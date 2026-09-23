@@ -1,0 +1,43 @@
+# Data — do not commit raw or processed data; use kagglehub to download
+data/raw/
+data/processed/
+data/sample/
+
+# Models
+models/*.pkl
+models/*.joblib
+models/*.pt
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# Virtual env
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temp
+audit.py
