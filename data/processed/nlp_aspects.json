@@ -1,0 +1,263 @@
+{
+  "aspect_summary": {
+    "Delivery/Logistics": {
+      "total_mentions": 18181,
+      "negative": 4028,
+      "neutral": 4640,
+      "positive": 9513,
+      "small_sample_flag": false
+    },
+    "Product Quality": {
+      "total_mentions": 18450,
+      "negative": 5326,
+      "neutral": 3894,
+      "positive": 9230,
+      "small_sample_flag": false
+    },
+    "Wrong/Missing Item": {
+      "total_mentions": 1817,
+      "negative": 1136,
+      "neutral": 605,
+      "positive": 76,
+      "small_sample_flag": false
+    },
+    "Customer Service": {
+      "total_mentions": 4918,
+      "negative": 1889,
+      "neutral": 907,
+      "positive": 2122,
+      "small_sample_flag": false
+    },
+    "Packaging": {
+      "total_mentions": 874,
+      "negative": 485,
+      "neutral": 236,
+      "positive": 153,
+      "small_sample_flag": false
+    },
+    "Price/Value": {
+      "total_mentions": 1790,
+      "negative": 695,
+      "neutral": 386,
+      "positive": 709,
+      "small_sample_flag": false
+    },
+    "Description Mismatch": {
+      "total_mentions": 1853,
+      "negative": 633,
+      "neutral": 649,
+      "positive": 571,
+      "small_sample_flag": false
+    },
+    "Uncategorized": {
+      "total_mentions": 11497,
+      "negative": 1695,
+      "neutral": 2571,
+      "positive": 7231,
+      "small_sample_flag": false
+    }
+  },
+  "top_negative_terms_discovered": {
+    "nao": {
+      "freq": 977,
+      "neg_pos_ratio": 488.5
+    },
+    "agora": {
+      "freq": 529,
+      "neg_pos_ratio": 264.5
+    },
+    "correios": {
+      "freq": 493,
+      "neg_pos_ratio": 246.5
+    },
+    "porém": {
+      "freq": 439,
+      "neg_pos_ratio": 219.5
+    },
+    "nada": {
+      "freq": 407,
+      "neg_pos_ratio": 203.5
+    },
+    "problema": {
+      "freq": 392,
+      "neg_pos_ratio": 196.0
+    },
+    "quero": {
+      "freq": 391,
+      "neg_pos_ratio": 195.5
+    },
+    "frete": {
+      "freq": 387,
+      "neg_pos_ratio": 193.5
+    },
+    "contato": {
+      "freq": 351,
+      "neg_pos_ratio": 175.5
+    },
+    "errado": {
+      "freq": 336,
+      "neg_pos_ratio": 168.0
+    },
+    "defeito": {
+      "freq": 308,
+      "neg_pos_ratio": 154.0
+    },
+    "fiz": {
+      "freq": 288,
+      "neg_pos_ratio": 144.0
+    },
+    "outro": {
+      "freq": 283,
+      "neg_pos_ratio": 141.5
+    },
+    "apenas": {
+      "freq": 280,
+      "neg_pos_ratio": 140.0
+    },
+    "paguei": {
+      "freq": 266,
+      "neg_pos_ratio": 133.0
+    },
+    "caixa": {
+      "freq": 263,
+      "neg_pos_ratio": 131.5
+    },
+    "dois": {
+      "freq": 263,
+      "neg_pos_ratio": 131.5
+    },
+    "porque": {
+      "freq": 263,
+      "neg_pos_ratio": 131.5
+    },
+    "demora": {
+      "freq": 255,
+      "neg_pos_ratio": 127.5
+    },
+    "troca": {
+      "freq": 255,
+      "neg_pos_ratio": 127.5
+    },
+    "dinheiro": {
+      "freq": 246,
+      "neg_pos_ratio": 123.0
+    },
+    "resposta": {
+      "freq": 243,
+      "neg_pos_ratio": 121.5
+    },
+    "correio": {
+      "freq": 242,
+      "neg_pos_ratio": 121.0
+    },
+    "ainda recebi": {
+      "freq": 240,
+      "neg_pos_ratio": 120.0
+    },
+    "pedi": {
+      "freq": 232,
+      "neg_pos_ratio": 116.0
+    },
+    "falta": {
+      "freq": 231,
+      "neg_pos_ratio": 115.5
+    },
+    "receber": {
+      "freq": 231,
+      "neg_pos_ratio": 115.5
+    },
+    "embalagem": {
+      "freq": 229,
+      "neg_pos_ratio": 114.5
+    },
+    "devolução": {
+      "freq": 220,
+      "neg_pos_ratio": 110.0
+    },
+    "entregaram": {
+      "freq": 219,
+      "neg_pos_ratio": 109.5
+    },
+    "retorno": {
+      "freq": 218,
+      "neg_pos_ratio": 109.0
+    },
+    "valor": {
+      "freq": 217,
+      "neg_pos_ratio": 108.5
+    },
+    "cor": {
+      "freq": 215,
+      "neg_pos_ratio": 107.5
+    },
+    "ruim": {
+      "freq": 215,
+      "neg_pos_ratio": 107.5
+    },
+    "diferente": {
+      "freq": 212,
+      "neg_pos_ratio": 106.0
+    },
+    "nenhuma": {
+      "freq": 212,
+      "neg_pos_ratio": 106.0
+    },
+    "momento": {
+      "freq": 210,
+      "neg_pos_ratio": 105.0
+    },
+    "fazer": {
+      "freq": 209,
+      "neg_pos_ratio": 104.5
+    },
+    "nunca": {
+      "freq": 205,
+      "neg_pos_ratio": 102.5
+    },
+    "demorou": {
+      "freq": 203,
+      "neg_pos_ratio": 101.5
+    },
+    "péssima": {
+      "freq": 201,
+      "neg_pos_ratio": 100.5
+    },
+    "hoje": {
+      "freq": 199,
+      "neg_pos_ratio": 99.5
+    },
+    "casa": {
+      "freq": 195,
+      "neg_pos_ratio": 97.5
+    },
+    "atraso": {
+      "freq": 194,
+      "neg_pos_ratio": 97.0
+    },
+    "devolver": {
+      "freq": 194,
+      "neg_pos_ratio": 97.0
+    },
+    "ninguém": {
+      "freq": 193,
+      "neg_pos_ratio": 96.5
+    },
+    "nao recebi": {
+      "freq": 192,
+      "neg_pos_ratio": 96.0
+    },
+    "duas": {
+      "freq": 189,
+      "neg_pos_ratio": 94.5
+    },
+    "consigo": {
+      "freq": 187,
+      "neg_pos_ratio": 93.5
+    },
+    "fiscal": {
+      "freq": 185,
+      "neg_pos_ratio": 92.5
+    }
+  },
+  "note": "Aspects were discovered from frequent terms in negative reviews, then grouped into semantic categories. Categories with <100 mentions are flagged as LOW-N."
+}

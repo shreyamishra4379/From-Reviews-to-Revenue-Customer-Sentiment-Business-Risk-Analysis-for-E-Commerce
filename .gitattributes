@@ -1,0 +1,17 @@
+# Git LFS — track large binary files so they don't bloat the git history
+# Cloners with `git lfs pull` will download the actual bytes; others get pointers.
+
+# NumPy embedding matrices
+*.npy filter=lfs diff=lfs merge=lfs -text
+
+# Pickle / joblib model artifacts
+*.pkl filter=lfs diff=lfs merge=lfs -text
+*.joblib filter=lfs diff=lfs merge=lfs -text
+
+# PyTorch model checkpoints
+*.pt filter=lfs diff=lfs merge=lfs -text
+*.pth filter=lfs diff=lfs merge=lfs -text
+
+# Large Parquet files  (>50 MB threshold — all parquets here are <15 MB so
+# they go into normal git, but keep the rule for future large ones)
+# *.parquet filter=lfs diff=lfs merge=lfs -text

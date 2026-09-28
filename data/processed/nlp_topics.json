@@ -1,0 +1,415 @@
+{
+  "tfidf_topics": [
+    {
+      "topic_id": 0,
+      "top_terms": [
+        "bom",
+        "produto bom",
+        "bom produto",
+        "produto",
+        "bom recomendo",
+        "bom atendimento",
+        "bom entrega",
+        "atendimento",
+        "prazo bom",
+        "bom chegou",
+        "preço",
+        "bom preço",
+        "tudo bom",
+        "bom entregue",
+        "bom gostei"
+      ],
+      "review_count": 3398
+    },
+    {
+      "topic_id": 1,
+      "top_terms": [
+        "antes",
+        "antes prazo",
+        "prazo",
+        "chegou",
+        "chegou antes",
+        "produto chegou",
+        "bem",
+        "bem antes",
+        "chegou bem",
+        "previsto",
+        "entrega antes",
+        "produto",
+        "entregue antes",
+        "prazo previsto",
+        "chegou prazo"
+      ],
+      "review_count": 5765
+    },
+    {
+      "topic_id": 2,
+      "top_terms": [
+        "recomendo",
+        "super recomendo",
+        "super",
+        "todos",
+        "bom recomendo",
+        "loja",
+        "recomendo todos",
+        "recomendo loja",
+        "prazo recomendo",
+        "produto recomendo",
+        "recomendo produto",
+        "qualidade recomendo",
+        "produto",
+        "vendedor",
+        "qualidade"
+      ],
+      "review_count": 2932
+    },
+    {
+      "topic_id": 3,
+      "top_terms": [
+        "recebi",
+        "recebi produto",
+        "produto",
+        "ainda",
+        "ainda recebi",
+        "nao",
+        "comprei",
+        "nao recebi",
+        "veio",
+        "produto ainda",
+        "agora",
+        "loja",
+        "compra",
+        "apenas",
+        "pedido"
+      ],
+      "review_count": 11432
+    },
+    {
+      "topic_id": 4,
+      "top_terms": [
+        "ótimo",
+        "ótimo produto",
+        "produto",
+        "produto ótimo",
+        "ótimo atendimento",
+        "atendimento",
+        "produto recomendo",
+        "produto entrega",
+        "ótimo vendedor",
+        "prazo ótimo",
+        "vendedor",
+        "tudo ótimo",
+        "ótimo recomendo",
+        "produto chegou",
+        "custo"
+      ],
+      "review_count": 1562
+    },
+    {
+      "topic_id": 5,
+      "top_terms": [
+        "entrega",
+        "rápida",
+        "entrega rápida",
+        "gostei",
+        "produto",
+        "qualidade",
+        "super",
+        "entrega super",
+        "super rápida",
+        "rápida produto",
+        "boa",
+        "tudo",
+        "produto entrega",
+        "ótima",
+        "prazo entrega"
+      ],
+      "review_count": 8932
+    },
+    {
+      "topic_id": 6,
+      "top_terms": [
+        "excelente",
+        "produto excelente",
+        "excelente produto",
+        "produto",
+        "excelente qualidade",
+        "qualidade",
+        "atendimento",
+        "excelente atendimento",
+        "prazo excelente",
+        "excelente entrega",
+        "loja",
+        "excelente recomendo",
+        "excelente loja",
+        "loja excelente",
+        "produto recomendo"
+      ],
+      "review_count": 1578
+    },
+    {
+      "topic_id": 7,
+      "top_terms": [
+        "entregue",
+        "produto entregue",
+        "produto",
+        "prazo",
+        "entregue antes",
+        "entregue prazo",
+        "dentro",
+        "dentro prazo",
+        "entregue dentro",
+        "qualidade",
+        "antes",
+        "antes prazo",
+        "conforme",
+        "bom produto",
+        "otimo"
+      ],
+      "review_count": 5378
+    }
+  ],
+  "embedding_topics": [
+    {
+      "topic_id": 0,
+      "business_topic_name": "Topic 0: produto / recomendo / prazo",
+      "representative_terms": [
+        "produto",
+        "recomendo",
+        "prazo",
+        "entrega",
+        "loja",
+        "gostei",
+        "compra",
+        "bom",
+        "antes",
+        "bem",
+        "comprar",
+        "chegou",
+        "super",
+        "antes prazo",
+        "lannister"
+      ],
+      "sample_reviews": [
+        "Parabéns lojas lannister adorei comprar pela Internet seguro e prático Parabéns a todos feliz Páscoa",
+        "Vendedor confiável, produto ok e entrega antes do prazo.",
+        "relógio muito bonito e barato.",
+        "Tô completamente apaixonada, loja super responsável e confiável!",
+        "otimo vendedor chegou ate antes do prazo , adorei o produto"
+      ],
+      "review_count": 5864,
+      "interpretation": "Cluster dominated by terms: produto, recomendo, prazo, entrega, loja. Contains 5864 reviews."
+    },
+    {
+      "topic_id": 1,
+      "business_topic_name": "Topic 1: recebi / comprei / entrega",
+      "representative_terms": [
+        "recebi",
+        "comprei",
+        "entrega",
+        "veio",
+        "produto",
+        "ainda",
+        "chegou",
+        "prazo",
+        "pedido",
+        "correios",
+        "entregue",
+        "nao",
+        "apenas",
+        "compra",
+        "dois"
+      ],
+      "sample_reviews": [
+        "Não gostei ! Comprei gato por lebre",
+        "Nada de chegar o meu pedido.",
+        "recebi somente 1 controle Midea Split ESTILO.\r\nFaltou Controle Remoto para Ar Condicionado Consul",
+        "O produto não chegou no prazo estipulado e causou transtorno, pq programei a viagem de férias do meu filho, baseado no prazo. Moro na Bahia e ele em Cuiabá sozinho. Agora, a casa está vazia. ",
+        "Eu comprei duas unidades e só recebi uma e agora o que faço?"
+      ],
+      "review_count": 5193,
+      "interpretation": "Cluster dominated by terms: recebi, comprei, entrega, veio, produto. Contains 5193 reviews."
+    },
+    {
+      "topic_id": 2,
+      "business_topic_name": "Topic 2: produto / qualidade / entrega",
+      "representative_terms": [
+        "produto",
+        "qualidade",
+        "entrega",
+        "bom",
+        "recomendo",
+        "ótimo",
+        "excelente",
+        "prazo",
+        "rápida",
+        "produto bom",
+        "ótimo produto",
+        "bom produto",
+        "entrega rápida",
+        "boa",
+        "bem"
+      ],
+      "sample_reviews": [
+        "Produto entregue como solicitado, e com muita brevidade. Parabéns!\r\n",
+        "Produto de qualidade excelente",
+        "Ótimo custo-benefício",
+        "Muito bom alta qualidade!",
+        "Produto bonito, entregue bem valado e dentro do prazo. Recomendo!"
+      ],
+      "review_count": 4056,
+      "interpretation": "Cluster dominated by terms: produto, qualidade, entrega, bom, recomendo. Contains 4056 reviews."
+    },
+    {
+      "topic_id": 3,
+      "business_topic_name": "Topic 3: prazo / antes / produto",
+      "representative_terms": [
+        "prazo",
+        "antes",
+        "produto",
+        "antes prazo",
+        "chegou",
+        "entrega",
+        "bem",
+        "entregue",
+        "chegou antes",
+        "produto chegou",
+        "prazo produto",
+        "recomendo",
+        "bem antes",
+        "produto entregue",
+        "dentro"
+      ],
+      "sample_reviews": [
+        "Recebi bem antes do prazo estipulado.",
+        "A compra foi realizada facilmente.\r\nA entrega foi efetuada muito antes do prazo dado.\r\nO produto já começou a ser usado e até o presente,\r\nsem problemas.",
+        "Sempre compro pela Internet e a entrega ocorre antes do prazo combinado, que acredito ser o prazo máximo. No stark o prazo máximo já se esgotou e ainda não recebi o produto.",
+        "Recebi exatamente o que esperava. As demais encomendas de outros vendedores atrasaram, mas esta chegou no prazo.",
+        "Ocorreu tudo como contratado sendo a entrega realizada antes do prazo \r\n Estou satisfeita\r\n"
+      ],
+      "review_count": 6462,
+      "interpretation": "Cluster dominated by terms: prazo, antes, produto, antes prazo, chegou. Contains 6462 reviews."
+    },
+    {
+      "topic_id": 4,
+      "business_topic_name": "Topic 4: bom / recomendo / tudo",
+      "representative_terms": [
+        "bom",
+        "recomendo",
+        "tudo",
+        "excelente",
+        "ótimo",
+        "ok",
+        "gostei",
+        "bom bom",
+        "perfeito",
+        "boa",
+        "certo",
+        "parabéns",
+        "tudo ok",
+        "tudo certo",
+        "satisfeito"
+      ],
+      "sample_reviews": [
+        "Recomendo ,",
+        "muito boa ",
+        "Muito bom. muito cheiroso.",
+        "boa",
+        "MT lindo"
+      ],
+      "review_count": 4005,
+      "interpretation": "Cluster dominated by terms: bom, recomendo, tudo, excelente, ótimo. Contains 4005 reviews."
+    },
+    {
+      "topic_id": 5,
+      "business_topic_name": "Topic 5: entrega / produto / bom",
+      "representative_terms": [
+        "entrega",
+        "produto",
+        "bom",
+        "recomendo",
+        "prazo",
+        "otimo",
+        "tudo",
+        "chegou",
+        "rápida",
+        "antes",
+        "recebi",
+        "super",
+        "entregue",
+        "veio",
+        "entrega rápida"
+      ],
+      "sample_reviews": [
+        "Mas um pouco ,travando...pelo valor ta Boa.\r\n",
+        "GOSTARIA DE SABER O QUE HOUVE, SEMPRE RECEBI E ESSA COMPRA AGORA ME DECPCIONOU",
+        "Péssimo",
+        "Loja nota 10",
+        "obrigado pela atençao amim dispensada"
+      ],
+      "review_count": 5365,
+      "interpretation": "Cluster dominated by terms: entrega, produto, bom, recomendo, prazo. Contains 5365 reviews."
+    },
+    {
+      "topic_id": 6,
+      "business_topic_name": "Topic 6: produto / veio / comprei",
+      "representative_terms": [
+        "produto",
+        "veio",
+        "comprei",
+        "qualidade",
+        "recebi",
+        "chegou",
+        "bem",
+        "cor",
+        "porém",
+        "produto veio",
+        "bom",
+        "diferente",
+        "foto",
+        "embalagem",
+        "gostei"
+      ],
+      "sample_reviews": [
+        "aparelho eficiente. no site a marca do aparelho esta impresso como 3desinfector e ao chegar esta com outro nome...atualizar com a marca correta uma vez que é o mesmo aparelho",
+        "Produto bom, porém o que veio para mim não condiz com a foto do anúncio.",
+        "Produto muito inferior, mal acabado.",
+        "comprei tres pacotes de cinco folhas cada de papel transfer para tecido escuro e so recebi dois",
+        "Não funciona não faz sincronismo"
+      ],
+      "review_count": 4759,
+      "interpretation": "Cluster dominated by terms: produto, veio, comprei, qualidade, recebi. Contains 4759 reviews."
+    },
+    {
+      "topic_id": 7,
+      "business_topic_name": "Topic 7: produto / recebi / ainda",
+      "representative_terms": [
+        "produto",
+        "recebi",
+        "ainda",
+        "recebi produto",
+        "entregue",
+        "comprei",
+        "entrega",
+        "chegou",
+        "prazo",
+        "compra",
+        "loja",
+        "nao",
+        "veio",
+        "dia",
+        "produto entregue"
+      ],
+      "sample_reviews": [
+        "Produto chegou, mas meu PC não conseguiu reconhecer as portas USB.",
+        "A entrega foi dividida em duas. Não houve comunicado do loja. Cheguei a pensar que só haviam enviado parte do produto. ",
+        "Comprei o produto dia 25 de fevereiro e hoje dia 29 de marco não fora entregue na minha residência. Não sei se os correios desse Brasil e péssimo ou foi a própria loja que demorou postar.",
+        "fiz minha compra faz 30 dias e não recebi ainda meu produto.\r\nPrecisa melhorar nas entregas",
+        "Faltou 1 produto e os que recebi 1 veio quebrado"
+      ],
+      "review_count": 5273,
+      "interpretation": "Cluster dominated by terms: produto, recebi, ainda, recebi produto, entregue. Contains 5273 reviews."
+    }
+  ],
+  "method_notes": "TF-IDF+NMF baseline vs SentenceTransformer+KMeans advanced. Topic names derived from c-TF-IDF top terms, NOT pre-assumed."
+}

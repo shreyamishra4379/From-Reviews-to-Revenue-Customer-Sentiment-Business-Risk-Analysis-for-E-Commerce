@@ -1,0 +1,887 @@
+{
+  "sample_size_validation": {
+    "product_threshold": 30,
+    "category_threshold": 100,
+    "product_distribution": {
+      "1_review": 12759,
+      "2_to_9": 5662,
+      "10_to_29": 409,
+      "30_plus": 91
+    },
+    "misleading_example": {
+      "low_n_product": "0009406fd7479715e4bef61dd91f2462",
+      "low_n_reviews": 1,
+      "low_n_neg_rate": 1.0,
+      "high_n_product": "06edb72f1e0c64b14c5b79353f7abea3",
+      "high_n_reviews": 62,
+      "high_n_neg_rate": 0.2609
+    }
+  },
+  "statistical_analysis": {
+    "correlations": {
+      "Delivery Delay vs Review Score": {
+        "rho": -0.1755,
+        "p_value": 0.0
+      },
+      "Freight Value vs Review Score": {
+        "rho": -0.0383,
+        "p_value": 2.035548287445373e-16
+      },
+      "Price vs Review Score": {
+        "rho": 0.0216,
+        "p_value": 3.32524883243417e-06
+      },
+      "Complaint Rate vs Avg Rating": {
+        "rho": -0.9829,
+        "p_value": 2.515969079005007e-27
+      }
+    },
+    "ontime_vs_late": {
+      "test": "Mann-Whitney U (one-sided)",
+      "ontime_mean": 3.82,
+      "ontime_n": 41359,
+      "late_mean": 2.09,
+      "late_n": 4778,
+      "U": 151887117.5,
+      "p_value": 0.0
+    },
+    "freight_comparison": {
+      "test": "Mann-Whitney U",
+      "median_freight": 16.59,
+      "low_mean": 3.69,
+      "high_mean": 3.58,
+      "U": 276504307.5,
+      "p_value": 2.5151873045925173e-15
+    },
+    "price_bands": {
+      "test": "Kruskal-Wallis H",
+      "bands": {
+        "<50": {
+          "mean": 3.61,
+          "n": 15728
+        },
+        "50-150": {
+          "mean": 3.64,
+          "n": 21084
+        },
+        "150-500": {
+          "mean": 3.69,
+          "n": 7897
+        },
+        ">500": {
+          "mean": 3.69,
+          "n": 1428
+        }
+      },
+      "H": 18.57,
+      "p_value": 0.00033567889200741493
+    },
+    "category_comparison": {
+      "test": "Kruskal-Wallis H",
+      "n_categories": 37,
+      "H": 640.29,
+      "p_value": 1.0630917379081878e-111,
+      "top5": [
+        {
+          "category": "books_general_interest",
+          "review_count": 162.0,
+          "avg_review_score": 4.091428571428572,
+          "neg_review_rate": 0.17714285714285713
+        },
+        {
+          "category": "fashion_shoes",
+          "review_count": 112.0,
+          "avg_review_score": 4.068702290076335,
+          "neg_review_rate": 0.19083969465648856
+        },
+        {
+          "category": "luggage_accessories",
+          "review_count": 419.0,
+          "avg_review_score": 4.044543429844098,
+          "neg_review_rate": 0.17817371937639198
+        },
+        {
+          "category": "fashion_bags_accessories",
+          "review_count": 784.0,
+          "avg_review_score": 3.8433179723502304,
+          "neg_review_rate": 0.21428571428571427
+        },
+        {
+          "category": "home_appliances",
+          "review_count": 334.0,
+          "avg_review_score": 3.8376068376068377,
+          "neg_review_rate": 0.23076923076923078
+        }
+      ],
+      "bottom5": [
+        {
+          "category": "office_furniture",
+          "review_count": 606.0,
+          "avg_review_score": 2.8914081145584727,
+          "neg_review_rate": 0.42601431980906923
+        },
+        {
+          "category": "unknown",
+          "review_count": 628.0,
+          "avg_review_score": 3.2602545968882604,
+          "neg_review_rate": 0.38613861386138615
+        },
+        {
+          "category": "furniture_living_room",
+          "review_count": 158.0,
+          "avg_review_score": 3.303030303030303,
+          "neg_review_rate": 0.35353535353535354
+        },
+        {
+          "category": "air_conditioning",
+          "review_count": 103.0,
+          "avg_review_score": 3.3203125,
+          "neg_review_rate": 0.34375
+        },
+        {
+          "category": "drinks",
+          "review_count": 120.0,
+          "avg_review_score": 3.324675324675325,
+          "neg_review_rate": 0.3246753246753247
+        }
+      ]
+    },
+    "logistic_regression": {
+      "disclaimer": "Observational data only. Coefficients are associations, not causal effects.",
+      "coefficients": {
+        "const": -0.577849,
+        "delay_days": 0.047237,
+        "price": -0.000245,
+        "freight_value": 0.005006
+      },
+      "p_values": {
+        "const": 0.0,
+        "delay_days": 0.0,
+        "price": 0.00015,
+        "freight_value": 0.0
+      },
+      "pseudo_r2": 0.0421,
+      "n_obs": 46137
+    }
+  },
+  "delivery_analysis": {
+    "top_late_categories": [
+      {
+        "category": "audio",
+        "n": 156,
+        "late_rate": 0.1524390243902439
+      },
+      {
+        "category": "home_confort",
+        "n": 219,
+        "late_rate": 0.1346938775510204
+      },
+      {
+        "category": "baby",
+        "n": 1074,
+        "late_rate": 0.1260647359454855
+      },
+      {
+        "category": "health_beauty",
+        "n": 3341,
+        "late_rate": 0.12023460410557185
+      },
+      {
+        "category": "electronics",
+        "n": 1052,
+        "late_rate": 0.11890504704875962
+      },
+      {
+        "category": "unknown",
+        "n": 628,
+        "late_rate": 0.1173974540311174
+      },
+      {
+        "category": "musical_instruments",
+        "n": 254,
+        "late_rate": 0.11721611721611722
+      },
+      {
+        "category": "home_appliances_2",
+        "n": 103,
+        "late_rate": 0.11650485436893204
+      },
+      {
+        "category": "food",
+        "n": 163,
+        "late_rate": 0.1164021164021164
+      },
+      {
+        "category": "stationery",
+        "n": 850,
+        "late_rate": 0.11158798283261803
+      }
+    ],
+    "top_late_states": [
+      {
+        "state": "AL",
+        "n": 198,
+        "late_rate": 0.3119266055045872
+      },
+      {
+        "state": "MA",
+        "n": 341,
+        "late_rate": 0.2345360824742268
+      },
+      {
+        "state": "SE",
+        "n": 188,
+        "late_rate": 0.1875
+      },
+      {
+        "state": "CE",
+        "n": 646,
+        "late_rate": 0.17591339648173207
+      },
+      {
+        "state": "BA",
+        "n": 1640,
+        "late_rate": 0.16525871172122492
+      },
+      {
+        "state": "RJ",
+        "n": 5605,
+        "late_rate": 0.1625241851465992
+      },
+      {
+        "state": "PI",
+        "n": 223,
+        "late_rate": 0.16129032258064516
+      },
+      {
+        "state": "MS",
+        "n": 294,
+        "late_rate": 0.14857142857142858
+      },
+      {
+        "state": "RN",
+        "n": 208,
+        "late_rate": 0.1483050847457627
+      },
+      {
+        "state": "PB",
+        "n": 248,
+        "late_rate": 0.14576271186440679
+      }
+    ],
+    "aspect_by_delivery": [
+      {
+        "extracted_aspects": "Delivery/Logistics",
+        "on_time": 997,
+        "late": 520,
+        "total": 1517,
+        "late_share": 34.3
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsProduct Quality",
+        "on_time": 799,
+        "late": 433,
+        "total": 1232,
+        "late_share": 35.1
+      },
+      {
+        "extracted_aspects": "Product Quality",
+        "on_time": 1632,
+        "late": 384,
+        "total": 2016,
+        "late_share": 19.0
+      },
+      {
+        "extracted_aspects": "Uncategorized",
+        "on_time": 1791,
+        "late": 307,
+        "total": 2098,
+        "late_share": 14.6
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsProduct QualityCustomer Service",
+        "on_time": 276,
+        "late": 160,
+        "total": 436,
+        "late_share": 36.7
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsCustomer Service",
+        "on_time": 242,
+        "late": 110,
+        "total": 352,
+        "late_share": 31.2
+      },
+      {
+        "extracted_aspects": "Product QualityCustomer Service",
+        "on_time": 317,
+        "late": 103,
+        "total": 420,
+        "late_share": 24.5
+      },
+      {
+        "extracted_aspects": "Customer Service",
+        "on_time": 339,
+        "late": 84,
+        "total": 423,
+        "late_share": 19.9
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsProduct QualityPrice/Value",
+        "on_time": 138,
+        "late": 33,
+        "total": 171,
+        "late_share": 19.3
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsProduct QualityWrong/Missing Item",
+        "on_time": 122,
+        "late": 31,
+        "total": 153,
+        "late_share": 20.3
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsPrice/Value",
+        "on_time": 174,
+        "late": 25,
+        "total": 199,
+        "late_share": 12.6
+      },
+      {
+        "extracted_aspects": "Wrong/Missing Item",
+        "on_time": 296,
+        "late": 24,
+        "total": 320,
+        "late_share": 7.5
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsCustomer ServicePrice/Value",
+        "on_time": 20,
+        "late": 24,
+        "total": 44,
+        "late_share": 54.5
+      },
+      {
+        "extracted_aspects": "Product QualityPrice/Value",
+        "on_time": 92,
+        "late": 22,
+        "total": 114,
+        "late_share": 19.3
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsWrong/Missing Item",
+        "on_time": 112,
+        "late": 21,
+        "total": 133,
+        "late_share": 15.8
+      },
+      {
+        "extracted_aspects": "Product QualityWrong/Missing Item",
+        "on_time": 255,
+        "late": 15,
+        "total": 270,
+        "late_share": 5.6
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsProduct QualityCustomer ServicePrice/Value",
+        "on_time": 38,
+        "late": 14,
+        "total": 52,
+        "late_share": 26.9
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsProduct QualityPackaging",
+        "on_time": 98,
+        "late": 12,
+        "total": 110,
+        "late_share": 10.9
+      },
+      {
+        "extracted_aspects": "Price/Value",
+        "on_time": 84,
+        "late": 10,
+        "total": 94,
+        "late_share": 10.6
+      },
+      {
+        "extracted_aspects": "Product QualityWrong/Missing ItemCustomer Service",
+        "on_time": 109,
+        "late": 9,
+        "total": 118,
+        "late_share": 7.6
+      },
+      {
+        "extracted_aspects": "Product QualityPackaging",
+        "on_time": 153,
+        "late": 9,
+        "total": 162,
+        "late_share": 5.6
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsProduct QualityWrong/Missing ItemCustomer Service",
+        "on_time": 35,
+        "late": 8,
+        "total": 43,
+        "late_share": 18.6
+      },
+      {
+        "extracted_aspects": "Product QualityDescription Mismatch",
+        "on_time": 180,
+        "late": 7,
+        "total": 187,
+        "late_share": 3.7
+      },
+      {
+        "extracted_aspects": "Wrong/Missing ItemCustomer Service",
+        "on_time": 72,
+        "late": 6,
+        "total": 78,
+        "late_share": 7.7
+      },
+      {
+        "extracted_aspects": "Customer ServicePrice/Value",
+        "on_time": 26,
+        "late": 6,
+        "total": 32,
+        "late_share": 18.8
+      },
+      {
+        "extracted_aspects": "Product QualityWrong/Missing ItemDescription Mismatch",
+        "on_time": 82,
+        "late": 5,
+        "total": 87,
+        "late_share": 5.7
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsWrong/Missing ItemCustomer Service",
+        "on_time": 17,
+        "late": 5,
+        "total": 22,
+        "late_share": 22.7
+      },
+      {
+        "extracted_aspects": "Description Mismatch",
+        "on_time": 107,
+        "late": 4,
+        "total": 111,
+        "late_share": 3.6
+      },
+      {
+        "extracted_aspects": "Packaging",
+        "on_time": 92,
+        "late": 4,
+        "total": 96,
+        "late_share": 4.2
+      },
+      {
+        "extracted_aspects": "Product QualityCustomer ServiceDescription Mismatch",
+        "on_time": 31,
+        "late": 3,
+        "total": 34,
+        "late_share": 8.8
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsPackaging",
+        "on_time": 49,
+        "late": 2,
+        "total": 51,
+        "late_share": 3.9
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsWrong/Missing ItemPrice/Value",
+        "on_time": 12,
+        "late": 2,
+        "total": 14,
+        "late_share": 14.3
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsProduct QualityDescription Mismatch",
+        "on_time": 37,
+        "late": 2,
+        "total": 39,
+        "late_share": 5.1
+      },
+      {
+        "extracted_aspects": "Product QualityWrong/Missing ItemCustomer ServiceDescription Mismatch",
+        "on_time": 18,
+        "late": 2,
+        "total": 20,
+        "late_share": 10.0
+      },
+      {
+        "extracted_aspects": "Product QualityCustomer ServicePrice/Value",
+        "on_time": 31,
+        "late": 2,
+        "total": 33,
+        "late_share": 6.1
+      },
+      {
+        "extracted_aspects": "Product QualityWrong/Missing ItemPrice/Value",
+        "on_time": 11,
+        "late": 1,
+        "total": 12,
+        "late_share": 8.3
+      },
+      {
+        "extracted_aspects": "Product QualityPackagingDescription Mismatch",
+        "on_time": 12,
+        "late": 1,
+        "total": 13,
+        "late_share": 7.7
+      },
+      {
+        "extracted_aspects": "Wrong/Missing ItemPrice/Value",
+        "on_time": 11,
+        "late": 1,
+        "total": 12,
+        "late_share": 8.3
+      },
+      {
+        "extracted_aspects": "Product QualityCustomer ServicePackaging",
+        "on_time": 20,
+        "late": 1,
+        "total": 21,
+        "late_share": 4.8
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsCustomer ServicePackaging",
+        "on_time": 8,
+        "late": 1,
+        "total": 9,
+        "late_share": 11.1
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsCustomer ServiceDescription Mismatch",
+        "on_time": 7,
+        "late": 1,
+        "total": 8,
+        "late_share": 12.5
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsDescription Mismatch",
+        "on_time": 27,
+        "late": 1,
+        "total": 28,
+        "late_share": 3.6
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsProduct QualityCustomer ServiceDescription Mismatch",
+        "on_time": 5,
+        "late": 1,
+        "total": 6,
+        "late_share": 16.7
+      },
+      {
+        "extracted_aspects": "Customer ServiceDescription Mismatch",
+        "on_time": 17,
+        "late": 1,
+        "total": 18,
+        "late_share": 5.6
+      },
+      {
+        "extracted_aspects": "Customer ServicePackaging",
+        "on_time": 11,
+        "late": 1,
+        "total": 12,
+        "late_share": 8.3
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsProduct QualityWrong/Missing ItemPackaging",
+        "on_time": 7,
+        "late": 1,
+        "total": 8,
+        "late_share": 12.5
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsWrong/Missing ItemDescription Mismatch",
+        "on_time": 10,
+        "late": 1,
+        "total": 11,
+        "late_share": 9.1
+      },
+      {
+        "extracted_aspects": "Wrong/Missing ItemPackaging",
+        "on_time": 10,
+        "late": 1,
+        "total": 11,
+        "late_share": 9.1
+      },
+      {
+        "extracted_aspects": "Price/ValueDescription Mismatch",
+        "on_time": 8,
+        "late": 1,
+        "total": 9,
+        "late_share": 11.1
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsWrong/Missing ItemCustomer ServicePrice/Value",
+        "on_time": 4,
+        "late": 1,
+        "total": 5,
+        "late_share": 20.0
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsProduct QualityWrong/Missing ItemPackagingDescription Mismatch",
+        "on_time": 2,
+        "late": 1,
+        "total": 3,
+        "late_share": 33.3
+      },
+      {
+        "extracted_aspects": "Product QualityPrice/ValueDescription Mismatch",
+        "on_time": 12,
+        "late": 1,
+        "total": 13,
+        "late_share": 7.7
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsPackagingPrice/ValueDescription Mismatch",
+        "on_time": 2,
+        "late": 0,
+        "total": 2,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsPackagingPrice/Value",
+        "on_time": 12,
+        "late": 0,
+        "total": 12,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Customer ServicePackagingPrice/Value",
+        "on_time": 5,
+        "late": 0,
+        "total": 5,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsPrice/ValueDescription Mismatch",
+        "on_time": 1,
+        "late": 0,
+        "total": 1,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "PackagingPrice/Value",
+        "on_time": 10,
+        "late": 0,
+        "total": 10,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsProduct QualityWrong/Missing ItemPrice/Value",
+        "on_time": 16,
+        "late": 0,
+        "total": 16,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsWrong/Missing ItemPackaging",
+        "on_time": 8,
+        "late": 0,
+        "total": 8,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsProduct QualityPackagingPrice/Value",
+        "on_time": 6,
+        "late": 0,
+        "total": 6,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsProduct QualityPackagingDescription Mismatch",
+        "on_time": 6,
+        "late": 0,
+        "total": 6,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsProduct QualityCustomer ServicePackaging",
+        "on_time": 14,
+        "late": 0,
+        "total": 14,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsProduct QualityCustomer ServicePrice/ValueDescription Mismatch",
+        "on_time": 2,
+        "late": 0,
+        "total": 2,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsProduct QualityWrong/Missing ItemCustomer ServiceDescription Mismatch",
+        "on_time": 9,
+        "late": 0,
+        "total": 9,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsProduct QualityPrice/ValueDescription Mismatch",
+        "on_time": 5,
+        "late": 0,
+        "total": 5,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsProduct QualityWrong/Missing ItemDescription Mismatch",
+        "on_time": 21,
+        "late": 0,
+        "total": 21,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Delivery/LogisticsProduct QualityWrong/Missing ItemCustomer ServicePrice/Value",
+        "on_time": 7,
+        "late": 0,
+        "total": 7,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "PackagingDescription Mismatch",
+        "on_time": 9,
+        "late": 0,
+        "total": 9,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Product QualityWrong/Missing ItemCustomer ServicePackaging",
+        "on_time": 4,
+        "late": 0,
+        "total": 4,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Product QualityWrong/Missing ItemCustomer ServicePrice/Value",
+        "on_time": 6,
+        "late": 0,
+        "total": 6,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Product QualityPackagingPrice/Value",
+        "on_time": 2,
+        "late": 0,
+        "total": 2,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Product QualityCustomer ServicePrice/ValueDescription Mismatch",
+        "on_time": 2,
+        "late": 0,
+        "total": 2,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Product QualityCustomer ServicePackagingDescription Mismatch",
+        "on_time": 3,
+        "late": 0,
+        "total": 3,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Product QualityPackagingPrice/ValueDescription Mismatch",
+        "on_time": 2,
+        "late": 0,
+        "total": 2,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Product QualityWrong/Missing ItemPackagingDescription Mismatch",
+        "on_time": 2,
+        "late": 0,
+        "total": 2,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Product QualityWrong/Missing ItemPrice/ValueDescription Mismatch",
+        "on_time": 8,
+        "late": 0,
+        "total": 8,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Product QualityWrong/Missing ItemCustomer ServicePrice/ValueDescription Mismatch",
+        "on_time": 2,
+        "late": 0,
+        "total": 2,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Product QualityWrong/Missing ItemPackaging",
+        "on_time": 10,
+        "late": 0,
+        "total": 10,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Wrong/Missing ItemCustomer ServiceDescription Mismatch",
+        "on_time": 17,
+        "late": 0,
+        "total": 17,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Wrong/Missing ItemCustomer ServicePackagingDescription Mismatch",
+        "on_time": 1,
+        "late": 0,
+        "total": 1,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Wrong/Missing ItemCustomer ServicePackaging",
+        "on_time": 1,
+        "late": 0,
+        "total": 1,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Wrong/Missing ItemDescription Mismatch",
+        "on_time": 41,
+        "late": 0,
+        "total": 41,
+        "late_share": 0.0
+      },
+      {
+        "extracted_aspects": "Wrong/Missing ItemPackagingDescription Mismatch",
+        "on_time": 1,
+        "late": 0,
+        "total": 1,
+        "late_share": 0.0
+      }
+    ]
+  },
+  "commercial_exposure": {
+    "affected_order_value_BRL": 1763586.0,
+    "affected_orders": 9529,
+    "sensitivity_table": [
+      {
+        "impact_pct": 1.0,
+        "exposure_BRL": 17635.86
+      },
+      {
+        "impact_pct": 2.0,
+        "exposure_BRL": 35271.72
+      },
+      {
+        "impact_pct": 5.0,
+        "exposure_BRL": 88179.3
+      },
+      {
+        "impact_pct": 10.0,
+        "exposure_BRL": 176358.6
+      },
+      {
+        "impact_pct": 15.0,
+        "exposure_BRL": 264537.9
+      },
+      {
+        "impact_pct": 20.0,
+        "exposure_BRL": 352717.2
+      }
+    ],
+    "disclaimer": "Scenario-based estimate, not observed historical revenue loss."
+  }
+}

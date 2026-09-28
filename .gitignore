@@ -1,0 +1,45 @@
+# ── Raw Data ─────────────────────────────────────────────────────────────────
+# Raw CSVs are downloaded automatically via kagglehub — do NOT commit them
+data/raw/
+data/sample/
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# ── Virtual Environments ──────────────────────────────────────────────────────
+venv_cuda/
+venv/
+.venv/
+env/
+ENV/
+
+# ── IDE / Editor ──────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Jupyter ───────────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+
+# ── Temp / Audit ──────────────────────────────────────────────────────────────
+audit.py
+
+# ── Git LFS tracked files (listed here so plain git doesn't accidentally commit them)
+# These are managed via .gitattributes and Git LFS

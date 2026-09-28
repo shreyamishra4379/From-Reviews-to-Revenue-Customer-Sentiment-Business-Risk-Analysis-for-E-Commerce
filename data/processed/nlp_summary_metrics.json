@@ -1,0 +1,115 @@
+{
+  "total_reviews": 99224,
+  "reviews_with_text": 40977,
+  "text_coverage_pct": 41.3,
+  "benchmark_results": {
+    "transformer_sentiment_500_reviews_sec": 179.33,
+    "sentence_embeddings_500_reviews_sec": 49.96,
+    "tfidf_500_reviews_sec": 0.92,
+    "transformer_est_full_min": 244.95,
+    "embeddings_est_full_min": 68.24,
+    "actual_transformer_full_sec": 10.13,
+    "actual_embeddings_full_sec": 1.96
+  },
+  "baseline_lexicon": {
+    "distribution": {
+      "Positive": 23153,
+      "Neutral": 9804,
+      "Negative": 8020
+    },
+    "agreement_rate_pct": 65.76,
+    "runtime_sec": 1.59
+  },
+  "transformer_sentiment": {
+    "model": "cardiffnlp/twitter-xlm-roberta-base-sentiment",
+    "distribution": {
+      "Positive": 21493,
+      "Negative": 9896,
+      "Neutral": 9588
+    },
+    "agreement_rate_pct": 69.88,
+    "disagreement_rate_pct": 30.12,
+    "per_score_agreement_pct": {
+      "1": 63.9,
+      "2": 56.36,
+      "3": 37.81,
+      "4": 58.77,
+      "5": 82.61
+    },
+    "runtime_sec": 10.13
+  },
+  "mismatch_examples": {
+    "5star_negative_text": [
+      "Satisfeito\r\n",
+      "OTIMA",
+      "quanto ao site não tenho o que questionar! sempre cumprem super o combinado ... recomendo sempre! mas o produto é fraco.. ",
+      "Sdds ",
+      "Loja em si é boa pena a americana nao da suporte ao cliente "
+    ],
+    "1star_positive_text": [
+      "Muito bom o produto e preço cobrado!",
+      "Fornecedor targaryen me mandou um massageador completamente diferente do que comprei, de preço inferior e cheio de avaliações negativas. Ninguém erra mandando um superior né, curioso..Ou seja, n recomendo",
+      "preço bom, entrega no prazo",
+      "muito obrigado\r\n",
+      "Gostei e recomendo!!\r\nÉ de confiança!!"
+    ]
+  },
+  "aspect_summary": {
+    "Delivery/Logistics": {
+      "total_mentions": 18181,
+      "negative": 4028,
+      "neutral": 4640,
+      "positive": 9513,
+      "small_sample_flag": false
+    },
+    "Product Quality": {
+      "total_mentions": 18450,
+      "negative": 5326,
+      "neutral": 3894,
+      "positive": 9230,
+      "small_sample_flag": false
+    },
+    "Wrong/Missing Item": {
+      "total_mentions": 1817,
+      "negative": 1136,
+      "neutral": 605,
+      "positive": 76,
+      "small_sample_flag": false
+    },
+    "Customer Service": {
+      "total_mentions": 4918,
+      "negative": 1889,
+      "neutral": 907,
+      "positive": 2122,
+      "small_sample_flag": false
+    },
+    "Packaging": {
+      "total_mentions": 874,
+      "negative": 485,
+      "neutral": 236,
+      "positive": 153,
+      "small_sample_flag": false
+    },
+    "Price/Value": {
+      "total_mentions": 1790,
+      "negative": 695,
+      "neutral": 386,
+      "positive": 709,
+      "small_sample_flag": false
+    },
+    "Description Mismatch": {
+      "total_mentions": 1853,
+      "negative": 633,
+      "neutral": 649,
+      "positive": 571,
+      "small_sample_flag": false
+    },
+    "Uncategorized": {
+      "total_mentions": 11497,
+      "negative": 1695,
+      "neutral": 2571,
+      "positive": 7231,
+      "small_sample_flag": false
+    }
+  }
+}
