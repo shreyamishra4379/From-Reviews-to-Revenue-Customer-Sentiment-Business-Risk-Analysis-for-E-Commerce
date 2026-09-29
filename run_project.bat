@@ -1,59 +1,91 @@
 @echo off
-echo ===============================================================================
-echo  From Reviews to Revenue — Customer Sentiment ^& Business Risk Analytics
-echo ===============================================================================
+setlocal
+
+echo ================================================================
+echo  From Reviews to Revenue - Customer Sentiment ^& Business Risk Analytics
+echo  Single Next.js App (Frontend + API Routes)
+echo ================================================================
 echo.
 
-:: ── Check for Python ───────────────────────────────────────────────────────
-where python >nul 2>&1
-if %ERRORLEVEL% neq 0 (
-    echo [ERROR] Python not found. Please install Python 3.10+ and try again.
+REM Check Node.js
+node --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [ERROR] Node.js not found. Install from https://nodejs.org/
     pause
     exit /b 1
 )
 
-:: ── Activate virtual environment if it exists ─────────────────────────────
-if exist venv_cuda\Scripts\activate.bat (
-    echo Activating CUDA virtual environment...
-    call venv_cuda\Scripts\activate.bat
-) else if exist venv\Scripts\activate.bat (
-    echo Activating virtual environment...
-    call venv\Scripts\activate.bat
+npm --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [ERROR] npm not found. Install Node.js from https://nodejs.org/
+    pause
+    exit /b 1
+)
+
+echo [OK] Node.js:
+node --version
+echo [OK] npm:
+npm --version
+echo.
+
+REM Get project directory
+set "PROJECT_DIR=%~dp0"
+cd /d "%PROJECT_DIR%"
+echo [INFO] Project: %PROJECT_DIR%
+echo.
+
+REM Frontend deps
+echo [1/3] Installing dependencies...
+cd /d "%PROJECT_DIR%frontend"
+if not exist node_modules (
+    npm install
+    if errorlevel 1 (
+        echo [ERROR] npm install failed
+        pause
+        exit /b 1
+    )
 ) else (
-    echo [INFO] No virtual environment found. Using system Python.
-    echo        To create one: python -m venv venv
-    echo        Then: pip install -r requirements.txt
+    echo [OK] Dependencies exist
 )
 
-set NLTK_ALLOW_PROXIED_URLOPEN=1
+REM Score distribution
 echo.
-
-:: ── Smart pipeline: setup.py handles skipping if outputs exist ────────────
-echo [1/2] Running smart pipeline setup (skips completed stages)...
-python setup.py
-if %ERRORLEVEL% neq 0 (
-    echo.
-    echo ===============================================================================
-    echo  ERROR: Pipeline setup failed. Check the error above.
-    echo ===============================================================================
-    pause
-    exit /b 1
+echo [2/3] Creating score distribution...
+cd /d "%PROJECT_DIR%frontend"
+node ../backend/create_score_dist.mjs
+if errorlevel 1 (
+    echo [WARN] Score distribution failed (continuing)
 )
-echo.
 
-:: ── Launch dashboard ──────────────────────────────────────────────────────
-echo [2/2] Launching Streamlit dashboard...
-echo       Open http://localhost:8501 in your browser.
+REM Build
 echo.
-python -m streamlit run app.py
-if %ERRORLEVEL% neq 0 (
-    echo.
-    echo ===============================================================================
-    echo  ERROR: Streamlit launch failed.
-    echo  Make sure streamlit is installed: pip install streamlit
-    echo ===============================================================================
+echo [3/3] Building production...
+cd /d "%PROJECT_DIR%frontend"
+npm run build
+if errorlevel 1 (
+    echo [ERROR] Build failed
     pause
     exit /b 1
 )
 
-goto :eof
+REM Start production server
+echo.
+echo Starting server on http://localhost:3000...
+cd /d "%PROJECT_DIR%frontend"
+start "Frontend + API" cmd /k npm start
+
+timeout /t 3 /nobreak >nul
+
+REM Open browser
+echo.
+echo Opening http://localhost:3000 ...
+start "" "http://localhost:3000"
+
+echo.
+echo ================================================================
+echo  RUNNING at http://localhost:3000
+echo  API routes at /api/*
+echo ================================================================
+echo.
+echo Server runs in separate window. Close when ready.
+pause

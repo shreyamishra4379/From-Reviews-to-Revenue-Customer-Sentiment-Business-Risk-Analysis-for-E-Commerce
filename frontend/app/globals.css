@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0E1117;
+  --foreground: #FAFAFA;
+  --card: #1B1F2B;
+  --accent: #00D4AA;
+  --accent2: #7B61FF;
+  --accent3: #FF6B6B;
+  --muted: #8B8FA3;
+  --positive: #00D4AA;
+  --negative: #FF6B6B;
+  --neutral: #FFD93D;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-accent: var(--accent);
+  --color-accent2: var(--accent2);
+  --color-accent3: var(--accent3);
+  --color-muted: var(--muted);
+  --color-positive: var(--positive);
+  --color-negative: var(--negative);
+  --color-neutral: var(--neutral);
+  --font-sans: var(--font-inter);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0E1117;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2A2F3E;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3A3F4E;
+}
+
+/* Selection */
+::selection {
+  background: rgba(0, 212, 170, 0.3);
+  color: #FAFAFA;
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Utility classes */
+.text-gradient {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+}
+
+.bg-card {
+  background: var(--card);
+}
+
+.border-subtle {
+  border-color: rgba(255, 255, 255, 0.05);
+}

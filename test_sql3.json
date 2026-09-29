@@ -1,0 +1,1 @@
+{"query":"SELECT category, neg_sentiment_rate, total_value FROM business_prioritization WHERE neg_sentiment_rate > 0.3 LIMIT 5"}
