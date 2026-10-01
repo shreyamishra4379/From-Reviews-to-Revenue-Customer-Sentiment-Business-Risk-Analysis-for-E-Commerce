@@ -11,7 +11,8 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-import json, os
+import json, os, glob
+from pathlib import Path
 
 # ─────────────────────── CONFIG ───────────────────────
 st.set_page_config(
@@ -21,23 +22,27 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-DATA = "data/processed"
-S4 = f"{DATA}/stage4"
+# Use absolute paths based on this file's location so the app works
+# regardless of what directory Streamlit is launched from.
+BASE_DIR = Path(__file__).resolve().parent
+DATA     = BASE_DIR / "data" / "processed"
+SQL_DIR  = BASE_DIR / "sql"
+S4       = DATA / "stage4"
 
 # ─────────────────────── LOAD DATA ───────────────────────
 @st.cache_data
 def load_all():
-    nlp_metrics = json.load(open(f"{DATA}/nlp_summary_metrics.json", encoding="utf-8"))
-    nlp_topics = json.load(open(f"{DATA}/nlp_topics.json", encoding="utf-8"))
-    s4_metrics = json.load(open(f"{S4}/stage4_metrics.json", encoding="utf-8"))
-    cat_agg = pd.read_csv(f"{S4}/agg_category.csv")
-    seller_agg = pd.read_csv(f"{S4}/agg_seller.csv")
-    state_agg = pd.read_csv(f"{S4}/agg_state.csv")
-    monthly = pd.read_csv(f"{S4}/agg_monthly.csv")
-    quarterly = pd.read_csv(f"{S4}/agg_quarterly.csv")
-    prio = pd.read_csv(f"{S4}/business_prioritization.csv")
-    complaint_mx = pd.read_csv(f"{S4}/complaint_matrix.csv", index_col=0)
-    reviews = pd.read_parquet(f"{DATA}/fact_order_reviews.parquet")
+    nlp_metrics  = json.loads((DATA / "nlp_summary_metrics.json").read_text(encoding="utf-8"))
+    nlp_topics   = json.loads((DATA / "nlp_topics.json").read_text(encoding="utf-8"))
+    s4_metrics   = json.loads((S4 / "stage4_metrics.json").read_text(encoding="utf-8"))
+    cat_agg      = pd.read_csv(S4 / "agg_category.csv")
+    seller_agg   = pd.read_csv(S4 / "agg_seller.csv")
+    state_agg    = pd.read_csv(S4 / "agg_state.csv")
+    monthly      = pd.read_csv(S4 / "agg_monthly.csv")
+    quarterly    = pd.read_csv(S4 / "agg_quarterly.csv")
+    prio         = pd.read_csv(S4 / "business_prioritization.csv")
+    complaint_mx = pd.read_csv(S4 / "complaint_matrix.csv", index_col=0)
+    reviews      = pd.read_parquet(DATA / "fact_order_reviews.parquet")
     return (nlp_metrics, nlp_topics, s4_metrics, cat_agg, seller_agg,
             state_agg, monthly, quarterly, prio, complaint_mx, reviews)
 
@@ -46,16 +51,16 @@ def load_all():
 
 # ─────────────────────── THEME ───────────────────────
 COLORS = {
-    "bg": "#0E1117",
-    "card": "#1B1F2B",
-    "accent": "#00D4AA",
-    "accent2": "#7B61FF",
-    "accent3": "#FF6B6B",
-    "text": "#FAFAFA",
-    "muted": "#8B8FA3",
+    "bg":       "#0E1117",
+    "card":     "#1B1F2B",
+    "accent":   "#00D4AA",
+    "accent2":  "#7B61FF",
+    "accent3":  "#FF6B6B",
+    "text":     "#FAFAFA",
+    "muted":    "#8B8FA3",
     "positive": "#00D4AA",
     "negative": "#FF6B6B",
-    "neutral": "#FFD93D",
+    "neutral":  "#FFD93D",
 }
 
 plotly_template = dict(
@@ -189,22 +194,25 @@ if page == "🏠 Overview":
     <h1 style='text-align:center; font-weight:800; font-size:2.4rem;
         background: linear-gradient(135deg, #00D4AA, #7B61FF);
         -webkit-background-clip: text; -webkit-text-fill-color: transparent;'>
-        Customer Voice & Business Impact Analytics
+        Customer Voice &amp; Business Impact Analytics
     </h1>
     <p style='text-align:center; color:#8B8FA3; font-size:1rem; margin-bottom:2rem;'>
         NLP-Driven Risk Assessment Framework for E-Commerce · Olist Dataset · BRL (R$)
     </p>
     """, unsafe_allow_html=True)
 
-    # KPI cards
-    exp = s4_m['commercial_exposure']
+    # KPIs — all dynamic from loaded data
+    exp             = s4_m['commercial_exposure']
+    total_orders    = reviews['order_id'].nunique()
+    total_topics    = len(nlp_m.get('aspect_summary', {}))
+
     cols = st.columns(5)
     kpis = [
-        ("99,441", "Total Orders", ""),
-        (f"{nlp_m['reviews_with_text']:,}", "Reviews Analyzed", f"{nlp_m['text_coverage_pct']}% of all reviews"),
-        (f"{nlp_m['transformer_sentiment']['agreement_rate_pct']}%", "NLP Agreement", "Transformer vs Star Rating"),
-        ("8", "Complaint Topics", "Data-driven discovery"),
-        (f"R$ {exp['affected_order_value_BRL']:,.0f}", "At-Risk Order Value", "Tied to negative sentiment"),
+        (f"{total_orders:,}",                                           "Total Orders",         ""),
+        (f"{nlp_m['reviews_with_text']:,}",                             "Reviews Analyzed",     f"{nlp_m['text_coverage_pct']}% of all reviews"),
+        (f"{nlp_m['transformer_sentiment']['agreement_rate_pct']}%",    "NLP Agreement",        "Transformer vs Star Rating"),
+        (f"{total_topics}",                                             "Complaint Topics",     "Data-driven discovery"),
+        (f"R$ {exp['affected_order_value_BRL']:,.0f}",                  "At-Risk Order Value",  "Tied to negative sentiment"),
     ]
     for col, (val, label, sub) in zip(cols, kpis):
         col.markdown(f"""
@@ -226,10 +234,7 @@ if page == "🏠 Overview":
         fig = go.Figure(go.Bar(
             x=score_dist.index.astype(str),
             y=score_dist.values,
-            marker=dict(
-                color=['#FF6B6B', '#FF9F43', '#FFD93D', '#54A0FF', '#00D4AA'],
-                cornerradius=6
-            ),
+            marker=dict(color=['#FF6B6B', '#FF9F43', '#FFD93D', '#54A0FF', '#00D4AA']),
             text=[f"{v:,}" for v in score_dist.values],
             textposition='outside',
             textfont=dict(size=13, color='#C8CCD8')
@@ -263,7 +268,7 @@ if page == "🏠 Overview":
     """, unsafe_allow_html=True)
 
     corrs = s4_m['statistical_analysis']['correlations']
-    lat = s4_m['statistical_analysis']['ontime_vs_late']
+    lat   = s4_m['statistical_analysis']['ontime_vs_late']
 
     c1, c2, c3 = st.columns(3)
     c1.metric("Delivery Delay vs Score", f"ρ = {corrs['Delivery Delay vs Review Score']['rho']}", "p < 0.0001")
@@ -281,35 +286,41 @@ elif page == "🧠 NLP Insights":
     st.markdown("<div class='section-header'>Sentiment Agreement by Star Rating</div>", unsafe_allow_html=True)
     per_score = nlp_m['transformer_sentiment']['per_score_agreement_pct']
     scores = list(per_score.keys())
-    vals = list(per_score.values())
+    vals   = list(per_score.values())
     colors_agree = ['#FF6B6B' if v < 50 else '#FFD93D' if v < 70 else '#00D4AA' for v in vals]
 
     fig = go.Figure(go.Bar(
         x=[f"Score {s}" for s in scores], y=vals,
-        marker=dict(color=colors_agree, cornerradius=6),
+        marker=dict(color=colors_agree),
         text=[f"{v:.1f}%" for v in vals], textposition='outside',
         textfont=dict(size=14, color='#C8CCD8')
     ))
     fig.update_layout(**plotly_template['layout'].to_plotly_json(), height=350,
-                      yaxis_title="Agreement %", yaxis_range=[0,100])
+                      yaxis_title="Agreement %", yaxis_range=[0, 100])
     st.plotly_chart(fig, use_container_width=True)
 
     st.markdown("""
     <div class='insight-box'>
-        Score 3 (37.8% agreement) is inherently ambiguous — neither clearly positive nor negative.
-        Score 5 reviews agree 82.6% of the time, indicating the model handles clear sentiment well.
+        Score 3 reviews are inherently ambiguous — neither clearly positive nor negative.
+        Score 5 reviews agree with NLP at the highest rate, indicating the model handles clear sentiment well.
     </div>
     """, unsafe_allow_html=True)
 
     # Aspects
     st.markdown("<div class='section-header'>Complaint Aspect Breakdown</div>", unsafe_allow_html=True)
     aspects = nlp_m['aspect_summary']
-    asp_df = pd.DataFrame([
-        {'Aspect': k, 'Total Mentions': v['total_mentions'],
-         'Negative': v['negative'], 'Neutral': v['neutral'], 'Positive': v['positive'],
-         'Neg %': round(v['negative']/v['total_mentions']*100, 1)}
-        for k, v in aspects.items() if k != 'Uncategorized'
-    ]).sort_values('Neg %', ascending=True)
+    asp_rows = []
+    for k, v in aspects.items():
+        if k != 'Uncategorized' and v['total_mentions'] > 0:
+            asp_rows.append({
+                'Aspect': k,
+                'Total Mentions': v['total_mentions'],
+                'Negative': v['negative'],
+                'Neutral': v['neutral'],
+                'Positive': v['positive'],
+                'Neg %': round(v['negative'] / v['total_mentions'] * 100, 1)
+            })
+    asp_df = pd.DataFrame(asp_rows).sort_values('Neg %', ascending=True)
 
     fig = go.Figure(go.Bar(
         y=asp_df['Aspect'], x=asp_df['Neg %'],
@@ -317,7 +328,6 @@ elif page == "🧠 NLP Insights":
         marker=dict(
             color=asp_df['Neg %'],
             colorscale=[[0, '#00D4AA'], [0.5, '#FFD93D'], [1, '#FF6B6B']],
-            cornerradius=4
         ),
         text=[f"{v:.1f}% ({n:,})" for v, n in zip(asp_df['Neg %'], asp_df['Total Mentions'])],
         textposition='outside',
@@ -362,12 +372,11 @@ elif page == "📈 Statistical Analysis":
 
     fig = go.Figure(go.Bar(
         x=[r['ρ (Spearman)'] for _, r in corr_df.iterrows()],
-        y=[r['Variable Pair'] for _, r in corr_df.iterrows()],
+        y=[r['Variable Pair']  for _, r in corr_df.iterrows()],
         orientation='h',
         marker=dict(
             color=[COLORS['negative'] if r['ρ (Spearman)'] < 0 else COLORS['positive']
                    for _, r in corr_df.iterrows()],
-            cornerradius=6
         ),
         text=[f"ρ = {r['ρ (Spearman)']:.4f}" for _, r in corr_df.iterrows()],
         textposition='outside', textfont=dict(size=13, color='#C8CCD8')
@@ -382,20 +391,19 @@ elif page == "📈 Statistical Analysis":
 
     c1, c2, c3 = st.columns(3)
     c1.metric("On-Time Mean Score", f"{lat['ontime_mean']}", f"N = {lat['ontime_n']:,}")
-    c2.metric("Late Mean Score", f"{lat['late_mean']}", f"N = {lat['late_n']:,}", delta_color="inverse")
-    c3.metric("Mann-Whitney U", f"p < 0.0001", "Highly significant")
+    c2.metric("Late Mean Score",    f"{lat['late_mean']}",   f"N = {lat['late_n']:,}", delta_color="inverse")
+    c3.metric("Mann-Whitney U",     "p < 0.0001",            "Highly significant")
 
     # Price bands
     st.markdown("<div class='section-header'>Price Band Comparison</div>", unsafe_allow_html=True)
-    pb = s4_m['statistical_analysis']['price_bands']
+    pb    = s4_m['statistical_analysis']['price_bands']
     pb_df = pd.DataFrame([
         {'Price Band': k, 'Mean Score': v['mean'], 'N': v['n']}
         for k, v in pb['bands'].items()
     ])
     fig = go.Figure(go.Bar(
         x=pb_df['Price Band'], y=pb_df['Mean Score'],
-        marker=dict(color=[COLORS['accent2'], COLORS['accent'], COLORS['neutral'], COLORS['accent3']],
-                    cornerradius=6),
+        marker=dict(color=[COLORS['accent2'], COLORS['accent'], COLORS['neutral'], COLORS['accent3']]),
         text=[f"{v:.2f}" for v in pb_df['Mean Score']], textposition='outside',
         textfont=dict(size=14, color='#C8CCD8')
     ))
@@ -434,13 +442,12 @@ elif page == "🚚 Delivery Analysis":
     st.markdown("<div class='section-header'>Late Delivery Rate by State</div>", unsafe_allow_html=True)
     state_df = pd.DataFrame(del_data['top_late_states'])
     fig = go.Figure(go.Bar(
-        x=state_df['state'], y=state_df['late_rate'].apply(lambda x: x*100),
+        x=state_df['state'], y=state_df['late_rate'].apply(lambda x: x * 100),
         marker=dict(
-            color=state_df['late_rate'].apply(lambda x: x*100),
+            color=state_df['late_rate'].apply(lambda x: x * 100),
             colorscale=[[0, '#00D4AA'], [0.5, '#FFD93D'], [1, '#FF6B6B']],
-            cornerradius=6
         ),
-        text=[f"{r*100:.1f}%" for r in state_df['late_rate']],
+        text=[f"{r * 100:.1f}%" for r in state_df['late_rate']],
         textposition='outside', textfont=dict(size=12, color='#C8CCD8')
     ))
     fig.update_layout(**plotly_template['layout'].to_plotly_json(), height=400,
@@ -451,14 +458,13 @@ elif page == "🚚 Delivery Analysis":
     st.markdown("<div class='section-header'>Late Delivery Rate by Category (N≥100)</div>", unsafe_allow_html=True)
     cat_late_df = pd.DataFrame(del_data['top_late_categories'])
     fig = go.Figure(go.Bar(
-        y=cat_late_df['category'], x=cat_late_df['late_rate'].apply(lambda x: x*100),
+        y=cat_late_df['category'], x=cat_late_df['late_rate'].apply(lambda x: x * 100),
         orientation='h',
         marker=dict(
-            color=cat_late_df['late_rate'].apply(lambda x: x*100),
+            color=cat_late_df['late_rate'].apply(lambda x: x * 100),
             colorscale=[[0, '#00D4AA'], [0.5, '#FFD93D'], [1, '#FF6B6B']],
-            cornerradius=4
         ),
-        text=[f"{r*100:.1f}%" for r in cat_late_df['late_rate']],
+        text=[f"{r * 100:.1f}%" for r in cat_late_df['late_rate']],
         textposition='outside', textfont=dict(size=12, color='#C8CCD8')
     ))
     fig.update_layout(**plotly_template['layout'].to_plotly_json(), height=450,
@@ -468,7 +474,7 @@ elif page == "🚚 Delivery Analysis":
     # Aspect by delivery
     st.markdown("<div class='section-header'>Complaint Aspects: Late vs On-Time</div>", unsafe_allow_html=True)
     asp_del = pd.DataFrame(del_data['aspect_by_delivery'])
-    # Filter to top aspects (single-word/main aspects only)
+    # Filter to main single aspects for readability
     main_asp = asp_del[asp_del['extracted_aspects'].isin([
         'Delivery/Logistics', 'Product Quality', 'Customer Service',
         'Wrong/Missing Item', 'Packaging', 'Price/Value', 'Description Mismatch', 'Uncategorized'
@@ -529,7 +535,6 @@ elif page == "💰 Business Impact":
         marker=dict(
             color=sens['exposure_BRL'],
             colorscale=[[0, '#00D4AA'], [0.5, '#FFD93D'], [1, '#FF6B6B']],
-            cornerradius=6
         ),
         text=[f"R$ {v:,.0f}" for v in sens['exposure_BRL']],
         textposition='outside', textfont=dict(size=13, color='#C8CCD8')
@@ -543,16 +548,16 @@ elif page == "💰 Business Impact":
 
     seg_colors = {
         'HIGH Risk + HIGH Exposure': '#FF6B6B',
-        'HIGH Risk + LOW Exposure': '#FF9F43',
-        'LOW Risk + HIGH Exposure': '#54A0FF',
-        'LOW Risk + LOW Exposure': '#00D4AA'
+        'HIGH Risk + LOW Exposure':  '#FF9F43',
+        'LOW Risk + HIGH Exposure':  '#54A0FF',
+        'LOW Risk + LOW Exposure':   '#00D4AA'
     }
 
     prio_renamed = prio.rename(columns={
         'product_category_name_english': 'Category',
         'neg_sentiment_rate': 'Neg Sentiment Rate',
-        'neg_review_rate': 'Neg Review Rate',
-        'total_value': 'Total Revenue'
+        'neg_review_rate':    'Neg Review Rate',
+        'total_value':        'Total Revenue'
     })
 
     fig = px.scatter(
@@ -564,21 +569,22 @@ elif page == "💰 Business Impact":
     )
     fig.update_layout(**plotly_template['layout'].to_plotly_json(), height=500,
                       legend=dict(orientation='h', y=-0.15, font=dict(size=11)))
-    st.plotly_chart(fig, width='stretch')
+    st.plotly_chart(fig, use_container_width=True)
 
     # Table
     for seg in ['HIGH Risk + HIGH Exposure', 'HIGH Risk + LOW Exposure',
                 'LOW Risk + HIGH Exposure', 'LOW Risk + LOW Exposure']:
         subset = prio_renamed[prio_renamed['segment'] == seg].sort_values('Neg Sentiment Rate', ascending=False)
-        color = seg_colors[seg]
+        color  = seg_colors[seg]
         st.markdown(f"<span style='color:{color}; font-weight:700;'>● {seg}</span> ({len(subset)} categories)", unsafe_allow_html=True)
-        st.dataframe(subset[['Category', 'review_count', 'Neg Sentiment Rate', 'Total Revenue']].reset_index(drop=True),
-                     width='stretch', hide_index=True,
-                     column_config={
-                         "review_count": st.column_config.NumberColumn("Reviews", format="%d"),
-                         "Neg Sentiment Rate": st.column_config.NumberColumn("Neg Rate", format="%.1f%%"),
-                         "Total Revenue": st.column_config.NumberColumn("Value (R$)", format="R$ %,.0f")
-                     })
+        st.dataframe(
+            subset[['Category', 'review_count', 'Neg Sentiment Rate', 'Total Revenue']].reset_index(drop=True),
+            use_container_width=True, hide_index=True,
+            column_config={
+                "review_count":       st.column_config.NumberColumn("Reviews",    format="%d"),
+                "Neg Sentiment Rate": st.column_config.NumberColumn("Neg Rate",   format="%.1f%%"),
+                "Total Revenue":      st.column_config.NumberColumn("Value (R$)", format="R$ %,.0f")
+            })
 
 
 # ═══════════════════════════════════════════════════════════
@@ -590,7 +596,7 @@ elif page == "🏢 Category Deep Dive":
     # Heatmap
     st.markdown("<div class='section-header'>Category × Complaint Aspect Heatmap</div>", unsafe_allow_html=True)
 
-    # Filter to main single aspects for readability
+    # Use all available aspect columns dynamically
     single_aspects = [c for c in complaint_mx.columns if c in [
         'Delivery/Logistics', 'Product Quality', 'Customer Service',
         'Wrong/Missing Item', 'Packaging', 'Price/Value', 'Description Mismatch', 'Uncategorized'
@@ -619,13 +625,13 @@ elif page == "🏢 Category Deep Dive":
         name='Reviews', marker_color='rgba(0,212,170,0.3)',
     ), secondary_y=False)
     fig.add_trace(go.Scatter(
-        x=monthly_sorted['order_month'], y=monthly_sorted['neg_sentiment_rate']*100,
+        x=monthly_sorted['order_month'], y=monthly_sorted['neg_sentiment_rate'] * 100,
         name='Neg Sentiment %', line=dict(color=COLORS['negative'], width=3),
         mode='lines+markers'
     ), secondary_y=True)
     fig.update_layout(**plotly_template['layout'].to_plotly_json(), height=400,
                       legend=dict(orientation='h', y=1.1))
-    fig.update_yaxes(title_text="Review Count", secondary_y=False)
+    fig.update_yaxes(title_text="Review Count",         secondary_y=False)
     fig.update_yaxes(title_text="Negative Sentiment %", secondary_y=True)
     st.plotly_chart(fig, use_container_width=True)
 
@@ -638,14 +644,14 @@ elif page == "🏢 Category Deep Dive":
                      'top_complaint_topic']].reset_index(drop=True),
         use_container_width=True, hide_index=True,
         column_config={
-            "category": "Category",
-            "review_count": st.column_config.NumberColumn("Reviews", format="%d"),
-            "avg_review_score": st.column_config.NumberColumn("Avg Score", format="%.2f"),
-            "neg_review_rate": st.column_config.NumberColumn("Neg Review %", format="%.1f%%"),
-            "neg_sentiment_rate": st.column_config.NumberColumn("Neg Sentiment %", format="%.1f%%"),
-            "avg_item_price": st.column_config.NumberColumn("Avg Price (R$)", format="R$ %.2f"),
-            "avg_freight": st.column_config.NumberColumn("Avg Freight (R$)", format="R$ %.2f"),
-            "late_delivery_rate": st.column_config.NumberColumn("Late %", format="%.1f%%"),
+            "category":           "Category",
+            "review_count":       st.column_config.NumberColumn("Reviews",          format="%d"),
+            "avg_review_score":   st.column_config.NumberColumn("Avg Score",        format="%.2f"),
+            "neg_review_rate":    st.column_config.NumberColumn("Neg Review %",     format="%.1f%%"),
+            "neg_sentiment_rate": st.column_config.NumberColumn("Neg Sentiment %",  format="%.1f%%"),
+            "avg_item_price":     st.column_config.NumberColumn("Avg Price (R$)",   format="R$ %.2f"),
+            "avg_freight":        st.column_config.NumberColumn("Avg Freight (R$)", format="R$ %.2f"),
+            "late_delivery_rate": st.column_config.NumberColumn("Late %",           format="%.1f%%"),
             "top_complaint_topic": "Top Topic"
         }
     )
@@ -658,28 +664,121 @@ elif page == "🗄️ SQL Analytics":
     st.markdown("<h1 style='font-weight:700;'>🗄️ SQL Analytical Queries</h1>", unsafe_allow_html=True)
     st.markdown("""
     <div class='insight-box'>
-        11 validated SQL queries run against the Parquet data warehouse via DuckDB.
-        All queries returned real results and can be connected to any BI tool.
+        11 validated SQL queries executed live against the Parquet data warehouse via DuckDB.
+        Select any query, inspect the SQL, and click <b>▶ Run Query</b> to see real results.
     </div>
     """, unsafe_allow_html=True)
 
-    sql_files = sorted([f for f in os.listdir("sql") if f.endswith('.sql')])
-    selected = st.selectbox("Select Query", sql_files)
+    # ── Dynamically discover all .sql files ──────────────────────────────────
+    sql_path_list = sorted(SQL_DIR.glob("*.sql"))
 
-    if selected:
-        with open(f"sql/{selected}", 'r', encoding='utf-8') as f:
-            query = f.read()
-        st.code(query, language='sql')
+    if not sql_path_list:
+        st.error(f"No SQL files found in: {SQL_DIR}")
+        st.stop()
 
+    # Build friendly display names from filenames (remove number prefix + .sql)
+    def _friendly_name(path: Path) -> str:
+        stem = path.stem
+        # Strip leading digits and underscores: "01_category_revenue" → "Category Revenue"
+        parts = stem.split("_", 1)
+        name  = parts[1] if len(parts) == 2 and parts[0].isdigit() else stem
+        return name.replace("_", " ").title()
+
+    sql_options = {_friendly_name(p): p for p in sql_path_list}
+
+    # ── Query selector ────────────────────────────────────────────────────────
+    col_sel, col_run = st.columns([4, 1])
+    with col_sel:
+        selected_name = st.selectbox("Select Query", list(sql_options.keys()), label_visibility="visible")
+    with col_run:
+        st.markdown("<br>", unsafe_allow_html=True)   # vertical align
+        run_clicked = st.button("▶ Run Query", type="primary", use_container_width=True)
+
+    selected_path = sql_options[selected_name]
+    query         = selected_path.read_text(encoding="utf-8").strip()
+
+    # Always show the SQL code
+    st.code(query, language="sql")
+
+    # ── Execute on button click ───────────────────────────────────────────────
+    if run_clicked:
         try:
             import duckdb
-            conn = duckdb.connect(':memory:')
-            for tbl in ['nlp_reviews', 'fact_orders', 'fact_order_items',
-                        'dim_products', 'dim_customers', 'dim_sellers']:
-                conn.execute(f"CREATE VIEW {tbl} AS SELECT * FROM read_parquet('{DATA}/{tbl}.parquet')")
+
+            conn = duckdb.connect(":memory:")
+
+            # Register ALL parquet tables — use absolute paths so CWD doesn't matter
+            PARQUET_TABLES = {
+                "nlp_reviews":        DATA / "nlp_reviews.parquet",
+                "fact_orders":        DATA / "fact_orders.parquet",
+                "fact_order_items":   DATA / "fact_order_items.parquet",
+                "fact_order_reviews": DATA / "fact_order_reviews.parquet",
+                "dim_products":       DATA / "dim_products.parquet",
+                "dim_customers":      DATA / "dim_customers.parquet",
+                "dim_sellers":        DATA / "dim_sellers.parquet",
+                "dim_payments":       DATA / "dim_payments.parquet",
+            }
+            for tbl, path in PARQUET_TABLES.items():
+                if path.exists():
+                    # Use forward slashes for DuckDB compatibility on Windows
+                    conn.execute(
+                        f"CREATE VIEW {tbl} AS SELECT * FROM read_parquet('{path.as_posix()}')"
+                    )
+
             result = conn.execute(query).df()
-            st.dataframe(result.head(20), use_container_width=True, hide_index=True)
-            st.caption(f"Total rows: {len(result):,}")
             conn.close()
+
+            st.success(f"✅ Query executed successfully — {len(result):,} rows returned")
+
+            # ── Show chart if applicable ──────────────────────────────────────
+            if len(result) > 0 and len(result.columns) >= 2:
+                num_cols  = result.select_dtypes(include='number').columns.tolist()
+                cat_cols  = result.select_dtypes(exclude='number').columns.tolist()
+
+                if cat_cols and num_cols:
+                    x_col = cat_cols[0]
+                    y_col = num_cols[0]
+
+                    # Limit to top 30 rows for chart readability
+                    chart_df = result.head(30)
+                    orientation = 'h' if len(chart_df) > 10 else 'v'
+
+                    if orientation == 'h':
+                        fig = go.Figure(go.Bar(
+                            y=chart_df[x_col].astype(str),
+                            x=chart_df[y_col],
+                            orientation='h',
+                            marker=dict(color=COLORS['accent'],
+                                        colorscale=[[0, COLORS['accent']], [1, COLORS['accent2']]]),
+                            text=[f"{v:,.2f}" if isinstance(v, float) else f"{v:,}" for v in chart_df[y_col]],
+                            textposition='outside',
+                            textfont=dict(size=11, color='#C8CCD8')
+                        ))
+                        fig.update_layout(**plotly_template['layout'].to_plotly_json(),
+                                          height=max(350, len(chart_df) * 22),
+                                          xaxis_title=y_col, yaxis_title=x_col)
+                    else:
+                        fig = go.Figure(go.Bar(
+                            x=chart_df[x_col].astype(str),
+                            y=chart_df[y_col],
+                            marker_color=COLORS['accent'],
+                            text=[f"{v:,.2f}" if isinstance(v, float) else f"{v:,}" for v in chart_df[y_col]],
+                            textposition='outside',
+                            textfont=dict(size=12, color='#C8CCD8')
+                        ))
+                        fig.update_layout(**plotly_template['layout'].to_plotly_json(),
+                                          height=400,
+                                          xaxis_title=x_col, yaxis_title=y_col)
+
+                    st.plotly_chart(fig, use_container_width=True)
+
+            # ── Full data table ───────────────────────────────────────────────
+            st.markdown("<div class='section-header'>Query Results</div>", unsafe_allow_html=True)
+            st.dataframe(result, use_container_width=True, hide_index=True)
+            st.caption(f"Total rows: {len(result):,} | Columns: {', '.join(result.columns)}")
+
+        except ImportError:
+            st.error("❌ DuckDB is not installed. Run: `pip install duckdb`")
         except Exception as e:
-            st.error(f"Error: {e}")
+            st.error(f"❌ Query failed: {e}")
+            st.info("💡 Tip: Check that all referenced tables exist in the parquet data warehouse.")
