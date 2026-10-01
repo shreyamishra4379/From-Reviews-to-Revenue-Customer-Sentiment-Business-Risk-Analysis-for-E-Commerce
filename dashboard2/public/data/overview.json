@@ -1,0 +1,63 @@
+{
+  "total_reviews": 99224,
+  "reviews_with_text": 40977,
+  "text_coverage_pct": 41.3,
+  "total_orders": 99441,
+  "nlp_agreement_pct": 69.88,
+  "complaint_topics_count": 8,
+  "sentiment_distribution": {
+    "Positive": 21493,
+    "Negative": 9896,
+    "Neutral": 9588
+  },
+  "per_score_agreement_pct": {
+    "1": 63.9,
+    "2": 56.36,
+    "3": 37.81,
+    "4": 58.77,
+    "5": 82.61
+  },
+  "review_score_distribution": {
+    "1": 11424,
+    "2": 3151,
+    "3": 8179,
+    "4": 19142,
+    "5": 57328
+  },
+  "correlations": [
+    {
+      "pair": "Delivery Delay vs Review Score",
+      "rho": -0.1755,
+      "p_value": 0.0,
+      "p_label": "< 1e-300"
+    },
+    {
+      "pair": "Freight Value vs Review Score",
+      "rho": -0.0383,
+      "p_value": 2.035548287445373e-16,
+      "p_label": "2.04e-16"
+    },
+    {
+      "pair": "Price vs Review Score",
+      "rho": 0.0216,
+      "p_value": 3.32524883243417e-06,
+      "p_label": "3.33e-06"
+    },
+    {
+      "pair": "Complaint Rate vs Avg Rating",
+      "rho": -0.9829,
+      "p_value": 2.515969079005007e-27,
+      "p_label": "2.52e-27"
+    }
+  ],
+  "ontime_vs_late": {
+    "test": "Mann-Whitney U (one-sided)",
+    "ontime_mean": 3.82,
+    "ontime_n": 41359,
+    "late_mean": 2.09,
+    "late_n": 4778,
+    "U": 151887117.5,
+    "p_value": 0.0
+  },
+  "disclaimer": "Scenario-based estimate, not observed revenue loss"
+}

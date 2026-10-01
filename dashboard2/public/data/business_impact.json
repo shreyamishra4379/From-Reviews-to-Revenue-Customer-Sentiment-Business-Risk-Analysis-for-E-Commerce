@@ -1,0 +1,429 @@
+{
+  "disclaimer": "Scenario-based estimate, not observed revenue loss",
+  "currency": "BRL (R$)",
+  "affected_order_value_BRL": 1763586.0,
+  "affected_orders": 9529,
+  "sensitivity_table": [
+    {
+      "impact_pct": 1.0,
+      "label": "1% impact assumption",
+      "exposure_BRL": 17635.86
+    },
+    {
+      "impact_pct": 2.0,
+      "label": "2% impact assumption",
+      "exposure_BRL": 35271.72
+    },
+    {
+      "impact_pct": 5.0,
+      "label": "5% impact assumption",
+      "exposure_BRL": 88179.3
+    },
+    {
+      "impact_pct": 10.0,
+      "label": "10% impact assumption",
+      "exposure_BRL": 176358.6
+    },
+    {
+      "impact_pct": 15.0,
+      "label": "15% impact assumption",
+      "exposure_BRL": 264537.9
+    },
+    {
+      "impact_pct": 20.0,
+      "label": "20% impact assumption",
+      "exposure_BRL": 352717.2
+    }
+  ],
+  "prioritization": [
+    {
+      "category": "office_furniture",
+      "segment": "HIGH Risk + HIGH Exposure",
+      "neg_sentiment_rate": 0.3854,
+      "neg_review_rate": 0.426,
+      "total_value": 122420.11,
+      "review_count": 606,
+      "low_n": false
+    },
+    {
+      "category": "unknown",
+      "segment": "HIGH Risk + HIGH Exposure",
+      "neg_sentiment_rate": 0.3055,
+      "neg_review_rate": 0.3861,
+      "total_value": 88610.19,
+      "review_count": 628,
+      "low_n": false
+    },
+    {
+      "category": "audio",
+      "segment": "HIGH Risk + LOW Exposure",
+      "neg_sentiment_rate": 0.3049,
+      "neg_review_rate": 0.3415,
+      "total_value": 22979.54,
+      "review_count": 156,
+      "low_n": false
+    },
+    {
+      "category": "air_conditioning",
+      "segment": "HIGH Risk + LOW Exposure",
+      "neg_sentiment_rate": 0.3047,
+      "neg_review_rate": 0.3438,
+      "total_value": 21442.68,
+      "review_count": 103,
+      "low_n": false
+    },
+    {
+      "category": "drinks",
+      "segment": "HIGH Risk + LOW Exposure",
+      "neg_sentiment_rate": 0.2922,
+      "neg_review_rate": 0.3247,
+      "total_value": 7985.92,
+      "review_count": 120,
+      "low_n": false
+    },
+    {
+      "category": "computers_accessories",
+      "segment": "HIGH Risk + HIGH Exposure",
+      "neg_sentiment_rate": 0.2897,
+      "neg_review_rate": 0.3465,
+      "total_value": 384706.38,
+      "review_count": 2707,
+      "low_n": false
+    },
+    {
+      "category": "market_place",
+      "segment": "HIGH Risk + LOW Exposure",
+      "neg_sentiment_rate": 0.28,
+      "neg_review_rate": 0.288,
+      "total_value": 13781.8,
+      "review_count": 110,
+      "low_n": false
+    },
+    {
+      "category": "telephony",
+      "segment": "HIGH Risk + HIGH Exposure",
+      "neg_sentiment_rate": 0.275,
+      "neg_review_rate": 0.2843,
+      "total_value": 170466.51,
+      "review_count": 1852,
+      "low_n": false
+    },
+    {
+      "category": "furniture_decor",
+      "segment": "HIGH Risk + HIGH Exposure",
+      "neg_sentiment_rate": 0.2675,
+      "neg_review_rate": 0.3396,
+      "total_value": 281940.42,
+      "review_count": 2585,
+      "low_n": false
+    },
+    {
+      "category": "baby",
+      "segment": "HIGH Risk + HIGH Exposure",
+      "neg_sentiment_rate": 0.2649,
+      "neg_review_rate": 0.3262,
+      "total_value": 183848.19,
+      "review_count": 1074,
+      "low_n": false
+    },
+    {
+      "category": "consoles_games",
+      "segment": "HIGH Risk + LOW Exposure",
+      "neg_sentiment_rate": 0.2632,
+      "neg_review_rate": 0.3021,
+      "total_value": 76221.47,
+      "review_count": 399,
+      "low_n": false
+    },
+    {
+      "category": "housewares",
+      "segment": "HIGH Risk + HIGH Exposure",
+      "neg_sentiment_rate": 0.263,
+      "neg_review_rate": 0.2938,
+      "total_value": 278299.26,
+      "review_count": 2364,
+      "low_n": false
+    },
+    {
+      "category": "watches_gifts",
+      "segment": "HIGH Risk + HIGH Exposure",
+      "neg_sentiment_rate": 0.2495,
+      "neg_review_rate": 0.2755,
+      "total_value": 554566.04,
+      "review_count": 2489,
+      "low_n": false
+    },
+    {
+      "category": "home_construction",
+      "segment": "HIGH Risk + LOW Exposure",
+      "neg_sentiment_rate": 0.249,
+      "neg_review_rate": 0.3388,
+      "total_value": 34907.5,
+      "review_count": 200,
+      "low_n": false
+    },
+    {
+      "category": "home_confort",
+      "segment": "HIGH Risk + LOW Exposure",
+      "neg_sentiment_rate": 0.249,
+      "neg_review_rate": 0.302,
+      "total_value": 33248.81,
+      "review_count": 219,
+      "low_n": false
+    },
+    {
+      "category": "musical_instruments",
+      "segment": "HIGH Risk + LOW Exposure",
+      "neg_sentiment_rate": 0.2454,
+      "neg_review_rate": 0.2271,
+      "total_value": 84759.49,
+      "review_count": 254,
+      "low_n": false
+    },
+    {
+      "category": "toys",
+      "segment": "HIGH Risk + HIGH Exposure",
+      "neg_sentiment_rate": 0.2441,
+      "neg_review_rate": 0.2582,
+      "total_value": 214070.37,
+      "review_count": 1447,
+      "low_n": false
+    },
+    {
+      "category": "home_appliances",
+      "segment": "HIGH Risk + LOW Exposure",
+      "neg_sentiment_rate": 0.2422,
+      "neg_review_rate": 0.2308,
+      "total_value": 40574.15,
+      "review_count": 334,
+      "low_n": false
+    },
+    {
+      "category": "electronics",
+      "segment": "LOW Risk + LOW Exposure",
+      "neg_sentiment_rate": 0.2404,
+      "neg_review_rate": 0.2857,
+      "total_value": 84098.29,
+      "review_count": 1052,
+      "low_n": false
+    },
+    {
+      "category": "bed_bath_table",
+      "segment": "LOW Risk + HIGH Exposure",
+      "neg_sentiment_rate": 0.2402,
+      "neg_review_rate": 0.3096,
+      "total_value": 488451.15,
+      "review_count": 4277,
+      "low_n": false
+    },
+    {
+      "category": "health_beauty",
+      "segment": "LOW Risk + HIGH Exposure",
+      "neg_sentiment_rate": 0.2391,
+      "neg_review_rate": 0.2661,
+      "total_value": 494424.15,
+      "review_count": 3341,
+      "low_n": false
+    },
+    {
+      "category": "stationery",
+      "segment": "LOW Risk + HIGH Exposure",
+      "neg_sentiment_rate": 0.2328,
+      "neg_review_rate": 0.25,
+      "total_value": 93841.37,
+      "review_count": 850,
+      "low_n": false
+    },
+    {
+      "category": "perfumery",
+      "segment": "LOW Risk + HIGH Exposure",
+      "neg_sentiment_rate": 0.232,
+      "neg_review_rate": 0.2632,
+      "total_value": 164486.28,
+      "review_count": 1239,
+      "low_n": false
+    },
+    {
+      "category": "cool_stuff",
+      "segment": "LOW Risk + HIGH Exposure",
+      "neg_sentiment_rate": 0.2262,
+      "neg_review_rate": 0.2243,
+      "total_value": 303034.35,
+      "review_count": 1528,
+      "low_n": false
+    },
+    {
+      "category": "home_appliances_2",
+      "segment": "LOW Risk + LOW Exposure",
+      "neg_sentiment_rate": 0.2233,
+      "neg_review_rate": 0.2427,
+      "total_value": 56227.75,
+      "review_count": 103,
+      "low_n": false
+    },
+    {
+      "category": "pet_shop",
+      "segment": "LOW Risk + HIGH Exposure",
+      "neg_sentiment_rate": 0.2231,
+      "neg_review_rate": 0.2526,
+      "total_value": 87036.9,
+      "review_count": 651,
+      "low_n": false
+    },
+    {
+      "category": "furniture_living_room",
+      "segment": "LOW Risk + LOW Exposure",
+      "neg_sentiment_rate": 0.2222,
+      "neg_review_rate": 0.3535,
+      "total_value": 28042.93,
+      "review_count": 158,
+      "low_n": false
+    },
+    {
+      "category": "sports_leisure",
+      "segment": "LOW Risk + HIGH Exposure",
+      "neg_sentiment_rate": 0.219,
+      "neg_review_rate": 0.2865,
+      "total_value": 406741.87,
+      "review_count": 2945,
+      "low_n": false
+    },
+    {
+      "category": "garden_tools",
+      "segment": "LOW Risk + HIGH Exposure",
+      "neg_sentiment_rate": 0.2178,
+      "neg_review_rate": 0.2652,
+      "total_value": 208217.09,
+      "review_count": 1585,
+      "low_n": false
+    },
+    {
+      "category": "construction_tools_construction",
+      "segment": "LOW Risk + LOW Exposure",
+      "neg_sentiment_rate": 0.2158,
+      "neg_review_rate": 0.306,
+      "total_value": 58687.75,
+      "review_count": 299,
+      "low_n": false
+    },
+    {
+      "category": "auto",
+      "segment": "LOW Risk + HIGH Exposure",
+      "neg_sentiment_rate": 0.209,
+      "neg_review_rate": 0.2749,
+      "total_value": 299722.17,
+      "review_count": 1688,
+      "low_n": false
+    },
+    {
+      "category": "food",
+      "segment": "LOW Risk + LOW Exposure",
+      "neg_sentiment_rate": 0.2063,
+      "neg_review_rate": 0.2646,
+      "total_value": 12109.69,
+      "review_count": 163,
+      "low_n": false
+    },
+    {
+      "category": "small_appliances",
+      "segment": "LOW Risk + LOW Exposure",
+      "neg_sentiment_rate": 0.2014,
+      "neg_review_rate": 0.2526,
+      "total_value": 81685.31,
+      "review_count": 270,
+      "low_n": false
+    },
+    {
+      "category": "fashion_bags_accessories",
+      "segment": "LOW Risk + LOW Exposure",
+      "neg_sentiment_rate": 0.1855,
+      "neg_review_rate": 0.2143,
+      "total_value": 78751.58,
+      "review_count": 784,
+      "low_n": false
+    },
+    {
+      "category": "luggage_accessories",
+      "segment": "LOW Risk + LOW Exposure",
+      "neg_sentiment_rate": 0.1514,
+      "neg_review_rate": 0.1782,
+      "total_value": 64815.33,
+      "review_count": 419,
+      "low_n": false
+    },
+    {
+      "category": "fashion_shoes",
+      "segment": "LOW Risk + LOW Exposure",
+      "neg_sentiment_rate": 0.1221,
+      "neg_review_rate": 0.1908,
+      "total_value": 12217.23,
+      "review_count": 112,
+      "low_n": false
+    },
+    {
+      "category": "books_general_interest",
+      "segment": "LOW Risk + LOW Exposure",
+      "neg_sentiment_rate": 0.12,
+      "neg_review_rate": 0.1771,
+      "total_value": 16452.22,
+      "review_count": 162,
+      "low_n": false
+    }
+  ],
+  "low_n_threshold": 50,
+  "ontime_vs_late": {
+    "ontime_mean": 3.82,
+    "late_mean": 2.09,
+    "ontime_n": 41359,
+    "late_n": 4778
+  },
+  "price_bands": [
+    {
+      "band": "<50",
+      "mean_score": 3.61,
+      "n": 15728
+    },
+    {
+      "band": "50-150",
+      "mean_score": 3.64,
+      "n": 21084
+    },
+    {
+      "band": "150-500",
+      "mean_score": 3.69,
+      "n": 7897
+    },
+    {
+      "band": ">500",
+      "mean_score": 3.69,
+      "n": 1428
+    }
+  ],
+  "logistic_regression": {
+    "pseudo_r2": 0.0421,
+    "n_obs": 46137,
+    "disclaimer": "Observational data only. Coefficients are associations, not causal effects.",
+    "coefficients": [
+      {
+        "predictor": "const",
+        "coef": -0.577849,
+        "p_value": 0.0
+      },
+      {
+        "predictor": "delay_days",
+        "coef": 0.047237,
+        "p_value": 0.0
+      },
+      {
+        "predictor": "price",
+        "coef": -0.000245,
+        "p_value": 0.00015
+      },
+      {
+        "predictor": "freight_value",
+        "coef": 0.005006,
+        "p_value": 0.0
+      }
+    ]
+  }
+}

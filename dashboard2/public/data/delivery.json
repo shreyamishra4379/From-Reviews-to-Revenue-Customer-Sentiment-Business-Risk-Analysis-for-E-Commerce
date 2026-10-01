@@ -1,0 +1,294 @@
+{
+  "state_late_rates": [
+    {
+      "state": "AL",
+      "late_rate_pct": 31.19,
+      "order_count": 0
+    },
+    {
+      "state": "MA",
+      "late_rate_pct": 23.45,
+      "order_count": 0
+    },
+    {
+      "state": "SE",
+      "late_rate_pct": 18.75,
+      "order_count": 0
+    },
+    {
+      "state": "CE",
+      "late_rate_pct": 17.59,
+      "order_count": 0
+    },
+    {
+      "state": "BA",
+      "late_rate_pct": 16.53,
+      "order_count": 0
+    },
+    {
+      "state": "RJ",
+      "late_rate_pct": 16.25,
+      "order_count": 0
+    },
+    {
+      "state": "PI",
+      "late_rate_pct": 16.13,
+      "order_count": 0
+    },
+    {
+      "state": "MS",
+      "late_rate_pct": 14.86,
+      "order_count": 0
+    },
+    {
+      "state": "RN",
+      "late_rate_pct": 14.83,
+      "order_count": 0
+    },
+    {
+      "state": "PB",
+      "late_rate_pct": 14.58,
+      "order_count": 0
+    }
+  ],
+  "category_late_rates": [
+    {
+      "category": "audio",
+      "late_rate_pct": 15.24,
+      "order_count": 0
+    },
+    {
+      "category": "home_confort",
+      "late_rate_pct": 13.47,
+      "order_count": 0
+    },
+    {
+      "category": "baby",
+      "late_rate_pct": 12.61,
+      "order_count": 0
+    },
+    {
+      "category": "health_beauty",
+      "late_rate_pct": 12.02,
+      "order_count": 0
+    },
+    {
+      "category": "electronics",
+      "late_rate_pct": 11.89,
+      "order_count": 0
+    },
+    {
+      "category": "unknown",
+      "late_rate_pct": 11.74,
+      "order_count": 0
+    },
+    {
+      "category": "musical_instruments",
+      "late_rate_pct": 11.72,
+      "order_count": 0
+    },
+    {
+      "category": "home_appliances_2",
+      "late_rate_pct": 11.65,
+      "order_count": 0
+    },
+    {
+      "category": "food",
+      "late_rate_pct": 11.64,
+      "order_count": 0
+    },
+    {
+      "category": "stationery",
+      "late_rate_pct": 11.16,
+      "order_count": 0
+    }
+  ],
+  "aspect_by_delivery": [
+    {
+      "aspect": "Delivery/Logistics",
+      "on_time": 997,
+      "late": 520
+    },
+    {
+      "aspect": "Product Quality",
+      "on_time": 1632,
+      "late": 384
+    },
+    {
+      "aspect": "Uncategorized",
+      "on_time": 1791,
+      "late": 307
+    },
+    {
+      "aspect": "Customer Service",
+      "on_time": 339,
+      "late": 84
+    },
+    {
+      "aspect": "Wrong/Missing Item",
+      "on_time": 296,
+      "late": 24
+    },
+    {
+      "aspect": "Price/Value",
+      "on_time": 84,
+      "late": 10
+    },
+    {
+      "aspect": "Description Mismatch",
+      "on_time": 107,
+      "late": 4
+    },
+    {
+      "aspect": "Packaging",
+      "on_time": 92,
+      "late": 4
+    }
+  ],
+  "monthly_trends": [
+    {
+      "month": "2016-09",
+      "order_count": 3,
+      "review_count": 3,
+      "neg_sentiment_rate": 0.5
+    },
+    {
+      "month": "2016-10",
+      "order_count": 216,
+      "review_count": 216,
+      "neg_sentiment_rate": 0.3086
+    },
+    {
+      "month": "2016-12",
+      "order_count": 1,
+      "review_count": 1,
+      "neg_sentiment_rate": 0.0
+    },
+    {
+      "month": "2017-01",
+      "order_count": 357,
+      "review_count": 357,
+      "neg_sentiment_rate": 0.2654
+    },
+    {
+      "month": "2017-02",
+      "order_count": 775,
+      "review_count": 775,
+      "neg_sentiment_rate": 0.2307
+    },
+    {
+      "month": "2017-03",
+      "order_count": 1107,
+      "review_count": 1107,
+      "neg_sentiment_rate": 0.2396
+    },
+    {
+      "month": "2017-04",
+      "order_count": 997,
+      "review_count": 997,
+      "neg_sentiment_rate": 0.235
+    },
+    {
+      "month": "2017-05",
+      "order_count": 1485,
+      "review_count": 1485,
+      "neg_sentiment_rate": 0.2308
+    },
+    {
+      "month": "2017-06",
+      "order_count": 1336,
+      "review_count": 1336,
+      "neg_sentiment_rate": 0.21
+    },
+    {
+      "month": "2017-07",
+      "order_count": 1667,
+      "review_count": 1667,
+      "neg_sentiment_rate": 0.1984
+    },
+    {
+      "month": "2017-08",
+      "order_count": 1729,
+      "review_count": 1729,
+      "neg_sentiment_rate": 0.2155
+    },
+    {
+      "month": "2017-09",
+      "order_count": 1748,
+      "review_count": 1748,
+      "neg_sentiment_rate": 0.2082
+    },
+    {
+      "month": "2017-10",
+      "order_count": 1885,
+      "review_count": 1885,
+      "neg_sentiment_rate": 0.2182
+    },
+    {
+      "month": "2017-11",
+      "order_count": 3001,
+      "review_count": 3001,
+      "neg_sentiment_rate": 0.2648
+    },
+    {
+      "month": "2017-12",
+      "order_count": 2275,
+      "review_count": 2275,
+      "neg_sentiment_rate": 0.2733
+    },
+    {
+      "month": "2018-01",
+      "order_count": 2968,
+      "review_count": 2968,
+      "neg_sentiment_rate": 0.2736
+    },
+    {
+      "month": "2018-02",
+      "order_count": 2849,
+      "review_count": 2849,
+      "neg_sentiment_rate": 0.322
+    },
+    {
+      "month": "2018-03",
+      "order_count": 3036,
+      "review_count": 3036,
+      "neg_sentiment_rate": 0.3119
+    },
+    {
+      "month": "2018-04",
+      "order_count": 2765,
+      "review_count": 2765,
+      "neg_sentiment_rate": 0.242
+    },
+    {
+      "month": "2018-05",
+      "order_count": 2697,
+      "review_count": 2697,
+      "neg_sentiment_rate": 0.2214
+    },
+    {
+      "month": "2018-06",
+      "order_count": 2431,
+      "review_count": 2431,
+      "neg_sentiment_rate": 0.2022
+    },
+    {
+      "month": "2018-07",
+      "order_count": 2452,
+      "review_count": 2452,
+      "neg_sentiment_rate": 0.22
+    },
+    {
+      "month": "2018-08",
+      "order_count": 2406,
+      "review_count": 2406,
+      "neg_sentiment_rate": 0.2247
+    },
+    {
+      "month": "2018-09",
+      "order_count": 1,
+      "review_count": 1,
+      "neg_sentiment_rate": 1.0
+    }
+  ]
+}

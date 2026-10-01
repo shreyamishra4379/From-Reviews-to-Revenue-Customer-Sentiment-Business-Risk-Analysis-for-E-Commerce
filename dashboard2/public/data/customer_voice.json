@@ -1,0 +1,217 @@
+{
+  "aspects": [
+    {
+      "aspect": "Wrong/Missing Item",
+      "total_mentions": 1817,
+      "negative": 1136,
+      "neutral": 605,
+      "positive": 76,
+      "neg_pct": 62.5
+    },
+    {
+      "aspect": "Packaging",
+      "total_mentions": 874,
+      "negative": 485,
+      "neutral": 236,
+      "positive": 153,
+      "neg_pct": 55.5
+    },
+    {
+      "aspect": "Price/Value",
+      "total_mentions": 1790,
+      "negative": 695,
+      "neutral": 386,
+      "positive": 709,
+      "neg_pct": 38.8
+    },
+    {
+      "aspect": "Customer Service",
+      "total_mentions": 4918,
+      "negative": 1889,
+      "neutral": 907,
+      "positive": 2122,
+      "neg_pct": 38.4
+    },
+    {
+      "aspect": "Description Mismatch",
+      "total_mentions": 1853,
+      "negative": 633,
+      "neutral": 649,
+      "positive": 571,
+      "neg_pct": 34.2
+    },
+    {
+      "aspect": "Product Quality",
+      "total_mentions": 18450,
+      "negative": 5326,
+      "neutral": 3894,
+      "positive": 9230,
+      "neg_pct": 28.9
+    },
+    {
+      "aspect": "Delivery/Logistics",
+      "total_mentions": 18181,
+      "negative": 4028,
+      "neutral": 4640,
+      "positive": 9513,
+      "neg_pct": 22.2
+    },
+    {
+      "aspect": "Uncategorized",
+      "total_mentions": 11497,
+      "negative": 1695,
+      "neutral": 2571,
+      "positive": 7231,
+      "neg_pct": 14.7
+    }
+  ],
+  "topics": [
+    {
+      "topic_id": 0,
+      "label": "Topic 0",
+      "review_count": 5864,
+      "top_terms": [
+        "produto",
+        "recomendo",
+        "prazo",
+        "entrega",
+        "loja",
+        "gostei",
+        "compra",
+        "bom"
+      ]
+    },
+    {
+      "topic_id": 1,
+      "label": "Topic 1",
+      "review_count": 5193,
+      "top_terms": [
+        "recebi",
+        "comprei",
+        "entrega",
+        "veio",
+        "produto",
+        "ainda",
+        "chegou",
+        "prazo"
+      ]
+    },
+    {
+      "topic_id": 2,
+      "label": "Topic 2",
+      "review_count": 4056,
+      "top_terms": [
+        "produto",
+        "qualidade",
+        "entrega",
+        "bom",
+        "recomendo",
+        "ótimo",
+        "excelente",
+        "prazo"
+      ]
+    },
+    {
+      "topic_id": 3,
+      "label": "Topic 3",
+      "review_count": 6462,
+      "top_terms": [
+        "prazo",
+        "antes",
+        "produto",
+        "antes prazo",
+        "chegou",
+        "entrega",
+        "bem",
+        "entregue"
+      ]
+    },
+    {
+      "topic_id": 4,
+      "label": "Topic 4",
+      "review_count": 4005,
+      "top_terms": [
+        "bom",
+        "recomendo",
+        "tudo",
+        "excelente",
+        "ótimo",
+        "ok",
+        "gostei",
+        "bom bom"
+      ]
+    },
+    {
+      "topic_id": 5,
+      "label": "Topic 5",
+      "review_count": 5365,
+      "top_terms": [
+        "entrega",
+        "produto",
+        "bom",
+        "recomendo",
+        "prazo",
+        "otimo",
+        "tudo",
+        "chegou"
+      ]
+    },
+    {
+      "topic_id": 6,
+      "label": "Topic 6",
+      "review_count": 4759,
+      "top_terms": [
+        "produto",
+        "veio",
+        "comprei",
+        "qualidade",
+        "recebi",
+        "chegou",
+        "bem",
+        "cor"
+      ]
+    },
+    {
+      "topic_id": 7,
+      "label": "Topic 7",
+      "review_count": 5273,
+      "top_terms": [
+        "produto",
+        "recebi",
+        "ainda",
+        "recebi produto",
+        "entregue",
+        "comprei",
+        "entrega",
+        "chegou"
+      ]
+    }
+  ],
+  "per_score_agreement": [
+    {
+      "score": 1,
+      "agreement_pct": 63.9
+    },
+    {
+      "score": 2,
+      "agreement_pct": 56.36
+    },
+    {
+      "score": 3,
+      "agreement_pct": 37.81
+    },
+    {
+      "score": 4,
+      "agreement_pct": 58.77
+    },
+    {
+      "score": 5,
+      "agreement_pct": 82.61
+    }
+  ],
+  "sentiment_distribution": {
+    "Positive": 21493,
+    "Negative": 9896,
+    "Neutral": 9588
+  }
+}
