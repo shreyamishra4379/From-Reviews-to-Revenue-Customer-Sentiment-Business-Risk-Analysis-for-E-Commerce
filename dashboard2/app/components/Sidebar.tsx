@@ -3,12 +3,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NAV = [
-  { href: "/",                   icon: "🏠", label: "Overview" },
-  { href: "/customer-voice",     icon: "🧠", label: "Customer Voice" },
-  { href: "/category",           icon: "🏢", label: "Category Intelligence" },
-  { href: "/delivery",           icon: "🚚", label: "Delivery" },
-  { href: "/business-impact",    icon: "💰", label: "Business Impact" },
-  { href: "/sql-analytics",      icon: "🗄️", label: "SQL Analytics" },
+  { href: "/",                      icon: "🏠", label: "Overview" },
+  { href: "/nlp-insights",          icon: "🧠", label: "NLP Insights" },
+  { href: "/statistical-analysis",  icon: "📈", label: "Statistical Analysis" },
+  { href: "/delivery",              icon: "🚚", label: "Delivery Analysis" },
+  { href: "/business-impact",       icon: "💰", label: "Business Impact" },
+  { href: "/category-deep-dive",    icon: "🏢", label: "Category Deep Dive" },
+  { href: "/sql-analytics",         icon: "🗄️", label: "SQL Analytics" },
 ];
 
 export default function Sidebar() {
@@ -17,7 +18,7 @@ export default function Sidebar() {
     <aside className="sidebar">
       <div className="sidebar-logo">
         <h2>Reviews → Revenue</h2>
-        <p>Olist E-Commerce Analytics</p>
+        <p>E-Commerce Analytics</p>
       </div>
 
       <nav className="sidebar-nav">

@@ -1,1 +1,0 @@
-{"query":"SELECT order_id, customer_id FROM fact_orders LIMIT 5"}

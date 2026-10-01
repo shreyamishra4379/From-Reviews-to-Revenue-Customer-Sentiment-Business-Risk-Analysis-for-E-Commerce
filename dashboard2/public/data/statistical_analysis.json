@@ -1,0 +1,95 @@
+{
+  "disclaimer": "All results are associations only. This project uses observational data and does not establish causation.",
+  "correlations": [
+    {
+      "pair": "Delivery Delay vs Review Score",
+      "rho": -0.1755,
+      "p_value": 0.0,
+      "p_label": "< 1e-300",
+      "significant": true
+    },
+    {
+      "pair": "Freight Value vs Review Score",
+      "rho": -0.0383,
+      "p_value": 2.035548287445373e-16,
+      "p_label": "2.04e-16",
+      "significant": true
+    },
+    {
+      "pair": "Price vs Review Score",
+      "rho": 0.0216,
+      "p_value": 3.32524883243417e-06,
+      "p_label": "3.33e-06",
+      "significant": true
+    },
+    {
+      "pair": "Complaint Rate vs Avg Rating",
+      "rho": -0.9829,
+      "p_value": 2.515969079005007e-27,
+      "p_label": "2.52e-27",
+      "significant": true
+    }
+  ],
+  "ontime_vs_late": {
+    "ontime_mean": 3.82,
+    "late_mean": 2.09,
+    "ontime_n": 41359,
+    "late_n": 4778,
+    "test": "Mann-Whitney U",
+    "p_label": "p < 0.0001",
+    "significant": true
+  },
+  "price_bands": {
+    "H_stat": 18.57,
+    "p_value": 0.00033567889200741493,
+    "bands": [
+      {
+        "band": "<50",
+        "mean_score": 3.61,
+        "n": 15728
+      },
+      {
+        "band": "50-150",
+        "mean_score": 3.64,
+        "n": 21084
+      },
+      {
+        "band": "150-500",
+        "mean_score": 3.69,
+        "n": 7897
+      },
+      {
+        "band": ">500",
+        "mean_score": 3.69,
+        "n": 1428
+      }
+    ]
+  },
+  "logistic_regression": {
+    "pseudo_r2": 0.0421,
+    "n_obs": 46137,
+    "disclaimer": "Observational data only. Coefficients are associations, not causal effects.",
+    "coefficients": [
+      {
+        "predictor": "const",
+        "coef": -0.577849,
+        "p_value": 0.0
+      },
+      {
+        "predictor": "delay_days",
+        "coef": 0.047237,
+        "p_value": 0.0
+      },
+      {
+        "predictor": "price",
+        "coef": -0.000245,
+        "p_value": 0.00015
+      },
+      {
+        "predictor": "freight_value",
+        "coef": 0.005006,
+        "p_value": 0.0
+      }
+    ]
+  }
+}

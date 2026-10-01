@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT   = Path(__file__).resolve().parent
 DATA   = ROOT / "data" / "processed"
 S4     = DATA / "stage4"
-OUT    = ROOT / "dashboard" / "public" / "data"
+OUT    = ROOT / "dashboard2" / "public" / "data"
 OUT.mkdir(parents=True, exist_ok=True)
 
 def jdump(obj, path: Path):
@@ -344,6 +344,117 @@ business_impact = {
     }
 }
 jdump(business_impact, OUT / "business_impact.json")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# EXPORT 6 — statistical_analysis.json  (dedicated page)
+# ─────────────────────────────────────────────────────────────────────────────
+stat    = s4_m["statistical_analysis"]
+logit   = stat["logistic_regression"]
+pb      = stat["price_bands"]
+
+statistical_analysis = {
+    "disclaimer": "All results are associations only. This project uses observational data and does not establish causation.",
+    # Spearman correlations
+    "correlations": [
+        {"pair": k, "rho": v["rho"],
+         "p_value": v["p_value"],
+         "p_label": "< 1e-300" if v["p_value"] == 0 else f"{v['p_value']:.2e}",
+         "significant": bool(v["p_value"] < 0.05)}
+        for k, v in stat["correlations"].items()
+    ],
+    # On-time vs Late
+    "ontime_vs_late": {
+        "ontime_mean": float(stat["ontime_vs_late"]["ontime_mean"]),
+        "late_mean":   float(stat["ontime_vs_late"]["late_mean"]),
+        "ontime_n":    int(stat["ontime_vs_late"]["ontime_n"]),
+        "late_n":      int(stat["ontime_vs_late"]["late_n"]),
+        "test":        "Mann-Whitney U",
+        "p_label":     "p < 0.0001",
+        "significant": True,
+    },
+    # Price bands
+    "price_bands": {
+        "H_stat": float(pb["H"]),
+        "p_value": float(pb["p_value"]),
+        "bands": [
+            {"band": k, "mean_score": float(v["mean"]), "n": int(v["n"])}
+            for k, v in pb["bands"].items()
+        ],
+    },
+    # Logistic regression
+    "logistic_regression": {
+        "pseudo_r2":  logit["pseudo_r2"],
+        "n_obs":      int(logit["n_obs"]),
+        "disclaimer": logit["disclaimer"],
+        "coefficients": [
+            {"predictor": k, "coef": float(v), "p_value": float(logit["p_values"][k])}
+            for k, v in logit["coefficients"].items()
+        ],
+    },
+}
+jdump(statistical_analysis, OUT / "statistical_analysis.json")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# EXPORT 7 — nlp_insights.json  (full NLP page, superset of customer_voice)
+# ─────────────────────────────────────────────────────────────────────────────
+dist = nlp_m["transformer_sentiment"]["distribution"]
+
+# Aspect rows (sorted by neg_pct desc)
+aspect_rows = []
+for asp_name, v in nlp_m["aspect_summary"].items():
+    total = v["total_mentions"]
+    if total == 0:
+        continue
+    aspect_rows.append({
+        "aspect":         asp_name,
+        "total_mentions": int(total),
+        "negative":       int(v["negative"]),
+        "neutral":        int(v.get("neutral", 0)),
+        "positive":       int(v["positive"]),
+        "neg_pct":        round(v["negative"] / total * 100, 1),
+        "pos_pct":        round(v["positive"] / total * 100, 1),
+    })
+aspect_rows.sort(key=lambda x: x["neg_pct"], reverse=True)
+
+# Topics embedding-based
+topics = [
+    {"topic_id": t["topic_id"],
+     "label": t.get("label", f"Topic {t['topic_id']}"),
+     "review_count": int(t["review_count"]),
+     "top_terms": t["representative_terms"][:10]}
+    for t in nlp_t.get("embedding_topics", [])
+]
+
+# Review score distribution
+score_dist = {
+    str(int(k)): int(v)
+    for k, v in reviews_pq["review_score"].value_counts().sort_index().items()
+}
+
+nlp_insights = {
+    # Coverage
+    "total_reviews":        nlp_m["total_reviews"],
+    "reviews_with_text":    nlp_m["reviews_with_text"],
+    "text_coverage_pct":    nlp_m["text_coverage_pct"],
+
+    # Sentiment
+    "sentiment_distribution": dist,
+    "agreement_rate_pct":   nlp_m["transformer_sentiment"]["agreement_rate_pct"],
+    "per_score_agreement":  [
+        {"score": int(k), "agreement_pct": float(v)}
+        for k, v in nlp_m["transformer_sentiment"]["per_score_agreement_pct"].items()
+    ],
+
+    # Review score histogram
+    "review_score_distribution": score_dist,
+
+    # Aspects
+    "aspects": aspect_rows,
+
+    # Topics
+    "topics": topics,
+}
+jdump(nlp_insights, OUT / "nlp_insights.json")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SUMMARY
