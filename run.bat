@@ -1,267 +1,243 @@
 @echo off
 setlocal enabledelayedexpansion
 
-title From Reviews to Revenue - Analytics Dashboard Launcher
+title From Reviews to Revenue - Dashboard Launcher
 color 0A
 
 echo.
 echo  ================================================================
 echo   FROM REVIEWS TO REVENUE
 echo   Customer Sentiment ^& Business Risk Analysis - E-Commerce
-echo   https://github.com/shreyamishra4379/From-Reviews-to-Revenue-...
 echo  ================================================================
 echo.
-echo  Smart launcher: already-computed stages are SKIPPED automatically.
-echo  NLP model is NEVER re-run if nlp_reviews.parquet already exists.
-echo.
 
-:: ── Project root (directory containing this .bat file) ──────────────────────
+:: ── Set project root to the folder where this .bat lives ────────────────────
 set "ROOT=%~dp0"
 if "%ROOT:~-1%"=="\" set "ROOT=%ROOT:~0,-1%"
+set "DASH=%ROOT%\dashboard2"
 
-set "DASHBOARD=%ROOT%\dashboard2"
-set "DATA=%ROOT%\data\processed"
-set "SRC=%ROOT%\src"
-set "REPORTS=%ROOT%\reports\figures"
+echo  Root : %ROOT%
+echo  Dash : %DASH%
+echo.
 
 :: ════════════════════════════════════════════════════════════════════════════
-:: STEP 0  -  Check prerequisites
+:: CHECK 1 — Python
 :: ════════════════════════════════════════════════════════════════════════════
-echo  [0/6] Checking prerequisites...
-echo  ----------------------------------------------------------------
-
-:: Python check
+echo  Checking Python...
 python --version >nul 2>&1
 if !ERRORLEVEL! neq 0 (
     echo.
-    echo  [ERROR] Python not found.
-    echo         Install Python 3.10+ from https://www.python.org
-    echo         Check "Add Python to PATH" during install.
+    echo  [ERROR] Python not found. Install from https://python.org
+    echo          Make sure "Add Python to PATH" is checked during install.
     pause
     exit /b 1
 )
-for /f "delims=" %%V in ('python --version 2^>^&1') do set "PY_VER=%%V"
-echo  [OK] !PY_VER!
+python --version
+echo  [OK] Python found.
+echo.
 
-:: Node.js check
+:: ════════════════════════════════════════════════════════════════════════════
+:: CHECK 2 — Node.js
+:: ════════════════════════════════════════════════════════════════════════════
+echo  Checking Node.js...
 node --version >nul 2>&1
 if !ERRORLEVEL! neq 0 (
     echo.
-    echo  [ERROR] Node.js not found.
-    echo         Install Node.js 18+ from https://nodejs.org
+    echo  [ERROR] Node.js not found. Install from https://nodejs.org
     pause
     exit /b 1
 )
-for /f "delims=" %%V in ('node --version') do set "NODE_VER=%%V"
-echo  [OK] Node.js !NODE_VER!
-
-:: Python packages check - use double-double-quotes for cmd compatibility
-python -c "import pandas, pyarrow, duckdb" >nul 2>&1
-if !ERRORLEVEL! neq 0 (
-    echo  [INFO] Installing Python packages (first run only)...
-    pip install -r "%ROOT%\requirements.txt"
-    if !ERRORLEVEL! neq 0 (
-        echo  [WARN] Some packages may have failed. Continuing...
-    ) else (
-        echo  [OK]   Python packages installed.
-    )
-) else (
-    echo  [OK] Python packages ready (pandas, pyarrow, duckdb).
-)
-
-:: ════════════════════════════════════════════════════════════════════════════
-:: STEP 1  -  Stage 1: Data Pipeline (Download + Star-Schema Parquets)
-:: ════════════════════════════════════════════════════════════════════════════
+node --version
+echo  [OK] Node.js found.
 echo.
-echo  [1/6] Stage 1 - Data Pipeline
+
+:: ════════════════════════════════════════════════════════════════════════════
+:: STAGE SKIP LOGIC
+:: (Already-computed outputs are detected and skipped automatically)
+:: ════════════════════════════════════════════════════════════════════════════
+echo  ----------------------------------------------------------------
+echo  Checking which pipeline stages need to run...
 echo  ----------------------------------------------------------------
 
-if exist "%DATA%\fact_orders.parquet" (
-    echo  [SKIP] fact_orders.parquet found - Stage 1 already complete.
+set "NEED_S1=0"
+set "NEED_S2=0"
+set "NEED_S3=0"
+set "NEED_S4=0"
+
+if not exist "%ROOT%\data\processed\fact_orders.parquet"           set "NEED_S1=1"
+if not exist "%ROOT%\reports\figures\01_monthly_order_volume.png"  set "NEED_S2=1"
+if not exist "%ROOT%\data\processed\nlp_reviews.parquet"          set "NEED_S3=1"
+if not exist "%ROOT%\data\processed\stage4\stage4_metrics.json"   set "NEED_S4=1"
+
+if "!NEED_S1!"=="0" (
+    echo  [SKIP] Stage 1 - fact_orders.parquet found
 ) else (
-    echo  [RUN]  src\data\make_dataset.py
-    echo         Downloading from Kaggle and building star-schema parquets...
-    echo         Requires KAGGLE_USERNAME and KAGGLE_KEY environment variables.
-    echo.
-    python "%SRC%\data\make_dataset.py"
+    echo  [RUN]  Stage 1 - will download and build parquets
+)
+if "!NEED_S2!"=="0" (
+    echo  [SKIP] Stage 2 - EDA figures found
+) else (
+    echo  [RUN]  Stage 2 - will run EDA and feature engineering
+)
+if "!NEED_S3!"=="0" (
+    echo  [SKIP] Stage 3 - nlp_reviews.parquet found
+) else (
+    echo  [RUN]  Stage 3 - will run NLP pipeline - 10 to 60 min
+)
+if "!NEED_S4!"=="0" (
+    echo  [SKIP] Stage 4 - stage4_metrics.json found
+) else (
+    echo  [RUN]  Stage 4 - will run statistical analysis
+)
+echo.
+
+:: ════════════════════════════════════════════════════════════════════════════
+:: STAGE 1 — Data Pipeline
+:: ════════════════════════════════════════════════════════════════════════════
+if "!NEED_S1!"=="1" (
+    echo  [1/4] Running Stage 1 - Data Pipeline...
+    echo        Requires KAGGLE_USERNAME and KAGGLE_KEY env vars.
+    python "%ROOT%\src\data\make_dataset.py"
     if !ERRORLEVEL! neq 0 (
-        echo.
-        echo  [ERROR] Stage 1 failed.
-        echo         Fix: Set KAGGLE_USERNAME and KAGGLE_KEY env vars, or
-        echo              place raw CSV files in data\raw\ manually.
+        echo  [ERROR] Stage 1 failed. See error above.
         pause
         exit /b 1
     )
-    echo  [OK]   Stage 1 complete.
+    echo  [OK] Stage 1 done.
+    echo.
 )
 
 :: ════════════════════════════════════════════════════════════════════════════
-:: STEP 2  -  Stage 2: EDA + Feature Engineering
+:: STAGE 2 — EDA + Feature Engineering
 :: ════════════════════════════════════════════════════════════════════════════
-echo.
-echo  [2/6] Stage 2 - EDA and Feature Engineering
-echo  ----------------------------------------------------------------
-
-:: 2A - EDA (check for a known output figure)
-if exist "%REPORTS%\01_monthly_order_volume.png" (
-    echo  [SKIP] EDA figures found - Stage 2A already complete.
-) else (
-    echo  [RUN]  src\data\run_eda.py
-    python "%SRC%\data\run_eda.py"
+if "!NEED_S2!"=="1" (
+    echo  [2/4] Running Stage 2 - EDA and Features...
+    python "%ROOT%\src\data\run_eda.py"
     if !ERRORLEVEL! neq 0 (
-        echo  [WARN] Stage 2A (EDA) had errors - continuing...
+        echo  [WARN] Stage 2A EDA had errors - continuing...
     ) else (
-        echo  [OK]   Stage 2A (EDA) complete.
+        echo  [OK] Stage 2A EDA done.
     )
-)
-
-:: 2B - Feature engineering
-if exist "%DATA%\feature_matrix.parquet" (
-    echo  [SKIP] feature_matrix.parquet found - Stage 2B already complete.
-) else (
-    if exist "%DATA%\features_orders.parquet" (
-        echo  [SKIP] features_orders.parquet found - Stage 2B already complete.
+    python "%ROOT%\src\data\build_features.py"
+    if !ERRORLEVEL! neq 0 (
+        echo  [WARN] Stage 2B features had errors - continuing...
     ) else (
-        echo  [RUN]  src\data\build_features.py
-        python "%SRC%\data\build_features.py"
-        if !ERRORLEVEL! neq 0 (
-            echo  [WARN] Stage 2B (features) had errors - continuing...
-        ) else (
-            echo  [OK]   Stage 2B (features) complete.
-        )
+        echo  [OK] Stage 2B features done.
     )
+    echo.
 )
 
 :: ════════════════════════════════════════════════════════════════════════════
-:: STEP 3  -  Stage 3: NLP Pipeline (XLM-RoBERTa Sentiment Analysis)
+:: STAGE 3 — NLP Pipeline (slow — skipped if already done)
 :: ════════════════════════════════════════════════════════════════════════════
-echo.
-echo  [3/6] Stage 3 - NLP Pipeline (XLM-RoBERTa)
-echo  ----------------------------------------------------------------
-
-if exist "%DATA%\nlp_reviews.parquet" (
-    echo  [SKIP] nlp_reviews.parquet found - NLP already computed.
-    echo         (40,977 reviews processed - skipping slow transformer step)
-) else (
-    echo  [RUN]  src\nlp\nlp_pipeline.py
+if "!NEED_S3!"=="1" (
+    echo  [3/4] Running Stage 3 - NLP Pipeline...
     echo.
     echo  +----------------------------------------------------------+
-    echo  ^|  WARNING: This step takes 10 to 60 minutes.             ^|
-    echo  ^|  GPU (CUDA) is used automatically if available.         ^|
-    echo  ^|  DO NOT close this window until it finishes.            ^|
+    echo  ^|  This step takes 10-60 minutes. Do NOT close window.    ^|
+    echo  ^|  GPU CUDA used automatically if available.           ^|
     echo  +----------------------------------------------------------+
     echo.
-    python "%SRC%\nlp\nlp_pipeline.py"
+    python "%ROOT%\src\nlp\nlp_pipeline.py"
     if !ERRORLEVEL! neq 0 (
-        echo.
-        echo  [ERROR] Stage 3 (NLP) failed.
-        echo         Install: pip install transformers torch sentence-transformers scikit-learn
+        echo  [ERROR] Stage 3 NLP failed.
+        echo  Install: pip install transformers torch sentence-transformers scikit-learn
         pause
         exit /b 1
     )
-    echo  [OK]   Stage 3 (NLP) complete.
+    echo  [OK] Stage 3 done.
+    echo.
 )
 
 :: ════════════════════════════════════════════════════════════════════════════
-:: STEP 4  -  Stage 4: Statistical Analysis + Business Metrics
+:: STAGE 4 — Statistical Analysis
 :: ════════════════════════════════════════════════════════════════════════════
-echo.
-echo  [4/6] Stage 4 - Statistical Analysis and Business Metrics
-echo  ----------------------------------------------------------------
-
-if exist "%DATA%\stage4\stage4_metrics.json" (
-    echo  [SKIP] stage4_metrics.json found - Stage 4 already complete.
-) else (
-    echo  [RUN]  src\analytics\stage4_analysis.py
-    python "%SRC%\analytics\stage4_analysis.py"
+if "!NEED_S4!"=="1" (
+    echo  [4/4] Running Stage 4 - Statistical Analysis...
+    python "%ROOT%\src\analytics\stage4_analysis.py"
     if !ERRORLEVEL! neq 0 (
-        echo.
-        echo  [ERROR] Stage 4 failed. Ensure Stage 3 (NLP) completed first.
+        echo  [ERROR] Stage 4 failed. Check Stage 3 completed first.
         pause
         exit /b 1
     )
-    echo  [OK]   Stage 4 complete.
+    echo  [OK] Stage 4 done.
+    echo.
 )
 
 :: ════════════════════════════════════════════════════════════════════════════
-:: STEP 5  -  Export: Pre-aggregated JSON for Dashboard
+:: EXPORT — Build dashboard JSON files (always runs, fast ~2 sec)
 :: ════════════════════════════════════════════════════════════════════════════
-echo.
-echo  [5/6] Export - Building dashboard JSON files
 echo  ----------------------------------------------------------------
-echo  [RUN]  export_dashboard_data.py (reads stages 1-4, writes JSON)
-
+echo  Exporting pre-aggregated JSON for dashboard (2-3 sec)...
+echo  ----------------------------------------------------------------
 python "%ROOT%\export_dashboard_data.py"
 if !ERRORLEVEL! neq 0 (
     echo.
-    echo  [ERROR] Data export failed.
-    echo         Ensure data\processed\ has all stage outputs.
+    echo  [ERROR] Data export failed. See error above.
     pause
     exit /b 1
 )
-echo  [OK]   7 JSON files written to dashboard2\public\data\
+echo  [OK] JSON export complete.
+echo.
 
 :: ════════════════════════════════════════════════════════════════════════════
-:: STEP 6  -  Launch Next.js Dashboard
+:: DASHBOARD — Install npm packages if needed
 :: ════════════════════════════════════════════════════════════════════════════
-echo.
-echo  [6/6] Dashboard - Starting Next.js server
+echo  ----------------------------------------------------------------
+echo  Preparing dashboard...
 echo  ----------------------------------------------------------------
 
-if not exist "%DASHBOARD%" (
-    echo  [ERROR] dashboard2 folder not found: %DASHBOARD%
+if not exist "%DASH%" (
+    echo  [ERROR] dashboard2 folder not found at: %DASH%
     pause
     exit /b 1
 )
 
-:: Install npm packages on first run
-if not exist "%DASHBOARD%\node_modules" (
-    echo  [INFO]  node_modules not found. Installing npm packages...
-    echo          (First-run only - takes about 1 minute)
-    cd /d "%DASHBOARD%"
+if not exist "%DASH%\node_modules" (
+    echo  Installing npm packages - first time only, takes ~1 minute...
+    cd /d "%DASH%"
     npm install --legacy-peer-deps
     if !ERRORLEVEL! neq 0 (
-        echo.
-        echo  [ERROR] npm install failed. Check your internet connection.
+        echo  [ERROR] npm install failed. Check internet connection.
         pause
         exit /b 1
     )
-    echo  [OK]   npm packages installed.
+    echo  [OK] npm packages installed.
 ) else (
-    echo  [OK]   node_modules present - skipping npm install.
+    echo  [OK] node_modules ready.
 )
 
-:: Free port 3000 in case anything is running on it
-for /f "tokens=5" %%P in ('netstat -aon 2^>nul ^| findstr LISTENING ^| findstr ":3000 "') do (
+:: Free port 3000
+echo  Freeing port 3000...
+for /f "tokens=5" %%P in ('netstat -aon 2^>nul ^| findstr LISTENING ^| findstr ":3000"') do (
     taskkill /PID %%P /F >nul 2>&1
 )
-echo  [OK]   Port 3000 is free.
 
+:: ════════════════════════════════════════════════════════════════════════════
+:: LAUNCH — Start the Next.js server
+:: ════════════════════════════════════════════════════════════════════════════
 echo.
 echo  ================================================================
-echo   LAUNCHING DASHBOARD  ^>^>  http://localhost:3000
+echo   STARTING DASHBOARD  >>  http://localhost:3000
 echo  ================================================================
 echo.
-echo   Home        http://localhost:3000/
-echo   NLP         http://localhost:3000/nlp-insights
-echo   Statistics  http://localhost:3000/statistical-analysis
-echo   Delivery    http://localhost:3000/delivery
-echo   Business    http://localhost:3000/business-impact
-echo   Category    http://localhost:3000/category-deep-dive
-echo   SQL         http://localhost:3000/sql-analytics
+echo   Home       http://localhost:3000/
+echo   NLP        http://localhost:3000/nlp-insights
+echo   Stats      http://localhost:3000/statistical-analysis
+echo   Delivery   http://localhost:3000/delivery
+echo   Business   http://localhost:3000/business-impact
+echo   Category   http://localhost:3000/category-deep-dive
+echo   SQL        http://localhost:3000/sql-analytics
 echo.
-echo   SQL Analytics runs live DuckDB queries - no model re-training.
+echo   Browser will open automatically in 5 seconds.
 echo   Press Ctrl+C to stop the server.
 echo  ================================================================
 echo.
 
-:: Change to dashboard2 dir and start server
-cd /d "%DASHBOARD%"
+cd /d "%DASH%"
 
-:: Open browser 4 seconds after server starts (in background)
-start /b cmd /c "timeout /t 4 /nobreak >nul 2>&1 && start http://localhost:3000"
+:: Open browser 5 seconds after npm run dev starts using PowerShell (avoids nested cmd issues)
+start /b powershell -WindowStyle Hidden -Command "Start-Sleep 5; Start-Process 'http://localhost:3000'"
 
-:: Start the dev server (blocking - keeps window open)
+:: Start server - this is the LAST command, keeps window open
 npm run dev
-
-endlocal
