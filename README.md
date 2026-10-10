@@ -1,407 +1,369 @@
-# Sentiment-to-Outcome Analytics: An NLP-Driven Risk Assessment Framework for E-Commerce
+# From Reviews to Revenue: Customer Sentiment & Business Risk Analysis for E-Commerce
 
-> **Currency:** All monetary values are in Brazilian Reais (R$ BRL). No ₹ or $ symbols are used anywhere in this project.
+**What are customers actually complaining about, and how much order value is tied to those complaints?**
+
+An end-to-end analytics project on the Olist Brazilian E-Commerce dataset. It combines unstructured review text (multilingual NLP on Portuguese reviews) with structured order, delivery, product and seller data, then serves the results through a SQL layer and a Next.js dashboard.
+
+> **Currency:** all money is in Brazilian Reais (**R$, BRL**).
+> **Causality:** all statistics are **associations**, not causal effects (observational data).
+> **Exposure:** all exposure figures are **scenario-based estimates, not observed revenue loss**.
+
+![Dashboard overview](reports/figures/dashboard/overview.png)
 
 ---
 
 ## Executive Summary
 
-This project builds an end-to-end data science portfolio demonstrating how natural-language signals in customer reviews can be quantified and connected to measurable business outcomes. Using the public Olist Brazilian E-Commerce dataset (99,224 orders, 9 relational tables), the pipeline integrates a star-schema data warehouse, multilingual NLP sentiment analysis and topic modeling on 40,977 Portuguese-language reviews (41.3% of all reviews), Spearman rank correlations and non-parametric group tests, and a scenario-based commercial exposure model — all producing analytical outputs joinable to revenue, delivery, and seller data. The goal is to answer: **which product categories and sellers carry the highest NLP-verified complaint risk, how strongly does delivery timing associate with review scores, and what is the estimated order-value exposure tied to negative customer experience?**
+The pipeline builds a star schema from 9 relational CSVs (99,441 orders, 112,650 order items, 99,224 reviews), runs XLM-RoBERTa sentiment, embedding-based topic modeling and data-driven aspect extraction on the **40,977 reviews that contain text (41.3%)**, and joins the results back to orders, categories, sellers and delivery data.
+
+Key findings (all from saved outputs in `data/processed/`):
+
+- **Late delivery is the strongest operational signal.** Late orders average **2.12** stars vs **3.98** on time, and **67.2%** of late-order text reviews are negative (score ≤ 2) vs **18.4%** on time. Spearman ρ (delay vs score) = **−0.217**, N = 39,100 reviews.
+- **What customers complain about:** when a review mentions a *Wrong/Missing Item*, **62.5%** of those reviews are negative; *Packaging* **55.5%**; *Customer Service* **38.4%**. The three most negative topics (order not received, partial/missing orders, item not matching the listing) account for **86.8%** of negative-sentiment reviews.
+- **Where to act first:** 10 categories (≥ 100 reviews) are above the median on both negative-sentiment rate and order value — led by `office_furniture` (36.5% negative), `computers_accessories`, `telephony`, `furniture_decor` and `watches_gifts`.
+- **Scenario exposure:** **R$ 1,761,899.57** of order value (9,529 orders) is tied to negative-sentiment reviews. Under a 5% impact assumption that is **R$ 88,095** — a scenario, not a measured loss.
 
 ---
 
 ## 1. Business Problem
 
-E-commerce platforms receive thousands of reviews, but most business decisions rely on aggregate star ratings alone — ignoring the nuance in written text. This project addresses three core questions:
+Most e-commerce decisions rely on the average star rating, which hides *why* customers are unhappy. This project answers three questions:
 
-1. **What are customers actually complaining about?** (NLP topic and aspect extraction)
-2. **Which categories/sellers have disproportionate complaint risk relative to their revenue exposure?** (Business prioritization)
-3. **How strongly do operational factors — delivery delay, price, freight — associate with negative reviews?** (Statistical analysis, association only, not causal)
+1. **What are customers complaining about?** (sentiment, topics, aspects)
+2. **Which categories and sellers combine high complaint risk with high order value?** (prioritization)
+3. **How strongly do delivery delay, price and freight associate with negative reviews?** (statistics, association only)
 
 ---
 
-## 2. Dataset Description & Real Constraints
+## 2. Dataset & Real Constraints
 
-**Source:** Olist Brazilian E-Commerce Public Dataset, downloaded via `kagglehub`.
+**Source:** [Olist Brazilian E-Commerce Public Dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce), downloaded with `kagglehub`:
 
 ```python
 import kagglehub
 path = kagglehub.dataset_download("olistbr/brazilian-ecommerce")
 ```
 
-**9 CSV files:** customers, geolocation, order_items, order_payments, order_reviews, orders, products, sellers, category_name_translation.
+`src/data/download_data.py` runs this and copies the 9 CSVs into `data/raw/` (gitignored).
 
 | Table | Rows |
 |---|---|
 | orders | 99,441 |
 | order_items | 112,650 |
 | order_reviews | 99,224 |
+| order_payments | 103,886 (aggregated to 99,440 orders) |
 | products | 32,951 |
 | customers | 99,441 |
 | sellers | 3,095 |
+| geolocation | 1,000,163 (deduplicated to 19,015 zip prefixes) |
+| category_name_translation | 71 |
 
-**Real constraints discovered during this project:**
-- **Currency:** BRL only. No cost, profit, or CLV data available.
-- **No returns/refund table.** Cannot compute actual return rates or financial impact of returns.
-- **No product size/fit attributes.** Sizing complaints cannot be verified against specs.
-- **Review text coverage: only 41.3%** (40,977 of 99,224 reviews) have non-null `review_comment_message`. All NLP analyses apply only to this subset.
-- **Language: Portuguese.** All review text is in Portuguese; a multilingual model was used directly (see NLP section).
-- **Positive-review skew:** 57,328 of 99,224 reviews (57.8%) are 5-star. This affects complaint analysis — negative patterns are derived from a minority of the total review corpus.
-- **Seller identity:** Sellers are anonymized using Game of Thrones house names in this project.
+**Constraints discovered and respected:**
+
+- **BRL only.** No cost, profit, marketing or CLV data — none is estimated.
+- **No returns/refund table and no size/fit attribute.** Return rates and "sizing complaints" cannot be computed and are not claimed.
+- **Text coverage is 41.3%** (40,977 of 99,224 reviews have `review_comment_message`). All NLP results apply only to this subset, which likely skews toward strong opinions.
+- **Portuguese text.** Multilingual models are used directly; no English-only tools (e.g. raw VADER).
+- **Anonymisation.** Company names inside review text are replaced with Game of Thrones house names (e.g. "lannister" appears in Topic 0's terms). Seller and customer IDs are hashes.
+- **Positive skew.** 57,328 reviews (57.8%) are 5-star, so complaints are a minority class.
+- **`review_id` is not unique.** 40,977 text reviews have only 40,668 distinct `review_id`s; `(review_id, order_id)` is the real key.
+- **Encoding noise.** 424 raw review texts contain mojibake (e.g. `Ã£`); they are kept as-is.
 
 ---
 
 ## 3. Data Architecture — Star Schema
 
-Built in Stage 1. All tables saved to `data/processed/` as Parquet.
+Built in Stage 1 (`src/data/make_dataset.py`), saved as Parquet in `data/processed/`.
 
 ```
-                    ┌─────────────────┐
-                    │  fact_orders    │
-                    │  (99,441 rows)  │
-                    └────────┬────────┘
-                             │ order_id
-          ┌──────────────────┼──────────────────┐
-          │                  │                  │
-┌─────────▼──────┐  ┌────────▼──────┐  ┌───────▼──────────┐
-│fact_order_items│  │fact_order_    │  │fact_order_reviews │
-│(112,650 rows)  │  │reviews        │  │+ nlp_reviews      │
-│price, freight  │  │(99,224 rows)  │  │(40,977 NLP rows)  │
-└────┬───────────┘  └───────────────┘  └───────────────────┘
-     │ product_id / seller_id / customer_id
-     │
-┌────▼──────┐  ┌─────────────┐  ┌──────────────┐  ┌──────────────┐
-│dim_products│  │dim_sellers  │  │dim_customers │  │dim_payments  │
-│(32,951)   │  │(3,095)      │  │(99,441)      │  │(103,886)     │
-└───────────┘  └─────────────┘  └──────────────┘  └──────────────┘
+                       ┌──────────────────┐
+                       │   fact_orders    │  1 row per order (99,441)
+                       └────────┬─────────┘
+                                │ order_id
+       ┌────────────────────────┼─────────────────────────┐
+┌──────▼──────────┐   ┌─────────▼─────────┐     ┌─────────▼────────┐
+│fact_order_items │   │fact_order_reviews │     │  dim_payments    │
+│ 112,650 rows    │   │ 99,224 rows       │     │ 99,440 (order    │
+│ price, freight  │   │ + nlp_reviews     │     │  grain)          │
+└──┬──────────┬───┘   │   (40,977 rows)   │     └──────────────────┘
+   │          │       └─────────┬─────────┘
+   │product_id│seller_id        │ emb_topic_id
+┌──▼────────┐ ┌▼───────────┐  ┌─▼──────────┐   ┌──────────────┐  ┌───────────────┐
+│dim_products│ │dim_sellers │  │ dim_topics │   │dim_customers │  │dim_geolocation│
+│ 32,951     │ │ 3,095      │  │ 8 topics   │   │ 99,441       │  │ 19,015 zips   │
+└────────────┘ └────────────┘  └────────────┘   └──────────────┘  └───────────────┘
 ```
+
+**Risky joins handled explicitly:** an order can have several items (so joining reviews to items repeats a review), several payments (aggregated to order grain), and occasionally several reviews. Every Stage 4 metric is computed over **unique reviews** — see §5.
+
+No fact rows are dropped in Stage 1. Geolocation is deduplicated to one row per zip prefix and payments are aggregated to one row per order; both are logged by the script.
 
 ---
 
 ## 4. Data Dictionary
 
-### Fact Tables
-
 | Column | Table | Description |
 |---|---|---|
 | `order_id` | fact_orders | Primary key |
-| `order_delivered_customer_date` | fact_orders | Actual delivery date |
-| `order_estimated_delivery_date` | fact_orders | Estimated delivery date |
-| `price` | fact_order_items | Item price in R$ |
-| `freight_value` | fact_order_items | Freight cost in R$ |
-| `review_score` | fact_order_reviews | Customer rating 1–5 |
-| `review_comment_message` | fact_order_reviews | Free-text review (41.3% non-null) |
+| `order_delivered_customer_date` | fact_orders | Actual delivery date (null if not delivered) |
+| `order_estimated_delivery_date` | fact_orders | Estimated delivery date shown to the customer |
+| `price`, `freight_value` | fact_order_items | Item price and freight in R$ |
+| `review_score` | fact_order_reviews | Rating 1–5 |
+| `review_comment_message` | fact_order_reviews | Free text (41.3% non-null) |
 
-### Derived / NLP Features (Stage 3 — `nlp_reviews.parquet`)
+**NLP features (`nlp_reviews.parquet`, Stage 3)**
 
 | Column | Description |
 |---|---|
-| `sentiment_label` | XLM-RoBERTa label: Positive / Negative / Neutral |
-| `sentiment_score` | Model confidence score |
+| `sentiment_label`, `sentiment_score` | XLM-RoBERTa label (Positive / Neutral / Negative) and confidence |
 | `baseline_sentiment_label` | Portuguese lexicon baseline label |
-| `tfidf_topic_id` | Topic ID from TF-IDF + NMF (0–7) |
-| `emb_topic_id` | Topic ID from embedding + KMeans (0–7) |
-| `topic_label` | Business-readable topic label (derived from c-TF-IDF terms) |
-| `extracted_aspects` | List of detected complaint aspects per review |
-| `sentiment_agrees` | Boolean: NLP label matches star-rating expectation |
+| `tfidf_topic_id` | TF-IDF + NMF topic (baseline) |
+| `emb_topic_id` | Sentence-embedding + KMeans topic (joins to `dim_topics`) |
+| `extracted_aspects` | List of aspects mentioned (not mutually exclusive) |
+| `sentiment_agrees` | NLP label matches the label implied by the star rating |
 
-### Derived Business Features (Stage 4)
+**Derived metrics (`src/utils/metrics.py`, Stage 4)** — one definition shared by the pipeline and the tests
 
-| Column | Description |
+| Metric | Definition |
 |---|---|
-| `delay_days` | `order_delivered_customer_date` − `order_estimated_delivery_date` in days |
-| `is_late` | Boolean: delay_days > 0 |
-| `is_neg_review` | Boolean: review_score ≤ 2 |
-| `is_neg_sentiment` | Boolean: sentiment_label == 'Negative' |
-| `order_value` | price + freight_value |
+| `delay_days` | delivered − estimated, in days (NaN if not delivered) |
+| `is_late` | 1 if `delay_days > 0`, 0 if on time/early, **NaN if not delivered** |
+| `is_neg_review` | `review_score <= 2` |
+| `is_neg_sentiment` | `sentiment_label == 'Negative'` |
+| `order_value` | sum of `price + freight_value` over the order's items |
 
 ---
 
 ## 5. Methodology
 
-### Stage 1: Data Acquisition, Audit & Star Schema
-- Downloaded 9 CSVs via `kagglehub` and copied to `data/raw/`.
-- Schema audit: row counts, column types, missingness %, primary/foreign key validation.
-- Built star schema in `data/processed/` as Parquet files.
-- Key cleaning decisions: dropped duplicate order rows; retained null review text rows in fact table (excluded only from NLP).
+### Stage 1 — Acquisition, audit, star schema
+`download_data.py` → `make_dataset.py`. Schema audit (row counts, missingness, key uniqueness, foreign keys), category-translation patches for the 2 untranslated categories, Parquet star schema.
 
-### Stage 2: EDA & Feature Engineering
-- Computed delivery delay, late-delivery flag, order value.
-- Analyzed review score distribution, delivery delay distribution, category revenue.
-- Key EDA outputs saved to `data/processed/features_orders.parquet`.
+### Stage 2 — EDA & feature engineering
+`run_eda.py` (14 charts in `reports/figures/`) and `build_features.py` (`features_orders.parquet`: delay, order value, freight ratio, items per order, outlier flags).
 
-### Stage 3: NLP Pipeline
+### Stage 3 — NLP (`src/nlp/nlp_pipeline.py`)
+**Language decision:** use multilingual models directly on Portuguese rather than machine-translate 40,977 reviews (translation adds noise, cost and rate limits).
 
-**Language decision: Approach (b) — Multilingual models directly on Portuguese.**
+| Method | 500-review benchmark (CPU) |
+|---|---|
+| Portuguese lexicon baseline | < 1 s |
+| XLM-RoBERTa sentiment (`cardiffnlp/twitter-xlm-roberta-base-sentiment`) | 179.3 s |
+| Sentence embeddings (`paraphrase-multilingual-MiniLM-L12-v2`) | 50.0 s |
+| TF-IDF + NMF | 0.9 s |
 
-Rationale: `cardiffnlp/twitter-xlm-roberta-base-sentiment` is trained natively on multilingual Twitter data including Portuguese. Machine-translation would add noise, cost, and rate-limiting for 40,977 reviews. Using native multilingual models is standard practice in modern multilingual NLP.
+The full transformer run is batched (32) with a checkpoint every 2,000 reviews in `data/processed/checkpoints/` (gitignored, regenerated on demand).
 
-**Benchmarks (500-review sample, CPU):**
+- **Topics:** TF-IDF + NMF baseline and embeddings + MiniBatch KMeans (8 topics). Clusters are described with c-TF-IDF terms and sample reviews; business names are assigned in `src/nlp/topic_names.py` and stored in `dim_topics.csv`.
+- **Aspects:** terms that are disproportionately frequent in negative reviews were mined from the data and grouped into 7 aspects plus *Uncategorized*.
 
-| Method | 500 reviews | Actual for 40,977 |
-|---|---|---|
-| Portuguese Lexicon Baseline | — | 8.3 seconds |
-| XLM-RoBERTa Sentiment | 179.3s | 91.2 minutes |
-| Sentence Embeddings (MiniLM) | 50.0s | 9.5 minutes |
-| TF-IDF + NMF | 0.9s | 3.9 seconds |
-
-**Sentiment:** Two-tier approach — Portuguese lexicon baseline (fast, interpretable), then `cardiffnlp/twitter-xlm-roberta-base-sentiment` transformer on all 40,977 reviews with batch_size=32 and incremental checkpointing every 2,000 reviews.
-
-**Topic modeling:** TF-IDF + NMF (8 topics, baseline) and Sentence Transformers + KMeans (8 topics, advanced). Topics interpreted via c-TF-IDF on cluster documents — not pre-assumed labels.
-
-**Aspect extraction:** Data-driven discovery — mined top-30 most disproportionately frequent terms from negative reviews, then grouped into 7 semantic categories. NOT pre-assumed.
-
-### Stage 4: Statistical Analysis & Business Layer
-- **Spearman rank correlation** (ordinal review scores, non-normal continuous predictors)
-- **Mann-Whitney U** for two-group comparisons (non-parametric; review scores are not normally distributed)
-- **Kruskal-Wallis H** for multi-group comparisons (categories, price bands)
-- **Logistic regression** for probability of negative review (observational only — see Limitations)
-- **Scenario-based exposure model** (not historical revenue loss)
-- **11 DuckDB-validated SQL queries** in `sql/`
+### Stage 4 — Business analytics, statistics, SQL (`src/analytics/stage4_analysis.py`)
+- **Grain:** the joined table is review × order item (47,642 rows for 40,453 reviews that have order items). Statistics use **one row per review** with order-level price/freight; category/seller/product metrics use **one row per (group, review)**. Rates are therefore never inflated by multi-item orders.
+- **Sample-size thresholds:** products/sellers ≥ 30 reviews, categories ≥ 100. Real example: product `0009406f…` has 1 review and a 100% negative rate, while `06edb72f…` has 62 reviews and 24.2% — without a threshold the 1-review product would rank as "worse".
+- **Tests:** Spearman (ordinal scores, non-normal predictors), Mann-Whitney U (two groups), Kruskal-Wallis H (price bands, categories), logistic regression for P(negative review).
+- **Exposure model:** `exposure = affected_order_value × impact_assumption`, with a sensitivity table.
+- **SQL:** 11 DuckDB queries in `sql/`, validated by `validate_sql.py` and cross-checked against the Python output in the tests.
 
 ---
 
 ## 6. Key EDA Findings
 
-**Review score distribution (all 99,224 reviews):**
+**Review scores (all 99,224 reviews)**
+
 | Score | Count | % |
 |---|---|---|
-| 5 ⭐ | 57,328 | 57.8% |
-| 4 ⭐ | 19,142 | 19.3% |
-| 3 ⭐ | 8,179 | 8.2% |
-| 2 ⭐ | 3,151 | 3.2% |
-| 1 ⭐ | 11,424 | 11.5% |
+| 5 | 57,328 | 57.8% |
+| 4 | 19,142 | 19.3% |
+| 3 | 8,179 | 8.2% |
+| 2 | 3,151 | 3.2% |
+| 1 | 11,424 | 11.5% |
 
-**Delivery performance (96,476 delivered orders):**
+**Delivery (96,476 orders with a delivery date)**
+
 | Metric | Value |
 |---|---|
-| Late deliveries (delay > 0) | 7,827 (8.1%) |
-| Median delivery vs. estimate | −11.9 days (early) |
-| Mean delivery vs. estimate | −11.2 days (early) |
-| 95th percentile delay | +3.8 days late |
-| Max observed delay | 189 days |
+| Late deliveries | 7,827 (8.1%) |
+| Median delivery vs estimate | 11.9 days early |
+| 95th percentile | 3.8 days late |
+| Max delay | 189 days |
 
-**Order economics:**
+**Order economics**
+
 | Metric | Value |
 |---|---|
-| Total gross revenue (item prices) | R$ 13,591,643.70 |
-| Total freight collected | R$ 2,251,909.54 |
-| Median item price | R$ 74.99 |
-| Mean item price | R$ 120.65 |
-| Median freight | R$ 16.26 |
-| Unique products sold | 32,951 |
-| Unique active sellers | 3,095 |
+| Item revenue | R$ 13,591,643.70 |
+| Freight | R$ 2,251,909.54 |
+| Median / mean item price | R$ 74.99 / R$ 120.65 |
+| Median freight per item | R$ 16.26 |
 
-**Top 5 categories by revenue:**
-| Category | Revenue (R$) |
-|---|---|
-| health_beauty | R$ 1,258,681.34 |
-| watches_gifts | R$ 1,205,005.68 |
-| bed_bath_table | R$ 1,036,988.68 |
-| sports_leisure | R$ 988,048.97 |
-| computers_accessories | R$ 911,954.32 |
+**Top 5 categories by item revenue:** health_beauty (R$ 1,258,681), watches_gifts (R$ 1,205,006), bed_bath_table (R$ 1,036,989), sports_leisure (R$ 988,049), computers_accessories (R$ 911,954).
 
 ---
 
 ## 7. NLP Results
 
-**Text coverage:** 40,977 of 99,224 reviews (41.3%) have non-null review text and were processed.
-
-### Sentiment Distribution (XLM-RoBERTa, all 40,977 text reviews)
+### Sentiment (XLM-RoBERTa, 40,977 text reviews)
 
 | Label | Count | % |
 |---|---|---|
 | Positive | 21,493 | 52.5% |
-| Negative | 9,896 | 24.1% |
+| Negative | 9,896 | 24.2% |
 | Neutral | 9,588 | 23.4% |
 
-**Lexicon baseline:** Positive 23,153 | Neutral 9,804 | Negative 8,020
-
-### Sentiment vs. Star Rating Agreement
-
-| Metric | Rate |
+| Agreement with star rating | Rate |
 |---|---|
-| Transformer agreement with star rating | **69.88%** |
-| Transformer disagreement | **30.12%** |
-| Lexicon baseline agreement | **65.76%** |
+| Transformer | **69.88%** |
+| Lexicon baseline | 65.76% |
 
-**Per-score agreement (transformer):**
-| Score | Agreement |
-|---|---|
-| 5 ⭐ | 82.6% |
-| 4 ⭐ | 58.8% |
-| 3 ⭐ | 37.8% — inherently ambiguous |
-| 2 ⭐ | 56.4% |
-| 1 ⭐ | 63.9% |
+Per score (transformer): 5★ 82.6% · 4★ 58.8% · 3★ 37.8% · 2★ 56.4% · 1★ 63.9%. Three-star reviews are the most ambiguous. Disagreements include 5-star reviews that complain in text ("o produto é fraco") and 1-star reviews whose text is about something else.
 
-The 30.12% disagreement rate is expected: customers often give high star ratings but complain in text ("produto bom, mas entrega demorou"), or give 1-star ratings where the complaint is about a non-text issue not captured in the review message.
+### Topics (embeddings + KMeans)
 
-### Topic Table (Embedding-Based, c-TF-IDF Interpretation)
+| Topic | Business name | Reviews | Negative sentiment | Representative terms |
+|---|---|---|---|---|
+| T0 | Positive Shopping Experience | 5,864 | 1.6% | produto, recomendo, prazo, entrega, loja |
+| T1 | Order Receipt / Delivery Problems | 5,193 | 54.5% | recebi, comprei, veio, correios, nao |
+| T2 | Product Quality Praise | 4,056 | 1.0% | produto, qualidade, bom, ótimo, excelente |
+| T3 | Early Delivery Satisfaction | 6,462 | 3.3% | prazo, antes, antes prazo, chegou antes |
+| T4 | General Approval / Short Praise | 4,005 | 0.8% | bom, recomendo, tudo ok, perfeito |
+| T5 | Mixed Delivery + Product Feedback | 5,365 | 17.4% | entrega, produto, bom, rápida |
+| T6 | Product Expectation vs Reality | 4,759 | 58.8% | veio, diferente, foto, cor, porém |
+| T7 | Delivery Status / Pending Orders | 5,273 | 56.0% | recebi, ainda, recebi produto, entregue |
 
-All topic names derived from **actual top terms in each cluster** — not pre-assumed.
+Negative reviews by topic (`sql/09_complaint_breakdown.sql`): T7 29.9%, T1 28.6%, T6 28.3%, T5 9.4%, others 3.8%.
 
-| Topic | Reviews | Representative Terms | Business Interpretation |
-|---|---|---|---|
-| T0 | 5,864 | produto, recomendo, prazo, entrega, loja | Positive Shopping Experience |
-| T1 | 5,193 | recebi, comprei, entrega, veio, correios, nao | Order Receipt / Delivery Problems |
-| T2 | 4,056 | produto, qualidade, entrega, bom, ótimo | Product Quality Praise |
-| T3 | 6,462 | prazo, antes, produto, antes prazo, chegou | Early Delivery Satisfaction |
-| T4 | 4,005 | bom, recomendo, tudo, excelente, tudo ok | General Approval / Short Praise |
-| T5 | 5,365 | entrega, produto, bom, rápida, entrega rápida | Fast Delivery + Product Satisfaction |
-| T6 | 4,759 | produto, veio, comprei, qualidade, recebi | Product Expectation vs. Reality |
-| T7 | 5,273 | produto, recebi, ainda, recebi produto, entregue | Delivery Status / Pending Orders |
-
-### Aspect Breakdown (Data-Driven — 7 discovered categories + Uncategorized)
-
-All aspects discovered by mining disproportionately frequent terms in negative reviews.
+### Aspects (not mutually exclusive)
 
 | Aspect | Mentions | Negative | % Negative |
 |---|---|---|---|
-| Product Quality | 18,450 | 5,326 | 28.9% |
-| Delivery/Logistics | 18,181 | 4,028 | 22.2% |
+| Wrong/Missing Item | 1,817 | 1,136 | **62.5%** |
+| Packaging | 874 | 485 | **55.5%** |
+| Price/Value | 1,790 | 695 | 38.8% |
 | Customer Service | 4,918 | 1,889 | 38.4% |
 | Description Mismatch | 1,853 | 633 | 34.2% |
-| Wrong/Missing Item | 1,817 | 1,136 | **62.5%** |
-| Price/Value | 1,790 | 695 | 38.8% |
-| Packaging | 874 | 485 | **55.5%** |
+| Product Quality | 18,450 | 5,326 | 28.9% |
+| Delivery/Logistics | 18,181 | 4,028 | 22.2% |
 | Uncategorized | 11,497 | 1,695 | 14.7% |
 
-**Notable:** Wrong/Missing Item (62.5%) and Packaging (55.5%) have the highest negative rates — when customers mention these aspects, complaints are the dominant outcome.
+Every aspect has well over 100 mentions, so none is flagged low-N.
 
 ---
 
 ## 8. Statistical Findings
 
-> ⚠️ All results below are **associations only**. This project uses observational data and does not establish causation. No causal language is used.
+> Associations only. Observational data cannot establish causation.
 
-### Spearman Rank Correlations
+Unit of analysis: **one row per text review on a delivered order (N = 39,100)**; price and freight are order totals.
 
-**Why Spearman:** Review scores are ordinal (1–5). Delay, price, and freight are continuous but non-normally distributed. Spearman handles both without normality assumptions.
+### Spearman correlations
 
-| Relationship | ρ | p-value | Interpretation |
+| Pair | ρ | p | N |
 |---|---|---|---|
-| Delivery Delay vs. Review Score | **−0.1755** | < 0.0001 | Moderate negative — longer delays associate with lower scores |
-| Freight Value vs. Review Score | −0.0383 | 2.04 × 10⁻¹⁶ | Very weak negative |
-| Price vs. Review Score | +0.0216 | 3.33 × 10⁻⁶ | Very weak positive — pricier items are not associated with worse reviews |
-| Complaint Rate vs. Avg Rating (category-level) | **−0.9829** | 2.52 × 10⁻²⁷ | Near-perfect inverse at category level |
+| Delivery delay vs review score | **−0.217** | < 1e-300 | 39,100 reviews |
+| Freight vs review score | −0.119 | 7.3e-124 | 39,100 reviews |
+| Order price vs review score | −0.055 | 1.2e-27 | 39,100 reviews |
+| Negative-sentiment rate vs avg rating | −0.839 | 9.1e-11 | 37 categories |
+| Negative-review rate vs avg rating | −0.981 | 1.3e-26 | 37 categories |
 
-### Group Comparisons
+The last row is close to definitional (both come from the same star ratings). The negative-*sentiment* row is the meaningful one: text-based complaint rates track ratings closely at category level.
 
-**On-time vs. Late Delivery (Mann-Whitney U, one-sided):**
-- On-time mean score: **3.82** (N = 41,359)
-- Late mean score: **2.09** (N = 4,778)
-- U = 151,887,118, **p < 0.0001**
+### Group comparisons
 
-**High vs. Low Freight (split at median R$ 16.59, Mann-Whitney U):**
-- Low freight mean: **3.69**, High freight mean: **3.58**
-- p = 2.52 × 10⁻¹⁵ — statistically significant but practically small (Δ = 0.11)
+| Comparison | Result |
+|---|---|
+| On time vs late (Mann-Whitney U, one-sided) | 3.98 (N = 34,824) vs **2.12** (N = 4,276), p < 1e-300 |
+| Low vs high freight (split at R$ 17.73) | 3.92 vs 3.63, p = 5.2e-69 |
+| Order price bands (Kruskal-Wallis) | < R$50: 3.88 · 50–150: 3.79 · 150–500: 3.62 · > 500: 3.59; H = 120.4, p = 6.4e-26 |
+| 37 categories (Kruskal-Wallis) | H = 397.5, p = 1.7e-62 |
 
-**Price Bands (Kruskal-Wallis H):**
-- H = 18.57, p = 3.36 × 10⁻⁴
-- Means: <R$50 → 3.61, R$50–150 → 3.64, R$150–500 → 3.69, >R$500 → 3.69
+### Logistic regression — P(negative review) ~ delay + price + freight
 
-**Cross-category (Kruskal-Wallis H, 37 categories above N=100):**
-- H = 640.29, p = 1.06 × 10⁻¹¹¹ — massive variation across categories
+| Predictor | Coefficient | Odds ratio | p |
+|---|---|---|---|
+| delay_days | +0.0629 | 1.065 per day | < 0.001 |
+| freight_value | +0.0119 | 1.012 per R$ | < 0.001 |
+| price | +0.00003 | 1.000 | 0.67 (not significant) |
 
-### Logistic Regression (Observational Only)
-
-**Model:** P(negative review) ~ delay_days + price + freight_value  
-**Note: Observational data. Coefficients are associations, NOT causal estimates.**
-
-| Predictor | Coefficient | p-value |
-|---|---|---|
-| delay_days | +0.0472 | < 0.001 |
-| price | −0.0002 | < 0.001 |
-| freight_value | +0.0050 | < 0.001 |
+Pseudo R² = 0.079: delivery, price and freight explain only a small part of why reviews are negative. Once delay and freight are in the model, order price shows no detectable association.
 
 ---
 
 ## 9. Business Impact
 
-### Commercial Exposure Model
+### Scenario-based exposure
 
-> ⚠️ **Scenario-based estimate, NOT observed historical revenue loss.**  
-> Formula: `commercial_exposure = affected_order_value × impact_assumption`
+> ⚠️ **Scenario-based estimate, NOT observed historical revenue loss.** `exposure = affected_order_value × impact_assumption`.
 
-**Total order value tied to Negative NLP sentiment:** R$ 1,763,586.00 (9,529 affected orders)
+Order value (items + freight) of orders with a negative-sentiment review: **R$ 1,761,899.57** across **9,529 orders**.
 
-| Impact Assumption | Scenario-Based Exposure (R$) |
+| Impact assumption | Scenario exposure |
 |---|---|
-| 1% | R$ 17,635.86 |
-| 2% | R$ 35,271.72 |
-| 5% | R$ 88,179.30 |
-| 10% | R$ 176,358.60 |
-| 15% | R$ 264,537.90 |
-| 20% | R$ 352,717.20 |
+| 1% | R$ 17,619.00 |
+| 2% | R$ 35,237.99 |
+| 5% | R$ 88,094.98 |
+| 10% | R$ 176,189.96 |
+| 15% | R$ 264,284.94 |
+| 20% | R$ 352,379.91 |
 
-### Business Prioritization Framework
+### Prioritization (37 categories with ≥ 100 reviews)
 
-Segmentation by **Negative Sentiment Rate** and **Total Order Value** (split at medians: 24.0% and R$ 84,759).
+Axes: negative-sentiment rate and item value in text-reviewed orders, split at the medians (23.5% and R$ 93,451).
 
-**HIGH Risk + HIGH Exposure — Immediate Action (9 categories):**
+| Segment | Categories |
+|---|---|
+| **HIGH risk + HIGH exposure — act first** (10) | office_furniture 36.5% (R$ 169,287, N=608) · unknown 29.9% · computers_accessories 27.6% (R$ 467,560) · telephony 27.3% · furniture_decor 26.3% · baby 26.2% · toys 24.4% · watches_gifts 24.0% (R$ 600,019) · housewares 23.9% · bed_bath_table 23.5% (R$ 598,658) |
+| **HIGH risk + LOW exposure — fix cheaply** (8) | air_conditioning 32.0% · audio 30.8% · market_place 28.2% · consoles_games 27.8% · home_construction 26.0% · furniture_living_room 25.3% · home_appliances 24.4% · home_confort 24.2% |
+| **LOW risk + HIGH exposure — protect** (8) | perfumery · pet_shop · health_beauty (R$ 555,099) · cool_stuff · stationery · sports_leisure · garden_tools · auto |
+| **LOW risk + LOW exposure — monitor** (11) | electronics · musical_instruments · construction_tools_construction · home_appliances_2 · drinks · food · small_appliances · fashion_bags_accessories · luggage_accessories · fashion_shoes · books_general_interest |
 
-| Category | Neg Sentiment Rate | Total Value (R$) | N Reviews |
-|---|---|---|---|
-| office_furniture | 38.5% | 122,420 | 606 |
-| unknown | 30.6% | 88,610 | 628 |
-| computers_accessories | 29.0% | 384,706 | 2,707 |
-| telephony | 27.5% | 170,467 | 1,852 |
-| furniture_decor | 26.7% | 281,940 | 2,585 |
-| baby | 26.5% | 183,848 | 1,074 |
-| housewares | 26.3% | 278,299 | 2,364 |
-| watches_gifts | 25.0% | 554,566 | 2,489 |
-| toys | 24.4% | 214,070 | 1,447 |
-
-**LOW Risk + HIGH Exposure — Protect & Maintain (9 categories):**
-
-| Category | Neg Sentiment Rate | Total Value (R$) | N Reviews |
-|---|---|---|---|
-| health_beauty | 23.9% | 494,424 | 3,341 |
-| bed_bath_table | 24.0% | 488,451 | 4,277 |
-| sports_leisure | 21.9% | 406,742 | 2,945 |
-| cool_stuff | 22.6% | 303,034 | 1,528 |
-| auto | 20.9% | 299,722 | 1,688 |
+Full table: `data/processed/stage4/business_prioritization.csv`.
 
 ---
 
-## 10. Power BI Dashboard
+## 10. Web Dashboard (Next.js)
 
-> **⏳ PENDING — This section is a placeholder.**
+A 7-page dashboard in `dashboard/` (Next.js 15, React 19, TypeScript, Recharts). It only **reads** precomputed outputs: `export_dashboard_data.py` writes small JSON files to `dashboard/public/data/` after reconciling them against the Parquet sources, and Next.js API routes serve them. No metric is recomputed in JavaScript. The SQL page runs the `sql/` queries (or your own SELECT) through DuckDB, sandboxed to `data/processed/` and read-only.
 
-The Power BI dashboard is built manually in Power BI Desktop using the Parquet outputs from `data/processed/stage4/` and the SQL queries in `sql/`. Once built, add screenshots here.
+| Page | What it shows |
+|---|---|
+| Overview | KPIs, score and sentiment distributions, correlations |
+| NLP Insights | Agreement by star rating, aspects, named topics |
+| Statistical Analysis | Correlations, group tests, logistic regression |
+| Delivery Analysis | Late rates by state/category, aspects in late vs on-time complaints, monthly trend |
+| Business Impact | Sensitivity table, 2×2 prioritization |
+| Category Deep Dive | Rankings (N ≥ 100 only), category × aspect heatmap, sortable table with LOW-N flags |
+| SQL Analytics | Run the 11 project queries or ad-hoc SELECTs |
 
-**Planned visuals:**
-- Category complaint heatmap (complaint_matrix.csv)
-- Business prioritization 2×2 scatter
-- Monthly sentiment trend line
-- Late delivery rate by state (map)
-- Seller performance table
+| | |
+|---|---|
+| ![NLP insights](reports/figures/dashboard/nlp_insights.png) | ![Business impact](reports/figures/dashboard/business_impact.png) |
+| ![Delivery](reports/figures/dashboard/delivery.png) | ![Category deep dive](reports/figures/dashboard/category_deep_dive.png) |
+| ![Statistical analysis](reports/figures/dashboard/statistical_analysis.png) | ![SQL analytics](reports/figures/dashboard/sql_analytics.png) |
 
-**To add screenshots:** Replace this section with `![Dashboard Screenshot](reports/figures/dashboard.png)` once exported from Power BI Desktop.
+**Power BI:** not built yet. The star-schema Parquet files and `stage4/*.csv` are ready to import into Power BI Desktop if a BI version is needed.
 
 ---
 
 ## 11. Limitations
 
-1. **No returns/refund data.** The dataset has no returns table. Return rates, refund amounts, and post-return sentiment cannot be computed. The exposure model cannot account for actual customer churn.
-2. **No cost, profit, or CLV data.** All financial figures are gross order value (price + freight). Margins, acquisition costs, and lifetime value are not available and not estimated.
-3. **Review text covers only 41.3% of orders.** All NLP findings apply to the 40,977 reviews with text. The 58.7% of orders without text may have systematically different sentiment — their opinions are unobserved.
-4. **Positive-review skew.** 57.8% of reviews are 5-star. Complaint patterns are derived from a minority of reviews, which limits the generalizability of aspect-level findings to the full customer base.
-5. **Observational statistics only.** All correlation and regression results are associations. No experimental design, instrument, or control exists in this data to support causal inference.
-6. **Portuguese NLP caveats.** XLM-RoBERTa was trained on Twitter-style text. Formal or regional Portuguese expressions may be misclassified. The 30.12% disagreement rate between NLP labels and star ratings reflects both genuine ambiguity and model limitations.
-7. **Aspect categories partially overlap.** The extracted_aspects field uses regex patterns. A review mentioning both delivery and product quality is tagged with both — aspect counts are not mutually exclusive.
-8. **Seller anonymization.** Seller IDs are hashed. No seller-level business context (size, type, tenure) is available for interpretation.
-
----
+1. **No returns, refunds, cost, profit or CLV data.** Exposure uses gross order value and an assumed impact rate.
+2. **Text covers 41.3% of reviews.** The 58.7% without text are unobserved and probably less extreme.
+3. **Positive skew** (57.8% five-star) makes complaints a minority class.
+4. **Observational statistics only.** No experiment or instrument supports causal claims.
+5. **Portuguese NLP caveats.** XLM-RoBERTa is trained on tweets; 30.1% of labels disagree with the star rating, reflecting both real ambiguity and model error.
+6. **Aspects overlap and are rule-based.** A review can count toward several aspects.
+7. **Topic names are interpretations** of KMeans clusters, and cluster ids can change if the pipeline is re-run.
+8. **524 text reviews belong to orders with no items** (cancelled/unavailable), so Stage 4 covers 40,453 of 40,977 text reviews.
+9. **Category value is attributed per item.** An order with items from two categories counts toward both.
 
 ## 12. Future Improvements
 
-1. **Targeted data collection:** Add returns/refund tracking, product cost data, and customer re-purchase records to enable CLV and margin-level analysis.
-2. **Better review coverage:** Implement post-purchase survey triggers to increase text coverage beyond 41.3%.
-3. **Fine-tuned Portuguese sentiment model:** Fine-tune XLM-RoBERTa on Olist-domain reviews with human-labeled sentiment to improve the current 69.88% agreement rate.
-4. **BERTopic** for more coherent topic modeling, replacing the current KMeans-on-embeddings approach.
-5. **Causal inference methods:** Difference-in-differences or instrumental variable approaches (e.g., using exogenous delivery delays from weather events) to move beyond observational associations.
-6. **Time-series analysis:** Model complaint rate trends over time to detect improving or worsening seller performance.
+1. Add returns/refund, cost and repeat-purchase data for margin and CLV analysis.
+2. Fine-tune a Portuguese sentiment model on human-labelled Olist reviews to lift the 69.9% agreement.
+3. Replace KMeans with BERTopic or HDBSCAN for more stable topics.
+4. Use quasi-experimental methods (e.g. difference-in-differences on carrier delays) to move beyond associations.
+5. Deploy the dashboard (e.g. Vercel) with the SQL page served from a pre-built DuckDB file.
+6. Build the Power BI version for BI-focused audiences.
 
 ---
 
@@ -409,98 +371,73 @@ The Power BI dashboard is built manually in Power BI Desktop using the Parquet o
 
 | Layer | Tools |
 |---|---|
-| Language | Python 3.12 |
-| Data processing | pandas, numpy, pyarrow |
-| NLP | transformers (XLM-RoBERTa), sentence-transformers (MiniLM), scikit-learn (TF-IDF, NMF, KMeans), NLTK |
-| Statistics | scipy, statsmodels |
-| SQL | DuckDB (validates queries against Parquet) |
-| Storage | Parquet (columnar, compressed) |
-| BI | Power BI Desktop (manual, separate step) |
-| Dataset acquisition | kagglehub |
+| Languages | Python 3.12+, SQL, TypeScript |
+| Data | pandas, NumPy, PyArrow (Parquet), kagglehub |
+| NLP / ML | Hugging Face Transformers (XLM-RoBERTa), Sentence Transformers, scikit-learn (TF-IDF, NMF, MiniBatch KMeans), NLTK, PyTorch |
+| Statistics | SciPy, statsmodels |
+| SQL engine | DuckDB |
+| Dashboard | Next.js 15, React 19, Recharts |
+| Testing | pytest |
 
 ---
 
 ## 14. Project Structure
 
 ```
+├── config/settings.py              # paths, raw file names, constants
 ├── data/
-│   ├── raw/                    # 9 original CSVs from Kaggle
-│   └── processed/
-│       ├── fact_orders.parquet
-│       ├── fact_order_items.parquet
-│       ├── fact_order_reviews.parquet
-│       ├── dim_*.parquet
-│       ├── nlp_reviews.parquet      # Stage 3 NLP outputs (40,977 rows)
-│       ├── nlp_topics.json
-│       ├── nlp_aspects.json
-│       ├── nlp_summary_metrics.json
-│       └── stage4/
-│           ├── agg_category.csv
-│           ├── agg_seller.csv
-│           ├── agg_state.csv
-│           ├── agg_monthly.csv
-│           ├── agg_quarterly.csv
-│           ├── complaint_matrix.csv
-│           ├── business_prioritization.csv
-│           └── stage4_metrics.json
-├── sql/
-│   ├── 01_category_revenue.sql
-│   ├── 02_avg_review_score_by_category.sql
-│   ├── 03_negative_review_rate.sql
-│   ├── 04_late_delivery_rate.sql
-│   ├── 05_category_complaint_rate.sql
-│   ├── 06_seller_performance.sql
-│   ├── 07_monthly_trends.sql
-│   ├── 08_product_ranking.sql
-│   ├── 09_complaint_breakdown.sql
-│   ├── 10_customer_geography.sql
-│   └── 11_order_value_segments.sql
+│   ├── raw/                        # 9 Olist CSVs (gitignored; see download_data.py)
+│   └── processed/                  # star schema + NLP + Stage 4 outputs
+│       ├── fact_*.parquet, dim_*.parquet, features_orders.parquet
+│       ├── nlp_reviews.parquet, nlp_topics.json, nlp_aspects.json, nlp_summary_metrics.json
+│       ├── dim_topics.csv          # business names for the 8 topics
+│       └── stage4/                 # agg_*.csv, complaint_matrix*.csv, business_prioritization.csv, stage4_metrics.json
 ├── src/
-│   ├── data/
-│   │   ├── load_raw.py
-│   │   └── make_dataset.py
-│   └── analytics/
-│       ├── nlp_pipeline.py          # Stage 3 NLP
-│       ├── stage4_analysis.py       # Stage 4 business analytics
-│       └── validate_sql.py          # DuckDB SQL validation
-├── requirements.txt
-└── README.md
+│   ├── data/                       # download_data, load_raw, make_dataset, run_eda, build_features
+│   ├── nlp/                        # nlp_pipeline (Stage 3), topic_names
+│   ├── analytics/                  # stage4_analysis, validate_sql
+│   └── utils/metrics.py            # shared metric definitions
+├── sql/                            # 11 analytical DuckDB queries
+├── notebooks/01_results_walkthrough.ipynb
+├── tests/                          # pytest: metric unit tests + data reconciliation
+├── dashboard/                      # Next.js dashboard
+├── reports/
+│   ├── data_dictionary.md
+│   └── figures/                    # 14 EDA charts + dashboard/ screenshots
+├── export_dashboard_data.py        # Stage 6: reconciled JSON export for the dashboard
+├── run.bat                         # one-click launcher (Windows)
+└── requirements.txt
 ```
 
 ---
 
 ## 15. Setup & Reproduction
 
-### Prerequisites
+### Requirements
+- Python 3.12+ and Node.js 18+
+- Kaggle credentials (`~/.kaggle/kaggle.json`, or `KAGGLE_USERNAME` / `KAGGLE_KEY`) — only needed to rebuild from raw data
+
 ```bash
 pip install -r requirements.txt
 ```
 
-Key packages: `pandas`, `pyarrow`, `torch`, `transformers`, `sentence-transformers`, `scikit-learn`, `scipy`, `statsmodels`, `duckdb`, `kagglehub`, `nltk`
+### One click (Windows)
+`run.bat` skips any stage whose outputs already exist, exports the dashboard data and starts the dashboard at http://localhost:3000.
 
-### Kaggle Credentials
-Configure `~/.kaggle/kaggle.json` with your Kaggle API key before running Stage 1.
-
-### Reproduce Each Stage
+### Step by step
 
 ```bash
-# Stage 1: Download data & build star schema
-python src/data/load_raw.py
-python src/data/make_dataset.py
-
-# Stage 2: EDA & feature engineering
-python src/data/build_features.py
-
-# Stage 3: NLP pipeline (~1.5–2 hours on CPU)
-python src/analytics/nlp_pipeline.py
-
-# Stage 4: Business analytics & statistics
-python src/analytics/stage4_analysis.py
-
-# Stage 4: Validate SQL queries
-python src/analytics/validate_sql.py
-
-# Power BI: Manual — open Power BI Desktop, connect to data/processed/ Parquet files
+python src/data/download_data.py          # Stage 1: fetch the 9 CSVs with kagglehub
+python src/data/make_dataset.py           # Stage 1: star schema
+python src/data/run_eda.py                # Stage 2: EDA charts
+python src/data/build_features.py         # Stage 2: features
+python src/nlp/nlp_pipeline.py            # Stage 3: NLP (about 1.5 h on CPU, faster on GPU)
+python src/nlp/topic_names.py             # Stage 3: topic lookup (re-check names after a re-run)
+python src/analytics/stage4_analysis.py   # Stage 4: business analytics + statistics
+python src/analytics/validate_sql.py      # Stage 4: run all SQL queries
+python export_dashboard_data.py           # Stage 6: reconciled dashboard JSON
+python -m pytest                          # tests
+cd dashboard && npm install && npm run dev
 ```
 
-> ⚠️ The NLP pipeline (`nlp_pipeline.py`) runs XLM-RoBERTa sentiment inference on 40,977 reviews on CPU (~91 minutes actual runtime). Incremental checkpoints are saved every 2,000 reviews to `data/processed/checkpoints/` so runs can be resumed if interrupted.
+The processed outputs are committed, so the dashboard, SQL, tests and notebook all work without re-running Stages 1–3.

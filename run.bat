@@ -14,7 +14,7 @@ echo.
 :: ── Set project root to the folder where this .bat lives ────────────────────
 set "ROOT=%~dp0"
 if "%ROOT:~-1%"=="\" set "ROOT=%ROOT:~0,-1%"
-set "DASH=%ROOT%\dashboard2"
+set "DASH=%ROOT%\dashboard"
 
 echo  Root : %ROOT%
 echo  Dash : %DASH%
@@ -96,7 +96,13 @@ echo.
 :: ════════════════════════════════════════════════════════════════════════════
 if "!NEED_S1!"=="1" (
     echo  [1/4] Running Stage 1 - Data Pipeline...
-    echo        Requires KAGGLE_USERNAME and KAGGLE_KEY env vars.
+    echo        Requires ~/.kaggle/kaggle.json or KAGGLE_USERNAME and KAGGLE_KEY env vars.
+    python "%ROOT%\src\data\download_data.py"
+    if !ERRORLEVEL! neq 0 (
+        echo  [ERROR] Dataset download failed. See error above.
+        pause
+        exit /b 1
+    )
     python "%ROOT%\src\data\make_dataset.py"
     if !ERRORLEVEL! neq 0 (
         echo  [ERROR] Stage 1 failed. See error above.
@@ -141,10 +147,11 @@ if "!NEED_S3!"=="1" (
     python "%ROOT%\src\nlp\nlp_pipeline.py"
     if !ERRORLEVEL! neq 0 (
         echo  [ERROR] Stage 3 NLP failed.
-        echo  Install: pip install transformers torch sentence-transformers scikit-learn
+        echo  Install: pip install -r requirements.txt
         pause
         exit /b 1
     )
+    echo  [NOTE] Topic ids can change on a re-run. Re-check TOPIC_NAMES in src\nlp\topic_names.py
     echo  [OK] Stage 3 done.
     echo.
 )
@@ -160,7 +167,13 @@ if "!NEED_S4!"=="1" (
         pause
         exit /b 1
     )
-    echo  [OK] Stage 4 done.
+    python "%ROOT%\src\analytics\validate_sql.py" >nul
+    if !ERRORLEVEL! neq 0 (
+        echo  [ERROR] SQL validation failed. Run: python src\analytics\validate_sql.py
+        pause
+        exit /b 1
+    )
+    echo  [OK] Stage 4 done - SQL queries validated.
     echo.
 )
 
@@ -170,6 +183,7 @@ if "!NEED_S4!"=="1" (
 echo  ----------------------------------------------------------------
 echo  Exporting pre-aggregated JSON for dashboard (2-3 sec)...
 echo  ----------------------------------------------------------------
+python "%ROOT%\src\nlp\topic_names.py" >nul
 python "%ROOT%\export_dashboard_data.py"
 if !ERRORLEVEL! neq 0 (
     echo.
@@ -188,7 +202,7 @@ echo  Preparing dashboard...
 echo  ----------------------------------------------------------------
 
 if not exist "%DASH%" (
-    echo  [ERROR] dashboard2 folder not found at: %DASH%
+    echo  [ERROR] dashboard folder not found at: %DASH%
     pause
     exit /b 1
 )

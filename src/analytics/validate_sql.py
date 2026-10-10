@@ -1,42 +1,92 @@
-import duckdb
-import os
-import glob
+"""
+validate_sql.py — Run every query in sql/ against the processed tables with DuckDB.
 
-def setup_duckdb():
-    print("Setting up DuckDB and views...")
-    conn = duckdb.connect(database=':memory:')
-    
-    # Create views over the parquet files
-    parquet_dir = 'data/processed'
-    conn.execute(f"CREATE VIEW nlp_reviews AS SELECT * FROM read_parquet('{parquet_dir}/nlp_reviews.parquet')")
-    conn.execute(f"CREATE VIEW fact_orders AS SELECT * FROM read_parquet('{parquet_dir}/fact_orders.parquet')")
-    conn.execute(f"CREATE VIEW fact_order_items AS SELECT * FROM read_parquet('{parquet_dir}/fact_order_items.parquet')")
-    conn.execute(f"CREATE VIEW dim_products AS SELECT * FROM read_parquet('{parquet_dir}/dim_products.parquet')")
-    conn.execute(f"CREATE VIEW dim_customers AS SELECT * FROM read_parquet('{parquet_dir}/dim_customers.parquet')")
-    conn.execute(f"CREATE VIEW dim_sellers AS SELECT * FROM read_parquet('{parquet_dir}/dim_sellers.parquet')")
-    
+Exits non-zero if any query fails or returns no rows, so it can be used as a check.
+
+Usage:
+    python src/analytics/validate_sql.py
+"""
+import glob
+import os
+import sys
+
+import duckdb
+
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+DATA_DIR = os.path.join(ROOT, "data", "processed")
+SQL_DIR = os.path.join(ROOT, "sql")
+
+PARQUET_VIEWS = {
+    "nlp_reviews":        "nlp_reviews.parquet",
+    "fact_orders":        "fact_orders.parquet",
+    "fact_order_items":   "fact_order_items.parquet",
+    "fact_order_reviews": "fact_order_reviews.parquet",
+    "dim_products":       "dim_products.parquet",
+    "dim_customers":      "dim_customers.parquet",
+    "dim_sellers":        "dim_sellers.parquet",
+    "dim_payments":       "dim_payments.parquet",
+}
+CSV_VIEWS = {
+    "dim_topics": "dim_topics.csv",
+}
+
+
+def connect(data_dir: str = DATA_DIR) -> duckdb.DuckDBPyConnection:
+    """In-memory DuckDB connection with one view per processed table."""
+    conn = duckdb.connect(database=":memory:")
+    for view, fname in PARQUET_VIEWS.items():
+        path = os.path.join(data_dir, fname).replace("\\", "/")
+        if os.path.exists(path):
+            conn.execute(f"CREATE VIEW {view} AS SELECT * FROM read_parquet('{path}')")
+    for view, fname in CSV_VIEWS.items():
+        path = os.path.join(data_dir, fname).replace("\\", "/")
+        if os.path.exists(path):
+            conn.execute(f"CREATE VIEW {view} AS SELECT * FROM read_csv_auto('{path}', header=true)")
     return conn
 
-def main():
-    conn = setup_duckdb()
-    
-    sql_files = sorted(glob.glob('sql/*.sql'))
+
+def connect_sandboxed(data_dir: str = DATA_DIR) -> duckdb.DuckDBPyConnection:
+    """Like connect(), but user SQL can only touch files in data/processed/ and cannot
+    change that setting. Used by the dashboard's SQL editor."""
+    conn = connect(data_dir)
+    allowed = data_dir.replace("\\", "/").rstrip("/") + "/"
+    conn.execute(f"SET allowed_directories = ['{allowed}']")
+    conn.execute("SET enable_external_access = false")
+    conn.execute("SET lock_configuration = true")
+    return conn
+
+
+def main() -> int:
+    sys.stdout.reconfigure(encoding="utf-8")
+    conn = connect()
+    sql_files = sorted(glob.glob(os.path.join(SQL_DIR, "*.sql")))
     if not sql_files:
         print("No SQL files found in sql/ directory.")
-        return
-        
+        return 1
+
+    failures = []
     for file in sql_files:
-        print(f"\n--- Executing {file} ---")
-        with open(file, 'r', encoding='utf-8') as f:
+        name = os.path.basename(file)
+        print(f"\n--- Executing {name} ---")
+        with open(file, "r", encoding="utf-8") as f:
             query = f.read()
-            
         try:
-            # Execute query and print first 5 rows
             result = conn.execute(query).df()
-            print(result.head(5).to_string())
-            print(f"Total rows returned: {len(result)}")
         except Exception as e:
-            print(f"ERROR executing {file}: {e}")
+            print(f"ERROR executing {name}: {e}")
+            failures.append(name)
+            continue
+        print(result.head(5).to_string())
+        print(f"Total rows returned: {len(result)}")
+        if result.empty:
+            failures.append(name)
+
+    print(f"\n{len(sql_files) - len(failures)}/{len(sql_files)} queries executed and returned rows.")
+    if failures:
+        print("Failed:", ", ".join(failures))
+        return 1
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

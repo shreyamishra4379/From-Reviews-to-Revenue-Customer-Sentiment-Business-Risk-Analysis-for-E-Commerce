@@ -1,3 +1,4 @@
+-- Review score and NLP complaint rate by order value segment (R$, items + freight).
 WITH order_values AS (
     SELECT 
         order_id, 
@@ -5,7 +6,7 @@ WITH order_values AS (
     FROM fact_order_items 
     GROUP BY 1
 )
-SELECT 
+SELECT
     CASE 
         WHEN ov.total_value < 50 THEN 'Low Value (<50)'
         WHEN ov.total_value BETWEEN 50 AND 200 THEN 'Medium Value (50-200)'

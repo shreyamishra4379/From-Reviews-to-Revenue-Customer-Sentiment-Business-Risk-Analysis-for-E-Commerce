@@ -1,4 +1,5 @@
-SELECT 
+-- Monthly NLP complaint trend for orders with a text review.
+SELECT
     strftime(o.order_purchase_timestamp, '%Y-%m') AS order_month,
     COUNT(DISTINCT o.order_id) AS total_orders,
     AVG(CASE WHEN r.sentiment_label = 'Negative' THEN 1.0 ELSE 0.0 END) AS negative_sentiment_rate

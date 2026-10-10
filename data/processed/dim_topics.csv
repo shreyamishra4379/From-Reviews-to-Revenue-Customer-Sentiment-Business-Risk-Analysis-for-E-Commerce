@@ -1,0 +1,9 @@
+topic_id,business_topic_name,term_label,representative_terms,review_count,evidence
+0,Positive Shopping Experience,Topic 0: produto / recomendo / prazo,"produto, recomendo, prazo, entrega, loja, gostei, compra, bom, antes, bem",5864,"produto, recomendo, loja, gostei; samples praise store and purchase"
+1,Order Receipt / Delivery Problems,Topic 1: recebi / comprei / entrega,"recebi, comprei, entrega, veio, produto, ainda, chegou, prazo, pedido, correios",5193,"recebi, comprei, veio, correios, nao; samples report missing or partial orders"
+2,Product Quality Praise,Topic 2: produto / qualidade / entrega,"produto, qualidade, entrega, bom, recomendo, ótimo, excelente, prazo, rápida, produto bom",4056,"qualidade, bom, ótimo, excelente; samples praise product quality"
+3,Early Delivery Satisfaction,Topic 3: prazo / antes / produto,"prazo, antes, produto, antes prazo, chegou, entrega, bem, entregue, chegou antes, produto chegou",6462,"prazo, antes, antes prazo, chegou antes"
+4,General Approval / Short Praise,Topic 4: bom / recomendo / tudo,"bom, recomendo, tudo, excelente, ótimo, ok, gostei, bom bom, perfeito, boa",4005,"bom, recomendo, tudo ok, perfeito; very short reviews"
+5,Mixed Delivery + Product Feedback,Topic 5: entrega / produto / bom,"entrega, produto, bom, recomendo, prazo, otimo, tudo, chegou, rápida, antes",5365,"entrega, produto, bom, rápida; samples mix praise and complaints"
+6,Product Expectation vs Reality,Topic 6: produto / veio / comprei,"produto, veio, comprei, qualidade, recebi, chegou, bem, cor, porém, produto veio",4759,"veio, diferente, foto, cor, porém; samples describe items not matching the listing"
+7,Delivery Status / Pending Orders,Topic 7: produto / recebi / ainda,"produto, recebi, ainda, recebi produto, entregue, comprei, entrega, chegou, prazo, compra",5273,"recebi, ainda, entregue, dia; samples report orders not yet received"

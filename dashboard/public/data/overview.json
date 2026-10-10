@@ -1,0 +1,71 @@
+{
+  "total_reviews": 99224,
+  "reviews_with_text": 40977,
+  "text_coverage_pct": 41.3,
+  "total_orders": 99441,
+  "nlp_agreement_pct": 69.88,
+  "complaint_topics_count": 8,
+  "sentiment_distribution": {
+    "Positive": 21493,
+    "Negative": 9896,
+    "Neutral": 9588
+  },
+  "per_score_agreement_pct": {
+    "1": 63.9,
+    "2": 56.36,
+    "3": 37.81,
+    "4": 58.77,
+    "5": 82.61
+  },
+  "review_score_distribution": {
+    "1": 11424,
+    "2": 3151,
+    "3": 8179,
+    "4": 19142,
+    "5": 57328
+  },
+  "correlations": [
+    {
+      "pair": "Delivery Delay vs Review Score",
+      "rho": -0.2172,
+      "p_value": 0.0,
+      "p_label": "< 1e-300"
+    },
+    {
+      "pair": "Freight Value vs Review Score",
+      "rho": -0.1193,
+      "p_value": 7.3116149871780265e-124,
+      "p_label": "7.31e-124"
+    },
+    {
+      "pair": "Price vs Review Score",
+      "rho": -0.0551,
+      "p_value": 1.214303028379971e-27,
+      "p_label": "1.21e-27"
+    },
+    {
+      "pair": "Complaint Rate vs Avg Rating",
+      "rho": -0.9813,
+      "p_value": 1.25947705165921e-26,
+      "p_label": "1.26e-26"
+    },
+    {
+      "pair": "Negative Sentiment Rate vs Avg Rating",
+      "rho": -0.8388,
+      "p_value": 9.060889516005737e-11,
+      "p_label": "9.06e-11"
+    }
+  ],
+  "ontime_vs_late": {
+    "test": "Mann-Whitney U (one-sided)",
+    "ontime_mean": 3.98,
+    "ontime_n": 34824,
+    "late_mean": 2.12,
+    "late_n": 4276,
+    "ontime_neg_review_rate": 0.1842,
+    "late_neg_review_rate": 0.6719,
+    "U": 117262469.5,
+    "p_value": 0.0
+  },
+  "disclaimer": "Scenario-based estimate, not observed revenue loss"
+}

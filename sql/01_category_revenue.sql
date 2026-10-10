@@ -1,4 +1,5 @@
-SELECT 
+-- Category revenue (R$): item price and freight from all order items.
+SELECT
     p.product_category_name_english AS category,
     COUNT(DISTINCT i.order_id) AS total_orders,
     SUM(i.price) AS total_revenue,

@@ -1,4 +1,5 @@
-SELECT 
+-- Late-delivery rate by customer state (delivered orders only, states with >= 100 orders).
+SELECT
     c.state,
     COUNT(o.order_id) AS total_orders,
     AVG(CASE WHEN o.order_delivered_customer_date > o.order_estimated_delivery_date THEN 1.0 ELSE 0.0 END) AS late_delivery_rate

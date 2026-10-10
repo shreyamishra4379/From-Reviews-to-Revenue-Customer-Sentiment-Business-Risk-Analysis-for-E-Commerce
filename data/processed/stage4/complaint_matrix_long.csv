@@ -1,0 +1,528 @@
+category,extracted_aspects,mention_count,neg_count,complaint_rate
+agro_industry_and_commerce,Customer Service,7,3,0.42857142857142855
+agro_industry_and_commerce,Delivery/Logistics,23,5,0.21739130434782608
+agro_industry_and_commerce,Description Mismatch,3,1,0.3333333333333333
+agro_industry_and_commerce,Packaging,1,1,1.0
+agro_industry_and_commerce,Price/Value,4,1,0.25
+agro_industry_and_commerce,Product Quality,32,11,0.34375
+agro_industry_and_commerce,Uncategorized,16,3,0.1875
+agro_industry_and_commerce,Wrong/Missing Item,4,3,0.75
+air_conditioning,Customer Service,10,4,0.4
+air_conditioning,Delivery/Logistics,42,10,0.23809523809523808
+air_conditioning,Description Mismatch,2,2,1.0
+air_conditioning,Packaging,2,1,0.5
+air_conditioning,Price/Value,4,2,0.5
+air_conditioning,Product Quality,47,21,0.44680851063829785
+air_conditioning,Uncategorized,24,5,0.20833333333333334
+air_conditioning,Wrong/Missing Item,8,3,0.375
+art,Customer Service,9,4,0.4444444444444444
+art,Delivery/Logistics,34,9,0.2647058823529412
+art,Description Mismatch,8,3,0.375
+art,Packaging,1,1,1.0
+art,Price/Value,7,3,0.42857142857142855
+art,Product Quality,38,12,0.3157894736842105
+art,Uncategorized,29,6,0.20689655172413793
+art,Wrong/Missing Item,2,1,0.5
+arts_and_craftmanship,Customer Service,2,1,0.5
+arts_and_craftmanship,Delivery/Logistics,7,3,0.42857142857142855
+arts_and_craftmanship,Packaging,1,0,0.0
+arts_and_craftmanship,Product Quality,3,2,0.6666666666666666
+arts_and_craftmanship,Uncategorized,2,1,0.5
+arts_and_craftmanship,Wrong/Missing Item,1,1,1.0
+audio,Customer Service,24,13,0.5416666666666666
+audio,Delivery/Logistics,67,17,0.2537313432835821
+audio,Description Mismatch,5,3,0.6
+audio,Packaging,6,5,0.8333333333333334
+audio,Price/Value,10,4,0.4
+audio,Product Quality,86,38,0.4418604651162791
+audio,Uncategorized,38,4,0.10526315789473684
+audio,Wrong/Missing Item,4,3,0.75
+auto,Customer Service,193,55,0.2849740932642487
+auto,Delivery/Logistics,759,150,0.1976284584980237
+auto,Description Mismatch,57,19,0.3333333333333333
+auto,Packaging,29,16,0.5517241379310345
+auto,Price/Value,69,21,0.30434782608695654
+auto,Product Quality,733,183,0.24965893587994542
+auto,Uncategorized,502,62,0.12350597609561753
+auto,Wrong/Missing Item,73,44,0.6027397260273972
+baby,Customer Service,144,63,0.4375
+baby,Delivery/Logistics,514,127,0.24708171206225682
+baby,Description Mismatch,53,16,0.3018867924528302
+baby,Packaging,13,9,0.6923076923076923
+baby,Price/Value,46,21,0.45652173913043476
+baby,Product Quality,513,147,0.28654970760233917
+baby,Uncategorized,253,47,0.1857707509881423
+baby,Wrong/Missing Item,62,28,0.45161290322580644
+bed_bath_table,Customer Service,401,171,0.42643391521197005
+bed_bath_table,Delivery/Logistics,1563,357,0.22840690978886757
+bed_bath_table,Description Mismatch,339,122,0.35988200589970504
+bed_bath_table,Packaging,28,14,0.5
+bed_bath_table,Price/Value,208,74,0.3557692307692308
+bed_bath_table,Product Quality,1878,542,0.288604898828541
+bed_bath_table,Uncategorized,1365,173,0.12673992673992673
+bed_bath_table,Wrong/Missing Item,222,131,0.5900900900900901
+books_general_interest,Customer Service,18,3,0.16666666666666666
+books_general_interest,Delivery/Logistics,85,10,0.11764705882352941
+books_general_interest,Description Mismatch,5,3,0.6
+books_general_interest,Packaging,1,0,0.0
+books_general_interest,Price/Value,9,4,0.4444444444444444
+books_general_interest,Product Quality,46,8,0.17391304347826086
+books_general_interest,Uncategorized,52,3,0.057692307692307696
+books_general_interest,Wrong/Missing Item,3,1,0.3333333333333333
+books_imported,Customer Service,1,1,1.0
+books_imported,Delivery/Logistics,7,2,0.2857142857142857
+books_imported,Packaging,1,0,0.0
+books_imported,Product Quality,5,1,0.2
+books_imported,Uncategorized,5,0,0.0
+books_imported,Wrong/Missing Item,1,0,0.0
+books_technical,Customer Service,9,3,0.3333333333333333
+books_technical,Delivery/Logistics,39,6,0.15384615384615385
+books_technical,Description Mismatch,1,0,0.0
+books_technical,Packaging,3,2,0.6666666666666666
+books_technical,Price/Value,1,0,0.0
+books_technical,Product Quality,22,5,0.22727272727272727
+books_technical,Uncategorized,31,2,0.06451612903225806
+books_technical,Wrong/Missing Item,3,2,0.6666666666666666
+cds_dvds_musicals,Customer Service,1,0,0.0
+cds_dvds_musicals,Delivery/Logistics,1,0,0.0
+cds_dvds_musicals,Uncategorized,3,1,0.3333333333333333
+christmas_supplies,Customer Service,3,2,0.6666666666666666
+christmas_supplies,Delivery/Logistics,19,3,0.15789473684210525
+christmas_supplies,Description Mismatch,5,3,0.6
+christmas_supplies,Packaging,2,2,1.0
+christmas_supplies,Price/Value,2,0,0.0
+christmas_supplies,Product Quality,28,6,0.21428571428571427
+christmas_supplies,Uncategorized,13,3,0.23076923076923078
+christmas_supplies,Wrong/Missing Item,5,3,0.6
+cine_photo,Customer Service,2,0,0.0
+cine_photo,Delivery/Logistics,11,3,0.2727272727272727
+cine_photo,Product Quality,13,4,0.3076923076923077
+cine_photo,Uncategorized,8,0,0.0
+computers,Customer Service,12,2,0.16666666666666666
+computers,Delivery/Logistics,29,1,0.034482758620689655
+computers,Packaging,2,1,0.5
+computers,Price/Value,4,0,0.0
+computers,Product Quality,34,8,0.23529411764705882
+computers,Uncategorized,29,5,0.1724137931034483
+computers_accessories,Customer Service,371,154,0.41509433962264153
+computers_accessories,Delivery/Logistics,1262,319,0.25277337559429475
+computers_accessories,Description Mismatch,102,40,0.39215686274509803
+computers_accessories,Packaging,70,49,0.7
+computers_accessories,Price/Value,122,47,0.38524590163934425
+computers_accessories,Product Quality,1229,400,0.32546786004882017
+computers_accessories,Uncategorized,754,132,0.17506631299734748
+computers_accessories,Wrong/Missing Item,112,73,0.6517857142857143
+consoles_games,Customer Service,55,22,0.4
+consoles_games,Delivery/Logistics,219,65,0.2968036529680365
+consoles_games,Description Mismatch,12,5,0.4166666666666667
+consoles_games,Packaging,16,9,0.5625
+consoles_games,Price/Value,16,6,0.375
+consoles_games,Product Quality,204,63,0.3088235294117647
+consoles_games,Uncategorized,80,14,0.175
+consoles_games,Wrong/Missing Item,18,13,0.7222222222222222
+construction_tools_construction,Customer Service,33,12,0.36363636363636365
+construction_tools_construction,Delivery/Logistics,125,27,0.216
+construction_tools_construction,Description Mismatch,9,0,0.0
+construction_tools_construction,Packaging,5,2,0.4
+construction_tools_construction,Price/Value,9,4,0.4444444444444444
+construction_tools_construction,Product Quality,142,39,0.2746478873239437
+construction_tools_construction,Uncategorized,88,13,0.14772727272727273
+construction_tools_construction,Wrong/Missing Item,17,10,0.5882352941176471
+construction_tools_lights,Customer Service,6,3,0.5
+construction_tools_lights,Delivery/Logistics,43,5,0.11627906976744186
+construction_tools_lights,Description Mismatch,4,3,0.75
+construction_tools_lights,Packaging,5,3,0.6
+construction_tools_lights,Price/Value,2,1,0.5
+construction_tools_lights,Product Quality,46,9,0.1956521739130435
+construction_tools_lights,Uncategorized,24,6,0.25
+construction_tools_lights,Wrong/Missing Item,3,0,0.0
+construction_tools_safety,Customer Service,10,5,0.5
+construction_tools_safety,Delivery/Logistics,27,4,0.14814814814814814
+construction_tools_safety,Description Mismatch,3,0,0.0
+construction_tools_safety,Packaging,2,1,0.5
+construction_tools_safety,Price/Value,1,1,1.0
+construction_tools_safety,Product Quality,30,11,0.36666666666666664
+construction_tools_safety,Uncategorized,24,8,0.3333333333333333
+construction_tools_safety,Wrong/Missing Item,6,2,0.3333333333333333
+cool_stuff,Customer Service,167,60,0.3592814371257485
+cool_stuff,Delivery/Logistics,711,136,0.19127988748241911
+cool_stuff,Description Mismatch,67,16,0.23880597014925373
+cool_stuff,Packaging,37,20,0.5405405405405406
+cool_stuff,Price/Value,71,28,0.39436619718309857
+cool_stuff,Product Quality,682,169,0.24780058651026393
+cool_stuff,Uncategorized,437,59,0.13501144164759726
+cool_stuff,Wrong/Missing Item,43,30,0.6976744186046512
+costruction_tools_garden,Customer Service,14,2,0.14285714285714285
+costruction_tools_garden,Delivery/Logistics,40,5,0.125
+costruction_tools_garden,Description Mismatch,3,0,0.0
+costruction_tools_garden,Packaging,2,1,0.5
+costruction_tools_garden,Price/Value,3,1,0.3333333333333333
+costruction_tools_garden,Product Quality,35,7,0.2
+costruction_tools_garden,Uncategorized,30,4,0.13333333333333333
+costruction_tools_garden,Wrong/Missing Item,3,1,0.3333333333333333
+costruction_tools_tools,Customer Service,6,3,0.5
+costruction_tools_tools,Delivery/Logistics,26,2,0.07692307692307693
+costruction_tools_tools,Description Mismatch,1,0,0.0
+costruction_tools_tools,Packaging,1,0,0.0
+costruction_tools_tools,Price/Value,1,0,0.0
+costruction_tools_tools,Product Quality,19,4,0.21052631578947367
+costruction_tools_tools,Uncategorized,6,1,0.16666666666666666
+costruction_tools_tools,Wrong/Missing Item,5,2,0.4
+diapers_and_hygiene,Customer Service,1,1,1.0
+diapers_and_hygiene,Delivery/Logistics,2,0,0.0
+diapers_and_hygiene,Description Mismatch,1,1,1.0
+diapers_and_hygiene,Packaging,1,1,1.0
+diapers_and_hygiene,Price/Value,2,1,0.5
+diapers_and_hygiene,Product Quality,4,1,0.25
+diapers_and_hygiene,Uncategorized,2,0,0.0
+drinks,Customer Service,9,2,0.2222222222222222
+drinks,Delivery/Logistics,56,6,0.10714285714285714
+drinks,Description Mismatch,3,1,0.3333333333333333
+drinks,Packaging,5,2,0.4
+drinks,Price/Value,4,2,0.5
+drinks,Product Quality,45,9,0.2
+drinks,Uncategorized,40,9,0.225
+drinks,Wrong/Missing Item,7,5,0.7142857142857143
+dvds_blu_ray,Customer Service,2,0,0.0
+dvds_blu_ray,Delivery/Logistics,7,1,0.14285714285714285
+dvds_blu_ray,Price/Value,1,0,0.0
+dvds_blu_ray,Product Quality,7,1,0.14285714285714285
+dvds_blu_ray,Uncategorized,8,2,0.25
+electronics,Customer Service,132,46,0.3484848484848485
+electronics,Delivery/Logistics,486,118,0.24279835390946503
+electronics,Description Mismatch,29,9,0.3103448275862069
+electronics,Packaging,18,7,0.3888888888888889
+electronics,Price/Value,36,11,0.3055555555555556
+electronics,Product Quality,463,122,0.2634989200863931
+electronics,Uncategorized,283,45,0.15901060070671377
+electronics,Wrong/Missing Item,36,22,0.6111111111111112
+fashio_female_clothing,Customer Service,4,1,0.25
+fashio_female_clothing,Delivery/Logistics,9,2,0.2222222222222222
+fashio_female_clothing,Description Mismatch,2,2,1.0
+fashio_female_clothing,Price/Value,3,2,0.6666666666666666
+fashio_female_clothing,Product Quality,8,4,0.5
+fashio_female_clothing,Uncategorized,6,3,0.5
+fashio_female_clothing,Wrong/Missing Item,2,2,1.0
+fashion_bags_accessories,Customer Service,93,27,0.2903225806451613
+fashion_bags_accessories,Delivery/Logistics,320,61,0.190625
+fashion_bags_accessories,Description Mismatch,39,7,0.1794871794871795
+fashion_bags_accessories,Packaging,12,3,0.25
+fashion_bags_accessories,Price/Value,24,10,0.4166666666666667
+fashion_bags_accessories,Product Quality,340,65,0.19117647058823528
+fashion_bags_accessories,Uncategorized,246,31,0.12601626016260162
+fashion_bags_accessories,Wrong/Missing Item,36,19,0.5277777777777778
+fashion_childrens_clothes,Customer Service,1,0,0.0
+fashion_childrens_clothes,Product Quality,1,0,0.0
+fashion_male_clothing,Customer Service,6,2,0.3333333333333333
+fashion_male_clothing,Delivery/Logistics,24,2,0.08333333333333333
+fashion_male_clothing,Description Mismatch,3,1,0.3333333333333333
+fashion_male_clothing,Price/Value,1,0,0.0
+fashion_male_clothing,Product Quality,25,5,0.2
+fashion_male_clothing,Uncategorized,22,4,0.18181818181818182
+fashion_male_clothing,Wrong/Missing Item,4,3,0.75
+fashion_shoes,Customer Service,18,1,0.05555555555555555
+fashion_shoes,Delivery/Logistics,40,3,0.075
+fashion_shoes,Description Mismatch,4,1,0.25
+fashion_shoes,Packaging,1,0,0.0
+fashion_shoes,Price/Value,1,0,0.0
+fashion_shoes,Product Quality,45,7,0.15555555555555556
+fashion_shoes,Uncategorized,41,5,0.12195121951219512
+fashion_shoes,Wrong/Missing Item,9,7,0.7777777777777778
+fashion_sport,Customer Service,1,0,0.0
+fashion_sport,Delivery/Logistics,3,0,0.0
+fashion_sport,Price/Value,1,0,0.0
+fashion_sport,Uncategorized,4,0,0.0
+fashion_underwear_beach,Customer Service,8,3,0.375
+fashion_underwear_beach,Delivery/Logistics,25,5,0.2
+fashion_underwear_beach,Description Mismatch,2,1,0.5
+fashion_underwear_beach,Packaging,1,0,0.0
+fashion_underwear_beach,Product Quality,22,4,0.18181818181818182
+fashion_underwear_beach,Uncategorized,14,2,0.14285714285714285
+fixed_telephony,Customer Service,13,7,0.5384615384615384
+fixed_telephony,Delivery/Logistics,39,7,0.1794871794871795
+fixed_telephony,Description Mismatch,8,4,0.5
+fixed_telephony,Packaging,1,1,1.0
+fixed_telephony,Price/Value,1,0,0.0
+fixed_telephony,Product Quality,51,13,0.2549019607843137
+fixed_telephony,Uncategorized,29,4,0.13793103448275862
+fixed_telephony,Wrong/Missing Item,2,1,0.5
+flowers,Delivery/Logistics,8,1,0.125
+flowers,Description Mismatch,2,0,0.0
+flowers,Packaging,1,0,0.0
+flowers,Price/Value,1,0,0.0
+flowers,Product Quality,4,1,0.25
+flowers,Uncategorized,2,0,0.0
+flowers,Wrong/Missing Item,1,0,0.0
+food,Customer Service,10,0,0.0
+food,Delivery/Logistics,85,12,0.1411764705882353
+food,Description Mismatch,4,1,0.25
+food,Packaging,3,2,0.6666666666666666
+food,Price/Value,2,0,0.0
+food,Product Quality,69,16,0.2318840579710145
+food,Uncategorized,49,9,0.1836734693877551
+food,Wrong/Missing Item,5,4,0.8
+food_drink,Customer Service,7,2,0.2857142857142857
+food_drink,Delivery/Logistics,38,5,0.13157894736842105
+food_drink,Description Mismatch,1,0,0.0
+food_drink,Packaging,1,0,0.0
+food_drink,Price/Value,2,1,0.5
+food_drink,Product Quality,29,6,0.20689655172413793
+food_drink,Uncategorized,25,2,0.08
+food_drink,Wrong/Missing Item,2,1,0.5
+furniture_bedroom,Customer Service,9,3,0.3333333333333333
+furniture_bedroom,Delivery/Logistics,23,2,0.08695652173913043
+furniture_bedroom,Description Mismatch,3,0,0.0
+furniture_bedroom,Price/Value,3,1,0.3333333333333333
+furniture_bedroom,Product Quality,26,7,0.2692307692307692
+furniture_bedroom,Uncategorized,8,2,0.25
+furniture_decor,Customer Service,288,127,0.4409722222222222
+furniture_decor,Delivery/Logistics,1061,249,0.23468426013195098
+furniture_decor,Description Mismatch,166,60,0.3614457831325301
+furniture_decor,Packaging,56,33,0.5892857142857143
+furniture_decor,Price/Value,107,52,0.48598130841121495
+furniture_decor,Product Quality,1196,346,0.28929765886287623
+furniture_decor,Uncategorized,726,146,0.20110192837465565
+furniture_decor,Wrong/Missing Item,144,76,0.5277777777777778
+furniture_living_room,Customer Service,12,4,0.3333333333333333
+furniture_living_room,Delivery/Logistics,82,18,0.21951219512195122
+furniture_living_room,Description Mismatch,13,4,0.3076923076923077
+furniture_living_room,Packaging,9,5,0.5555555555555556
+furniture_living_room,Price/Value,7,1,0.14285714285714285
+furniture_living_room,Product Quality,68,16,0.23529411764705882
+furniture_living_room,Uncategorized,39,8,0.20512820512820512
+furniture_living_room,Wrong/Missing Item,13,8,0.6153846153846154
+furniture_mattress_and_upholstery,Customer Service,2,1,0.5
+furniture_mattress_and_upholstery,Delivery/Logistics,9,4,0.4444444444444444
+furniture_mattress_and_upholstery,Description Mismatch,1,1,1.0
+furniture_mattress_and_upholstery,Price/Value,2,2,1.0
+furniture_mattress_and_upholstery,Product Quality,6,2,0.3333333333333333
+furniture_mattress_and_upholstery,Uncategorized,4,1,0.25
+garden_tools,Customer Service,198,68,0.3434343434343434
+garden_tools,Delivery/Logistics,741,151,0.203778677462888
+garden_tools,Description Mismatch,60,12,0.2
+garden_tools,Packaging,27,13,0.48148148148148145
+garden_tools,Price/Value,83,25,0.30120481927710846
+garden_tools,Product Quality,680,157,0.23088235294117648
+garden_tools,Uncategorized,448,61,0.13616071428571427
+garden_tools,Wrong/Missing Item,60,38,0.6333333333333333
+health_beauty,Customer Service,395,138,0.3493670886075949
+health_beauty,Delivery/Logistics,1629,352,0.21608348680171885
+health_beauty,Description Mismatch,84,29,0.34523809523809523
+health_beauty,Packaging,70,40,0.5714285714285714
+health_beauty,Price/Value,146,58,0.3972602739726027
+health_beauty,Product Quality,1522,402,0.26412614980289095
+health_beauty,Uncategorized,919,102,0.11099020674646355
+health_beauty,Wrong/Missing Item,168,116,0.6904761904761905
+home_appliances,Customer Service,53,22,0.41509433962264153
+home_appliances,Delivery/Logistics,156,31,0.1987179487179487
+home_appliances,Description Mismatch,14,4,0.2857142857142857
+home_appliances,Packaging,3,2,0.6666666666666666
+home_appliances,Price/Value,15,3,0.2
+home_appliances,Product Quality,155,54,0.34838709677419355
+home_appliances,Uncategorized,90,17,0.18888888888888888
+home_appliances,Wrong/Missing Item,17,12,0.7058823529411765
+home_appliances_2,Customer Service,15,5,0.3333333333333333
+home_appliances_2,Delivery/Logistics,39,7,0.1794871794871795
+home_appliances_2,Description Mismatch,3,1,0.3333333333333333
+home_appliances_2,Packaging,2,1,0.5
+home_appliances_2,Price/Value,7,2,0.2857142857142857
+home_appliances_2,Product Quality,42,13,0.30952380952380953
+home_appliances_2,Uncategorized,29,2,0.06896551724137931
+home_appliances_2,Wrong/Missing Item,3,2,0.6666666666666666
+home_comfort_2,Customer Service,2,0,0.0
+home_comfort_2,Delivery/Logistics,4,1,0.25
+home_comfort_2,Description Mismatch,1,0,0.0
+home_comfort_2,Product Quality,5,1,0.2
+home_comfort_2,Uncategorized,4,1,0.25
+home_confort,Customer Service,30,13,0.43333333333333335
+home_confort,Delivery/Logistics,78,16,0.20512820512820512
+home_confort,Description Mismatch,20,3,0.15
+home_confort,Packaging,1,1,1.0
+home_confort,Price/Value,10,5,0.5
+home_confort,Product Quality,81,33,0.4074074074074074
+home_confort,Uncategorized,66,6,0.09090909090909091
+home_confort,Wrong/Missing Item,10,8,0.8
+home_construction,Customer Service,18,7,0.3888888888888889
+home_construction,Delivery/Logistics,86,21,0.2441860465116279
+home_construction,Description Mismatch,8,3,0.375
+home_construction,Packaging,8,5,0.625
+home_construction,Price/Value,2,0,0.0
+home_construction,Product Quality,96,32,0.3333333333333333
+home_construction,Uncategorized,56,9,0.16071428571428573
+home_construction,Wrong/Missing Item,18,9,0.5
+housewares,Customer Service,273,102,0.37362637362637363
+housewares,Delivery/Logistics,985,213,0.216243654822335
+housewares,Description Mismatch,98,39,0.3979591836734694
+housewares,Packaging,54,33,0.6111111111111112
+housewares,Price/Value,95,43,0.45263157894736844
+housewares,Product Quality,1049,295,0.2812202097235462
+housewares,Uncategorized,734,111,0.15122615803814715
+housewares,Wrong/Missing Item,91,57,0.6263736263736264
+industry_commerce_and_business,Customer Service,12,3,0.25
+industry_commerce_and_business,Delivery/Logistics,38,5,0.13157894736842105
+industry_commerce_and_business,Description Mismatch,3,1,0.3333333333333333
+industry_commerce_and_business,Packaging,2,2,1.0
+industry_commerce_and_business,Price/Value,4,2,0.5
+industry_commerce_and_business,Product Quality,45,8,0.17777777777777778
+industry_commerce_and_business,Uncategorized,23,3,0.13043478260869565
+industry_commerce_and_business,Wrong/Missing Item,4,4,1.0
+kitchen_dining_laundry_garden_furniture,Customer Service,11,5,0.45454545454545453
+kitchen_dining_laundry_garden_furniture,Delivery/Logistics,38,7,0.18421052631578946
+kitchen_dining_laundry_garden_furniture,Description Mismatch,3,2,0.6666666666666666
+kitchen_dining_laundry_garden_furniture,Packaging,2,2,1.0
+kitchen_dining_laundry_garden_furniture,Price/Value,2,1,0.5
+kitchen_dining_laundry_garden_furniture,Product Quality,44,14,0.3181818181818182
+kitchen_dining_laundry_garden_furniture,Uncategorized,31,7,0.22580645161290322
+kitchen_dining_laundry_garden_furniture,Wrong/Missing Item,6,2,0.3333333333333333
+la_cuisine,Customer Service,2,1,0.5
+la_cuisine,Delivery/Logistics,2,1,0.5
+la_cuisine,Product Quality,1,0,0.0
+la_cuisine,Uncategorized,1,0,0.0
+luggage_accessories,Customer Service,45,12,0.26666666666666666
+luggage_accessories,Delivery/Logistics,226,32,0.1415929203539823
+luggage_accessories,Description Mismatch,19,5,0.2631578947368421
+luggage_accessories,Packaging,4,2,0.5
+luggage_accessories,Price/Value,27,8,0.2962962962962963
+luggage_accessories,Product Quality,215,41,0.19069767441860466
+luggage_accessories,Uncategorized,91,5,0.054945054945054944
+luggage_accessories,Wrong/Missing Item,14,5,0.35714285714285715
+market_place,Customer Service,15,5,0.3333333333333333
+market_place,Delivery/Logistics,50,13,0.26
+market_place,Description Mismatch,7,0,0.0
+market_place,Packaging,2,2,1.0
+market_place,Price/Value,1,1,1.0
+market_place,Product Quality,58,23,0.39655172413793105
+market_place,Uncategorized,24,1,0.041666666666666664
+market_place,Wrong/Missing Item,3,2,0.6666666666666666
+music,Customer Service,4,0,0.0
+music,Delivery/Logistics,8,1,0.125
+music,Packaging,3,2,0.6666666666666666
+music,Product Quality,6,1,0.16666666666666666
+music,Uncategorized,6,0,0.0
+musical_instruments,Customer Service,47,18,0.3829787234042553
+musical_instruments,Delivery/Logistics,112,25,0.22321428571428573
+musical_instruments,Description Mismatch,9,1,0.1111111111111111
+musical_instruments,Packaging,5,3,0.6
+musical_instruments,Price/Value,17,7,0.4117647058823529
+musical_instruments,Product Quality,122,30,0.2459016393442623
+musical_instruments,Uncategorized,60,7,0.11666666666666667
+musical_instruments,Wrong/Missing Item,11,7,0.6363636363636364
+office_furniture,Customer Service,72,37,0.5138888888888888
+office_furniture,Delivery/Logistics,250,91,0.364
+office_furniture,Description Mismatch,26,15,0.5769230769230769
+office_furniture,Packaging,23,14,0.6086956521739131
+office_furniture,Price/Value,42,18,0.42857142857142855
+office_furniture,Product Quality,273,114,0.4175824175824176
+office_furniture,Uncategorized,167,42,0.25149700598802394
+office_furniture,Wrong/Missing Item,63,44,0.6984126984126984
+party_supplies,Customer Service,1,0,0.0
+party_supplies,Delivery/Logistics,7,1,0.14285714285714285
+party_supplies,Description Mismatch,4,1,0.25
+party_supplies,Packaging,2,0,0.0
+party_supplies,Price/Value,1,1,1.0
+party_supplies,Product Quality,9,2,0.2222222222222222
+party_supplies,Uncategorized,4,2,0.5
+party_supplies,Wrong/Missing Item,2,1,0.5
+pc_gamer,Delivery/Logistics,1,0,0.0
+pc_gamer,Product Quality,1,1,1.0
+perfumery,Customer Service,137,39,0.2846715328467153
+perfumery,Delivery/Logistics,600,116,0.19333333333333333
+perfumery,Description Mismatch,42,18,0.42857142857142855
+perfumery,Packaging,36,26,0.7222222222222222
+perfumery,Price/Value,56,18,0.32142857142857145
+perfumery,Product Quality,507,134,0.26429980276134124
+perfumery,Uncategorized,350,43,0.12285714285714286
+perfumery,Wrong/Missing Item,46,33,0.717391304347826
+pet_shop,Customer Service,78,28,0.358974358974359
+pet_shop,Delivery/Logistics,281,65,0.2313167259786477
+pet_shop,Description Mismatch,46,16,0.34782608695652173
+pet_shop,Packaging,18,5,0.2777777777777778
+pet_shop,Price/Value,25,13,0.52
+pet_shop,Product Quality,321,82,0.2554517133956386
+pet_shop,Uncategorized,159,18,0.11320754716981132
+pet_shop,Wrong/Missing Item,35,20,0.5714285714285714
+portable_kitchen_food_preparers,Customer Service,1,1,1.0
+portable_kitchen_food_preparers,Delivery/Logistics,5,4,0.8
+portable_kitchen_food_preparers,Description Mismatch,1,0,0.0
+portable_kitchen_food_preparers,Product Quality,4,4,1.0
+portable_kitchen_food_preparers,Uncategorized,1,0,0.0
+security_and_services,Delivery/Logistics,2,1,0.5
+security_and_services,Price/Value,1,1,1.0
+security_and_services,Product Quality,1,1,1.0
+security_and_services,Wrong/Missing Item,1,1,1.0
+signaling_and_security,Customer Service,12,3,0.25
+signaling_and_security,Delivery/Logistics,24,6,0.25
+signaling_and_security,Description Mismatch,3,1,0.3333333333333333
+signaling_and_security,Packaging,2,2,1.0
+signaling_and_security,Price/Value,1,1,1.0
+signaling_and_security,Product Quality,20,6,0.3
+signaling_and_security,Uncategorized,16,1,0.0625
+signaling_and_security,Wrong/Missing Item,6,3,0.5
+small_appliances,Customer Service,33,13,0.3939393939393939
+small_appliances,Delivery/Logistics,124,23,0.18548387096774194
+small_appliances,Description Mismatch,14,4,0.2857142857142857
+small_appliances,Packaging,5,4,0.8
+small_appliances,Price/Value,11,3,0.2727272727272727
+small_appliances,Product Quality,116,26,0.22413793103448276
+small_appliances,Uncategorized,80,9,0.1125
+small_appliances,Wrong/Missing Item,13,6,0.46153846153846156
+small_appliances_home_oven_and_coffee,Customer Service,4,3,0.75
+small_appliances_home_oven_and_coffee,Delivery/Logistics,12,0,0.0
+small_appliances_home_oven_and_coffee,Description Mismatch,2,1,0.5
+small_appliances_home_oven_and_coffee,Product Quality,10,2,0.2
+small_appliances_home_oven_and_coffee,Uncategorized,10,2,0.2
+sports_leisure,Customer Service,357,119,0.3333333333333333
+sports_leisure,Delivery/Logistics,1419,283,0.19943622269203665
+sports_leisure,Description Mismatch,113,34,0.3008849557522124
+sports_leisure,Packaging,62,27,0.43548387096774194
+sports_leisure,Price/Value,130,46,0.35384615384615387
+sports_leisure,Product Quality,1318,338,0.2564491654021244
+sports_leisure,Uncategorized,827,101,0.12212817412333736
+sports_leisure,Wrong/Missing Item,106,65,0.6132075471698113
+stationery,Customer Service,105,45,0.42857142857142855
+stationery,Delivery/Logistics,393,85,0.21628498727735368
+stationery,Description Mismatch,44,12,0.2727272727272727
+stationery,Packaging,16,10,0.625
+stationery,Price/Value,40,10,0.25
+stationery,Product Quality,401,98,0.24438902743142144
+stationery,Uncategorized,235,30,0.1276595744680851
+stationery,Wrong/Missing Item,30,20,0.6666666666666666
+tablets_printing_image,Customer Service,1,1,1.0
+tablets_printing_image,Delivery/Logistics,16,5,0.3125
+tablets_printing_image,Description Mismatch,1,0,0.0
+tablets_printing_image,Price/Value,1,0,0.0
+tablets_printing_image,Product Quality,9,4,0.4444444444444444
+tablets_printing_image,Uncategorized,8,1,0.125
+tablets_printing_image,Wrong/Missing Item,1,0,0.0
+telephony,Customer Service,224,77,0.34375
+telephony,Delivery/Logistics,804,183,0.22761194029850745
+telephony,Description Mismatch,81,28,0.345679012345679
+telephony,Packaging,26,13,0.5
+telephony,Price/Value,71,25,0.352112676056338
+telephony,Product Quality,814,250,0.3071253071253071
+telephony,Uncategorized,543,114,0.20994475138121546
+telephony,Wrong/Missing Item,94,68,0.723404255319149
+toys,Customer Service,179,67,0.3743016759776536
+toys,Delivery/Logistics,689,158,0.22931785195936139
+toys,Description Mismatch,48,19,0.3958333333333333
+toys,Packaging,51,29,0.5686274509803921
+toys,Price/Value,55,24,0.43636363636363634
+toys,Product Quality,628,210,0.3343949044585987
+toys,Uncategorized,387,38,0.09819121447028424
+toys,Wrong/Missing Item,53,34,0.6415094339622641
+unknown,Customer Service,95,45,0.47368421052631576
+unknown,Delivery/Logistics,272,76,0.27941176470588236
+unknown,Description Mismatch,28,11,0.39285714285714285
+unknown,Packaging,17,11,0.6470588235294118
+unknown,Price/Value,20,11,0.55
+unknown,Product Quality,288,107,0.3715277777777778
+unknown,Uncategorized,165,25,0.15151515151515152
+unknown,Wrong/Missing Item,29,20,0.6896551724137931
+watches_gifts,Customer Service,321,126,0.3925233644859813
+watches_gifts,Delivery/Logistics,1166,236,0.20240137221269297
+watches_gifts,Description Mismatch,110,40,0.36363636363636365
+watches_gifts,Packaging,98,45,0.45918367346938777
+watches_gifts,Price/Value,107,44,0.411214953271028
+watches_gifts,Product Quality,1118,346,0.3094812164579606
+watches_gifts,Uncategorized,673,94,0.13967310549777118
+watches_gifts,Wrong/Missing Item,79,51,0.6455696202531646

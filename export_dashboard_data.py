@@ -8,13 +8,15 @@ import sys, json, math
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 import pandas as pd
-import numpy as np
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from src.nlp.topic_names import topic_name
 
 ROOT   = Path(__file__).resolve().parent
 DATA   = ROOT / "data" / "processed"
 S4     = DATA / "stage4"
-OUT    = ROOT / "dashboard2" / "public" / "data"
+OUT    = ROOT / "dashboard" / "public" / "data"
 OUT.mkdir(parents=True, exist_ok=True)
 
 def jdump(obj, path: Path):
@@ -91,8 +93,14 @@ check("sentiment dist total (vs nlp_reviews rows)",
 
 # Category totals
 cat_review_sum = cat_agg["review_count"].sum()
-print(f"  [INFO] Sum of cat_agg review_count: {cat_review_sum:,}")
-print(f"  [INFO] nlp_reviews rows: {text_reviews_src:,}")
+print(f"  [INFO] Sum of cat_agg review_count: {cat_review_sum:,} "
+      f"(>= review-level rows {s4_m['review_level_rows']:,}: an order can span categories)")
+if cat_review_sum < s4_m["review_level_rows"]:
+    errors.append("category review counts are below the number of reviews")
+check("monthly review_count total (vs Stage 4 review-level rows)",
+      monthly["review_count"].sum(), s4_m["review_level_rows"])
+check("state review_count total (vs Stage 4 review-level rows)",
+      state_agg["review_count"].sum(), s4_m["review_level_rows"], tol=0.002)
 
 # Exposure
 exp = s4_m["commercial_exposure"]
@@ -144,50 +152,16 @@ overview = {
 jdump(overview, OUT / "overview.json")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# EXPORT 2 — customer_voice.json
+# EXPORT 2 — category_intelligence.json
 # ─────────────────────────────────────────────────────────────────────────────
-# Aspects
-aspect_rows = []
-for asp_name, v in nlp_m["aspect_summary"].items():
-    total = v["total_mentions"]
-    if total == 0:
-        continue
-    aspect_rows.append({
-        "aspect":         asp_name,
-        "total_mentions": int(total),
-        "negative":       int(v["negative"]),
-        "neutral":        int(v.get("neutral", 0)),
-        "positive":       int(v["positive"]),
-        "neg_pct":        round(v["negative"] / total * 100, 1)
-    })
-aspect_rows.sort(key=lambda x: x["neg_pct"], reverse=True)
+# Low-N threshold: the category minimum chosen in Stage 4 sample-size validation
+LOW_N_THRESHOLD = int(s4_m["sample_size_validation"]["category_threshold"])
 
-# Topics (embedding-based)
-topics = []
-for t in nlp_t.get("embedding_topics", []):
-    topics.append({
-        "topic_id":    t["topic_id"],
-        "label":       t.get("label", f"Topic {t['topic_id']}"),
-        "review_count": int(t["review_count"]),
-        "top_terms":   t["representative_terms"][:8]
-    })
-
-customer_voice = {
-    "aspects": aspect_rows,
-    "topics":  topics,
-    "per_score_agreement": [
-        {"score": int(k), "agreement_pct": float(v)}
-        for k, v in nlp_m["transformer_sentiment"]["per_score_agreement_pct"].items()
-    ],
-    "sentiment_distribution": dist,
-}
-jdump(customer_voice, OUT / "customer_voice.json")
-
-# ─────────────────────────────────────────────────────────────────────────────
-# EXPORT 3 — category_intelligence.json
-# ─────────────────────────────────────────────────────────────────────────────
-# Low-N threshold from Stage 4 (50 reviews)
-LOW_N_THRESHOLD = 50
+MAIN_ASPECTS = [
+    "Delivery/Logistics", "Product Quality", "Customer Service",
+    "Wrong/Missing Item", "Packaging", "Price/Value",
+    "Description Mismatch", "Uncategorized"
+]
 
 cat_rows = []
 for _, row in cat_agg.iterrows():
@@ -200,20 +174,19 @@ for _, row in cat_agg.iterrows():
         "avg_item_price":     round(float(row["avg_item_price"]), 2),
         "avg_freight":        round(float(row.get("avg_freight", 0)), 2),
         "late_delivery_rate": round(float(row.get("late_delivery_rate", 0)), 4),
-        "top_complaint_topic": str(row.get("top_complaint_topic", "")),
+        "top_complaint_topic": "" if pd.isna(row.get("top_complaint_aspect")) else str(row["top_complaint_aspect"]),
         "confidence":         str(row.get("confidence", "")),
         "low_n":              bool(int(row["review_count"]) < LOW_N_THRESHOLD),
     })
 cat_rows.sort(key=lambda x: x["neg_sentiment_rate"], reverse=True)
 
-# Complaint matrix (category × aspect) — top 20 categories, main aspects only
-MAIN_ASPECTS = [
-    "Delivery/Logistics", "Product Quality", "Customer Service",
-    "Wrong/Missing Item", "Packaging", "Price/Value",
-    "Description Mismatch", "Uncategorized"
-]
-available_aspects = [c for c in complaint_mx.columns if c in MAIN_ASPECTS]
-heatmap_cats = list(complaint_mx.index[:20])
+# Complaint matrix (category × aspect) — the 20 categories with the most reviews
+unexpected = [c for c in complaint_mx.columns if c not in MAIN_ASPECTS]
+if unexpected:
+    errors.append(f"complaint_matrix has unexpected aspect columns: {unexpected}")
+available_aspects = [a for a in MAIN_ASPECTS if a in complaint_mx.columns and a != "Uncategorized"]
+by_volume = cat_agg.set_index("category")["review_count"]
+heatmap_cats = sorted(complaint_mx.index, key=lambda c: -by_volume.get(c, 0))[:20]
 heatmap = {
     "categories": heatmap_cats,
     "aspects":    available_aspects,
@@ -232,21 +205,21 @@ cat_intelligence = {
 jdump(cat_intelligence, OUT / "category_intelligence.json")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# EXPORT 4 — delivery.json
+# EXPORT 3 — delivery.json
 # ─────────────────────────────────────────────────────────────────────────────
 del_data = s4_m["delivery_analysis"]
 
 # State late rates — merge with state_agg for extra info
 state_late = [
     {"state": d["state"], "late_rate_pct": round(d["late_rate"] * 100, 2),
-     "order_count": int(d.get("order_count", 0))}
+     "order_count": int(d["n"])}
     for d in del_data["top_late_states"]
 ]
 
 # Category late rates
 cat_late = [
     {"category": d["category"], "late_rate_pct": round(d["late_rate"] * 100, 2),
-     "order_count": int(d.get("order_count", 0))}
+     "order_count": int(d["n"])}
     for d in del_data["top_late_categories"]
 ]
 
@@ -266,7 +239,7 @@ monthly_rows = []
 for _, row in monthly.sort_values("order_month").iterrows():
     monthly_rows.append({
         "month":              str(row["order_month"]),
-        "order_count":        int(row.get("order_count", row.get("review_count", 0))),
+        "order_count":        int(row["review_count"]),
         "review_count":       int(row.get("review_count", 0)),
         "neg_sentiment_rate": round(float(row["neg_sentiment_rate"]), 4),
     })
@@ -280,7 +253,7 @@ delivery = {
 jdump(delivery, OUT / "delivery.json")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# EXPORT 5 — business_impact.json
+# EXPORT 4 — business_impact.json
 # ─────────────────────────────────────────────────────────────────────────────
 exp = s4_m["commercial_exposure"]
 sens = exp["sensitivity_table"]
@@ -346,7 +319,7 @@ business_impact = {
 jdump(business_impact, OUT / "business_impact.json")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# EXPORT 6 — statistical_analysis.json  (dedicated page)
+# EXPORT 5 — statistical_analysis.json  (dedicated page)
 # ─────────────────────────────────────────────────────────────────────────────
 stat    = s4_m["statistical_analysis"]
 logit   = stat["logistic_regression"]
@@ -369,8 +342,8 @@ statistical_analysis = {
         "ontime_n":    int(stat["ontime_vs_late"]["ontime_n"]),
         "late_n":      int(stat["ontime_vs_late"]["late_n"]),
         "test":        "Mann-Whitney U",
-        "p_label":     "p < 0.0001",
-        "significant": True,
+        "p_label":     "p < 1e-300" if stat["ontime_vs_late"]["p_value"] == 0 else f"p = {stat['ontime_vs_late']['p_value']:.2e}",
+        "significant": bool(stat["ontime_vs_late"]["p_value"] < 0.05),
     },
     # Price bands
     "price_bands": {
@@ -395,7 +368,7 @@ statistical_analysis = {
 jdump(statistical_analysis, OUT / "statistical_analysis.json")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# EXPORT 7 — nlp_insights.json  (full NLP page, superset of customer_voice)
+# EXPORT 6 — nlp_insights.json  (NLP Insights page)
 # ─────────────────────────────────────────────────────────────────────────────
 dist = nlp_m["transformer_sentiment"]["distribution"]
 
@@ -419,7 +392,7 @@ aspect_rows.sort(key=lambda x: x["neg_pct"], reverse=True)
 # Topics embedding-based
 topics = [
     {"topic_id": t["topic_id"],
-     "label": t.get("label", f"Topic {t['topic_id']}"),
+     "label": topic_name(t["topic_id"]),
      "review_count": int(t["review_count"]),
      "top_terms": t["representative_terms"][:10]}
     for t in nlp_t.get("embedding_topics", [])
