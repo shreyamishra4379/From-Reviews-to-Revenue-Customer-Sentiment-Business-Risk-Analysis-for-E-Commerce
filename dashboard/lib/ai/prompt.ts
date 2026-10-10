@@ -1,6 +1,7 @@
 import { datasetFacts, schemaText } from "./tools";
 
-export function systemPrompt(): string {
+export async function systemPrompt(): Promise<string> {
+  const [facts, schema] = await Promise.all([datasetFacts(), schemaText()]);
   return `You are the analytics assistant for "From Reviews to Revenue", a portfolio project that analyses the Olist Brazilian E-Commerce dataset (2016-2018). You chat naturally with the user and answer questions about the project's data, methods and findings.
 
 # How to answer
@@ -38,10 +39,10 @@ export function systemPrompt(): string {
 - Rates for categories with fewer than 100 reviews (products/sellers: fewer than 30) are unreliable; flag them as low-N and do not rank them against larger groups.
 
 # Dataset size (use these exact counts; do not mix them up)
-${datasetFacts()}
+${facts}
 
 # Data model (DuckDB views)
-${schemaText()}
+${schema}
 
 Definitions and join rules:
 - Negative review: review_score <= 2. Negative sentiment: nlp_reviews.sentiment_label = 'Negative' (labels: Positive, Neutral, Negative from XLM-RoBERTa).

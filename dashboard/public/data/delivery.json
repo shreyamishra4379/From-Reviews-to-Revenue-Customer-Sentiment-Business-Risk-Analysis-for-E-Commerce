@@ -290,5 +290,16 @@
       "review_count": 1,
       "neg_sentiment_rate": 1.0
     }
-  ]
+  ],
+  "ontime_vs_late": {
+    "test": "Mann-Whitney U (one-sided)",
+    "ontime_mean": 3.98,
+    "ontime_n": 34824,
+    "late_mean": 2.12,
+    "late_n": 4276,
+    "ontime_neg_review_rate": 0.1842,
+    "late_neg_review_rate": 0.6719,
+    "U": 117262469.5,
+    "p_value": 0.0
+  }
 }

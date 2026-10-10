@@ -1,0 +1,16 @@
+{
+  "_comment": "Tables exposed to SQL. Read by src/analytics/validate_sql.py and dashboard/lib/sql.ts.",
+  "parquet": {
+    "nlp_reviews":        "nlp_reviews.parquet",
+    "fact_orders":        "fact_orders.parquet",
+    "fact_order_items":   "fact_order_items.parquet",
+    "fact_order_reviews": "fact_order_reviews.parquet",
+    "dim_products":       "dim_products.parquet",
+    "dim_customers":      "dim_customers.parquet",
+    "dim_sellers":        "dim_sellers.parquet",
+    "dim_payments":       "dim_payments.parquet"
+  },
+  "csv": {
+    "dim_topics": "dim_topics.csv"
+  }
+}

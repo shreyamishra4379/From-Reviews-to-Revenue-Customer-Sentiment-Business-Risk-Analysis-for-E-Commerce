@@ -1,127 +1,128 @@
 "use client";
-import { useEffect, useState } from "react";
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid, LabelList,
+  ComposedChart, Line,
 } from "recharts";
+import { Truck } from "lucide-react";
 import type { DeliveryData } from "../types";
+import { useData, Loading, ErrorState, PageHeader, Panel, Stats, Note } from "../components/ui";
+import { axis, categoryAxis, grid, tooltip, C, barLabel, rateColor } from "@/lib/chart";
+import { int, pct, pctOf, label, stateName } from "@/lib/format";
 
-const fmt  = (n: number) => n.toLocaleString("en-US");
-const fmtP = (n: number) => `${n.toFixed(1)}%`;
-
-function Loading() {
-  return <div className="loading"><div className="spinner" /><span>Loading…</span></div>;
-}
+const MIN_MONTH_REVIEWS = 100;
 
 export default function DeliveryPage() {
-  const [data, setData] = useState<DeliveryData | null>(null);
-
-  useEffect(() => {
-    fetch("/api/delivery").then(r => r.json()).then(setData);
-  }, []);
-
+  const { data, error } = useData<DeliveryData>("/api/delivery");
+  if (error) return <ErrorState message={error} />;
   if (!data) return <Loading />;
 
-  const stateData = data.state_late_rates.map(d => ({
-    state: d.state,
-    late: d.late_rate_pct,
-    fill: d.late_rate_pct > 25 ? "#FF6B6B" : d.late_rate_pct > 15 ? "#FFD93D" : "#00D4AA",
-  }));
+  const o = data.ontime_vs_late;
+  const states = data.state_late_rates.map(s => ({ ...s, name: `${stateName(s.state)} (${s.state})` }));
+  const cats = data.category_late_rates.map(c => ({ ...c, name: label(c.category) }));
+  const worst = states[0];
 
-  const catLateData = [...data.category_late_rates]
-    .sort((a, b) => b.late_rate_pct - a.late_rate_pct)
-    .slice(0, 20);
+  const aspects = data.aspect_by_delivery
+    .filter(a => a.aspect !== "Uncategorized")
+    .map(a => ({ ...a, total: a.on_time + a.late, late_share: (a.late / (a.on_time + a.late)) * 100 }))
+    .sort((a, b) => b.late_share - a.late_share);
+  const delivery = aspects.find(a => a.aspect === "Delivery/Logistics");
 
-  const aspData = data.aspect_by_delivery;
-
-  const monthlyData = data.monthly_trends.map(d => ({
-    month: d.month,
-    reviews: d.review_count,
-    neg_pct: +(d.neg_sentiment_rate * 100).toFixed(2),
+  const months = data.monthly_trends.map(m => ({
+    ...m,
+    reliable: m.review_count >= MIN_MONTH_REVIEWS,
+    // no line point for months too small to give a stable rate
+    neg: m.review_count >= MIN_MONTH_REVIEWS ? m.neg_sentiment_rate * 100 : null,
   }));
 
   return (
     <>
-      <div className="page-header">
-        <h1 className="page-title">🚚 Delivery Analysis</h1>
-        <p className="page-subtitle">Late delivery impact on customer sentiment and complaint patterns</p>
-      </div>
+      <PageHeader
+        name="Delivery"
+        icon={<Truck size={16} />}
+        finding={<>Two in three reviews of late orders are negative. For on-time orders it is fewer than one in five.</>}
+        lede={<>
+          Late means delivered after the estimated date shown to the customer. Orders that were never delivered are
+          left out of every late rate. Rates below use only states and categories with at least 100 reviews.
+        </>}
+      />
 
-      {/* Late by state */}
-      <div className="card mb">
-        <div className="card-title">Late Delivery Rate by State (Top 10, N ≥ 100)</div>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={stateData} margin={{ top: 8, right: 24, left: -10, bottom: 0 }}>
-            <XAxis dataKey="state" tick={{ fill: "#8B90A7", fontSize: 11 }} />
-            <YAxis tickFormatter={v => `${v}%`} tick={{ fill: "#8B90A7", fontSize: 11 }} />
-            <Tooltip
-              contentStyle={{ background: "#161B2C", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "#F0F2FA" }}
-              formatter={(v: any) => [fmtP(v), "Late Rate"]}
-            />
-            <Bar dataKey="late" radius={[4, 4, 0, 0]}>
-              {stateData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      <Stats items={[
+        { value: pct(o.late_neg_review_rate), label: "Late-order reviews that are negative", detail: `${int(o.late_n)} reviews`, tone: "neg" },
+        { value: pct(o.ontime_neg_review_rate), label: "On-time reviews that are negative", detail: `${int(o.ontime_n)} reviews`, tone: "pos" },
+        { value: `${o.late_mean.toFixed(2)} ★`, label: "Average score, late", detail: `On time: ${o.ontime_mean.toFixed(2)} ★` },
+        { value: pctOf(worst.late_rate_pct), label: `Late rate in ${stateName(worst.state)}`, detail: "Highest of any state" },
+      ]} />
 
-      {/* Late by category */}
-      <div className="card mb">
-        <div className="card-title">Late Delivery Rate by Category (Top 10, N ≥ 100)</div>
-        <ResponsiveContainer width="100%" height={Math.max(300, catLateData.length * 32)}>
-          <BarChart data={catLateData} layout="vertical" margin={{ top: 4, right: 70, left: 8, bottom: 4 }}>
-            <XAxis type="number" tickFormatter={v => `${v}%`} tick={{ fill: "#8B90A7", fontSize: 11 }} />
-            <YAxis type="category" dataKey="category" width={220} tick={{ fill: "#C8CCD8", fontSize: 11 }} />
-            <Tooltip
-              contentStyle={{ background: "#161B2C", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "#F0F2FA" }}
-              formatter={(v: any) => [fmtP(v), "Late Rate"]}
-            />
-            <Bar dataKey="late_rate_pct" radius={[0, 4, 4, 0]}
-              label={{ position: "right", fill: "#8B90A7", fontSize: 11, formatter: (v: any) => fmtP(v) }}>
-              {catLateData.map((entry, i) => {
-                const c = entry.late_rate_pct > 30 ? "#FF6B6B" : entry.late_rate_pct > 20 ? "#FFD93D" : "#00D4AA";
-                return <Cell key={i} fill={c} />;
-              })}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* Aspect by delivery status */}
-      {aspData.length > 0 && (
-        <div className="card mb">
-          <div className="card-title">Complaint Aspects in Negative Reviews: Late vs On-Time Deliveries</div>
-          <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={aspData} margin={{ top: 8, right: 24, left: 8, bottom: 40 }}>
-              <XAxis dataKey="aspect" tick={{ fill: "#8B90A7", fontSize: 11 }} angle={-20} textAnchor="end" />
-              <YAxis tick={{ fill: "#8B90A7", fontSize: 11 }} />
-              <Tooltip
-                contentStyle={{ background: "#161B2C", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "#F0F2FA" }}
-              />
-              <Bar dataKey="on_time" name="On-Time" fill="#00D4AA" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="late"    name="Late"    fill="#FF6B6B" radius={[4, 4, 0, 0]} />
+      <div className="grid grid-2">
+        <Panel title="States with the most late deliveries" sub="Share of reviewed, delivered orders that arrived late. Top 10 states.">
+          <ResponsiveContainer width="100%" height={320}>
+            <BarChart data={states} layout="vertical" margin={{ top: 0, right: 52, left: 0, bottom: 0 }}>
+              <XAxis type="number" hide domain={[0, "dataMax"]} />
+              <YAxis type="category" dataKey="name" width={190} {...categoryAxis} />
+              <Tooltip {...tooltip} formatter={(v: any, _: unknown, p: any) => [`${pctOf(v)} of ${int(p.payload.order_count)} reviewed orders`, "Late"]} />
+              <Bar dataKey="late_rate_pct" radius={[0, 3, 3, 0]} barSize={18}>
+                {states.map(s => <Cell key={s.state} fill={rateColor(s.late_rate_pct / 100, 0.1, 0.3)} />)}
+                <LabelList dataKey="late_rate_pct" position="right" style={barLabel} formatter={(v: any) => pctOf(v)} />
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
-        </div>
-      )}
+        </Panel>
+        <Panel title="Categories with the most late deliveries" sub="Top 10 categories with at least 100 reviews.">
+          <ResponsiveContainer width="100%" height={320}>
+            <BarChart data={cats} layout="vertical" margin={{ top: 0, right: 52, left: 0, bottom: 0 }}>
+              <XAxis type="number" hide domain={[0, "dataMax"]} />
+              <YAxis type="category" dataKey="name" width={190} {...categoryAxis} />
+              <Tooltip {...tooltip} formatter={(v: any, _: unknown, p: any) => [`${pctOf(v)} of ${int(p.payload.order_count)} reviewed orders`, "Late"]} />
+              <Bar dataKey="late_rate_pct" fill={C.ink2} radius={[0, 3, 3, 0]} barSize={18}>
+                <LabelList dataKey="late_rate_pct" position="right" style={barLabel} formatter={(v: any) => pctOf(v)} />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </Panel>
+      </div>
 
-      {/* Monthly trends */}
-      <div className="card">
-        <div className="card-title">Monthly Review Volume &amp; Negative Sentiment Rate</div>
+      <Panel
+        title="Which complaints come from late orders"
+        sub={delivery
+          ? `Among negative reviews, ${pctOf(delivery.late_share)} of delivery complaints come from late orders. Product-side complaints mostly come from orders that arrived on time.`
+          : "Share of each aspect's negative reviews that come from late orders."}
+      >
         <ResponsiveContainer width="100%" height={280}>
-          <BarChart data={monthlyData} margin={{ top: 8, right: 24, left: -10, bottom: 0 }}>
-            <XAxis dataKey="month" tick={{ fill: "#8B90A7", fontSize: 10 }} angle={-30} textAnchor="end" height={50} />
-            <YAxis yAxisId="left" tick={{ fill: "#8B90A7", fontSize: 11 }} />
-            <YAxis yAxisId="right" orientation="right" tickFormatter={v => `${v}%`} tick={{ fill: "#FFD93D", fontSize: 11 }} />
-            <Tooltip
-              contentStyle={{ background: "#161B2C", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "#F0F2FA" }}
-            />
-            <Bar yAxisId="left" dataKey="reviews" name="Reviews" fill="rgba(0,212,170,0.3)" radius={[2, 2, 0, 0]} />
-            <Bar yAxisId="right" dataKey="neg_pct" name="Neg Sentiment %" fill="#FFD93D" radius={[2, 2, 0, 0]} />
+          <BarChart data={aspects} layout="vertical" margin={{ top: 0, right: 140, left: 0, bottom: 0 }}>
+            <XAxis type="number" hide domain={[0, 100]} />
+            <YAxis type="category" dataKey="aspect" width={160} {...categoryAxis} />
+            <Tooltip {...tooltip} formatter={(v: any, _: unknown, p: any) => [`${pctOf(v)} (${int(p.payload.late)} of ${int(p.payload.total)})`, "From late orders"]} />
+            <Bar dataKey="late_share" radius={[0, 3, 3, 0]} barSize={18}>
+              {aspects.map(a => <Cell key={a.aspect} fill={rateColor(a.late_share / 100, 0.05, 0.35)} />)}
+              <LabelList dataKey="late_share" position="right" style={barLabel}
+                formatter={(v: any) => `${pctOf(v)} from late orders`} />
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
-        <p style={{ fontSize: "0.75rem", color: "#4A4F66", marginTop: 8, textAlign: "center" }}>
-          Note: Right axis (yellow) = Negative Sentiment % · Left axis (teal) = Review Count
-        </p>
+      </Panel>
+
+      <Panel
+        title="Review volume and negative sentiment by month"
+        sub={`Bars show text reviews per purchase month; the line shows the share with negative sentiment. Months with fewer than ${MIN_MONTH_REVIEWS} reviews are faded and their rates are unreliable.`}
+      >
+        <ResponsiveContainer width="100%" height={300}>
+          <ComposedChart data={months} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>
+            <CartesianGrid {...grid} />
+            <XAxis dataKey="month" {...axis} interval={2} />
+            <YAxis yAxisId="n" {...axis} width={48} tickFormatter={v => `${(v / 1000).toFixed(1)}K`} />
+            <YAxis yAxisId="r" orientation="right" {...axis} width={44} domain={[0, 45]} ticks={[0, 15, 30, 45]} tickFormatter={v => `${v}%`} />
+            <Tooltip {...tooltip} formatter={(v: any, name: any) =>
+              name === "neg" ? [pctOf(v), "Negative sentiment"] : [int(v), "Text reviews"]} />
+            <Bar yAxisId="n" dataKey="review_count" radius={[2, 2, 0, 0]}>
+              {months.map(m => <Cell key={m.month} fill={m.reliable ? C.cobaltSoft : C.line2} />)}
+            </Bar>
+            <Line yAxisId="r" dataKey="neg" connectNulls={false} stroke={C.s1} strokeWidth={2} dot={{ r: 2.5, fill: C.s1 }} isAnimationActive={false} />
+          </ComposedChart>
+        </ResponsiveContainer>
+      </Panel>
+
+      <div style={{ marginTop: 18 }}>
+        <Note>These are associations in observational data. Late delivery is linked to lower ratings; the data cannot show that it causes them.</Note>
       </div>
     </>
   );

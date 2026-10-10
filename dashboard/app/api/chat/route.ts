@@ -53,7 +53,7 @@ async function runTurn(p: ProviderConfig, base: ChatMessage[], emit: Emit, signa
 
     messages.push({ role: "assistant", content: result.content || null, tool_calls: result.toolCalls });
     for (const call of result.toolCalls) {
-      const outcome = executeTool(call.function.name, call.function.arguments);
+      const outcome = await executeTool(call.function.name, call.function.arguments);
       let input: unknown = call.function.arguments;
       try { input = JSON.parse(call.function.arguments); } catch { /* show raw */ }
       emit({ type: "tool", name: call.function.name, input, ok: outcome.ok,
@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
 
   let system: string;
   try {
-    system = systemPrompt();
+    system = await systemPrompt();
   } catch (e) {
     return Response.json({ error: `Could not load the data schema: ${e instanceof Error ? e.message : e}` }, { status: 500 });
   }

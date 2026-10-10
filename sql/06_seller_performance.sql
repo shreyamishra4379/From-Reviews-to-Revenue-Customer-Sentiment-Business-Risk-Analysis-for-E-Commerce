@@ -24,4 +24,4 @@ FROM seller_revenue s
 JOIN seller_reviews v ON s.seller_id = v.seller_id
 GROUP BY 1, 2, 3
 HAVING COUNT(*) >= 30
-ORDER BY negative_sentiment_rate DESC;
+ORDER BY negative_sentiment_rate DESC, text_reviews DESC, s.seller_id;

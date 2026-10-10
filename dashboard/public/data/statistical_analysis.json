@@ -4,6 +4,7 @@
     {
       "pair": "Delivery Delay vs Review Score",
       "rho": -0.2172,
+      "n": 39100,
       "p_value": 0.0,
       "p_label": "< 1e-300",
       "significant": true
@@ -11,6 +12,7 @@
     {
       "pair": "Freight Value vs Review Score",
       "rho": -0.1193,
+      "n": 39100,
       "p_value": 7.3116149871780265e-124,
       "p_label": "7.31e-124",
       "significant": true
@@ -18,6 +20,7 @@
     {
       "pair": "Price vs Review Score",
       "rho": -0.0551,
+      "n": 39100,
       "p_value": 1.214303028379971e-27,
       "p_label": "1.21e-27",
       "significant": true
@@ -25,6 +28,7 @@
     {
       "pair": "Complaint Rate vs Avg Rating",
       "rho": -0.9813,
+      "n": 37,
       "p_value": 1.25947705165921e-26,
       "p_label": "1.26e-26",
       "significant": true
@@ -32,6 +36,7 @@
     {
       "pair": "Negative Sentiment Rate vs Avg Rating",
       "rho": -0.8388,
+      "n": 37,
       "p_value": 9.060889516005737e-11,
       "p_label": "9.06e-11",
       "significant": true
@@ -74,6 +79,12 @@
   },
   "logistic_regression": {
     "pseudo_r2": 0.0791,
+    "odds_ratios": {
+      "const": 0.4149,
+      "delay_days": 1.0649,
+      "price": 1.0,
+      "freight_value": 1.012
+    },
     "n_obs": 39100,
     "disclaimer": "Observational data only. Coefficients are associations, not causal effects.",
     "coefficients": [

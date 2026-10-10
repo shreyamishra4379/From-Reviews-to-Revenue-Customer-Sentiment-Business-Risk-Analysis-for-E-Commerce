@@ -137,7 +137,7 @@ overview = {
 
     # correlations
     "correlations": [
-        {"pair": k, "rho": v["rho"],
+        {"pair": k, "rho": v["rho"], "n": v.get("n"),
          "p_value": v["p_value"],
          "p_label": "< 1e-300" if v["p_value"] == 0 else f"{v['p_value']:.2e}"}
         for k, v in s4_m["statistical_analysis"]["correlations"].items()
@@ -147,7 +147,40 @@ overview = {
     "ontime_vs_late": s4_m["statistical_analysis"]["ontime_vs_late"],
 
     # disclaimer
-    "disclaimer": "Scenario-based estimate, not observed revenue loss"
+    "disclaimer": "Scenario-based estimate, not observed revenue loss",
+    "headlines": None,   # filled in below
+}
+
+# Headline facts for the Overview page. Computed here so the UI only displays them.
+_asp = [(k, v) for k, v in nlp_m["aspect_summary"].items() if k != "Uncategorized"]
+_neg_total = sum(v["negative"] for _, v in _asp)
+_by_neg = sorted(_asp, key=lambda kv: -kv[1]["negative"])
+_by_rate = sorted(_asp, key=lambda kv: -kv[1]["negative"] / kv[1]["total_mentions"])
+_delivered = orders_pq.dropna(subset=["order_delivered_customer_date", "order_estimated_delivery_date"])
+_late = (pd.to_datetime(_delivered["order_delivered_customer_date"]) >
+         pd.to_datetime(_delivered["order_estimated_delivery_date"]))
+_exp = s4_m["commercial_exposure"]
+_act_first = prio[prio["segment"] == "HIGH Risk + HIGH Exposure"].sort_values("neg_sentiment_rate", ascending=False)
+overview["headlines"] = {
+    "top_aspects_by_negative": [
+        {"aspect": k, "negative": int(v["negative"]),
+         "share_of_negative_pct": round(v["negative"] / _neg_total * 100, 1)}
+        for k, v in _by_neg[:3]
+    ],
+    "highest_negative_rate_aspect": {
+        "aspect": _by_rate[0][0],
+        "neg_pct": round(_by_rate[0][1]["negative"] / _by_rate[0][1]["total_mentions"] * 100, 1),
+        "total_mentions": int(_by_rate[0][1]["total_mentions"]),
+    },
+    "late_delivery": {"delivered_orders": int(len(_delivered)), "late_orders": int(_late.sum()),
+                      "late_pct": round(float(_late.mean()) * 100, 1)},
+    "exposure": {"affected_order_value_BRL": float(_exp["affected_order_value_BRL"]),
+                 "affected_orders": int(_exp["affected_orders"]),
+                 "at_5_pct_BRL": next(float(r["exposure_BRL"]) for r in _exp["sensitivity_table"]
+                                      if r["impact_pct"] == 5.0)},
+    "act_first": {"count": int(len(_act_first)),
+                  "categories": [{"category": r.category, "neg_sentiment_rate": round(float(r.neg_sentiment_rate), 4),
+                                  "review_count": int(r.review_count)} for r in _act_first.head(5).itertuples()]},
 }
 jdump(overview, OUT / "overview.json")
 
@@ -249,6 +282,7 @@ delivery = {
     "category_late_rates": cat_late,
     "aspect_by_delivery":  asp_by_delivery,
     "monthly_trends":      monthly_rows,
+    "ontime_vs_late":      s4_m["statistical_analysis"]["ontime_vs_late"],
 }
 jdump(delivery, OUT / "delivery.json")
 
@@ -293,6 +327,7 @@ business_impact = {
     "sensitivity_table":       sensitivity,
     "prioritization":          prio_rows,
     "low_n_threshold":         LOW_N_THRESHOLD,
+    "prioritization_thresholds": s4_m["prioritization_thresholds"],
 
     # statistical highlights
     "ontime_vs_late": {
@@ -329,7 +364,7 @@ statistical_analysis = {
     "disclaimer": "All results are associations only. This project uses observational data and does not establish causation.",
     # Spearman correlations
     "correlations": [
-        {"pair": k, "rho": v["rho"],
+        {"pair": k, "rho": v["rho"], "n": v.get("n"),
          "p_value": v["p_value"],
          "p_label": "< 1e-300" if v["p_value"] == 0 else f"{v['p_value']:.2e}",
          "significant": bool(v["p_value"] < 0.05)}
@@ -357,6 +392,7 @@ statistical_analysis = {
     # Logistic regression
     "logistic_regression": {
         "pseudo_r2":  logit["pseudo_r2"],
+        "odds_ratios": logit.get("odds_ratios", {}),
         "n_obs":      int(logit["n_obs"]),
         "disclaimer": logit["disclaimer"],
         "coefficients": [

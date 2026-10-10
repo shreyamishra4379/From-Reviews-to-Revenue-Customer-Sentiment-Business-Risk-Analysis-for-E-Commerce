@@ -18,4 +18,4 @@ SELECT
 FROM review_category
 GROUP BY 1
 HAVING COUNT(*) >= 100
-ORDER BY avg_review_score DESC;
+ORDER BY avg_review_score DESC, category;

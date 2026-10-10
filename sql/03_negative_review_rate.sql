@@ -17,4 +17,4 @@ SELECT
 FROM review_category
 GROUP BY 1
 HAVING COUNT(*) >= 100
-ORDER BY negative_review_rate DESC;
+ORDER BY negative_review_rate DESC, category;

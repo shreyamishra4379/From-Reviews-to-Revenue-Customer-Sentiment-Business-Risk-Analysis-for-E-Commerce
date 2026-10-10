@@ -7,6 +7,7 @@ Usage:
     python src/analytics/validate_sql.py
 """
 import glob
+import json
 import os
 import sys
 
@@ -16,19 +17,10 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DATA_DIR = os.path.join(ROOT, "data", "processed")
 SQL_DIR = os.path.join(ROOT, "sql")
 
-PARQUET_VIEWS = {
-    "nlp_reviews":        "nlp_reviews.parquet",
-    "fact_orders":        "fact_orders.parquet",
-    "fact_order_items":   "fact_order_items.parquet",
-    "fact_order_reviews": "fact_order_reviews.parquet",
-    "dim_products":       "dim_products.parquet",
-    "dim_customers":      "dim_customers.parquet",
-    "dim_sellers":        "dim_sellers.parquet",
-    "dim_payments":       "dim_payments.parquet",
-}
-CSV_VIEWS = {
-    "dim_topics": "dim_topics.csv",
-}
+with open(os.path.join(SQL_DIR, "views.json"), encoding="utf-8") as _f:
+    _VIEWS = json.load(_f)
+PARQUET_VIEWS = _VIEWS["parquet"]
+CSV_VIEWS = _VIEWS["csv"]
 
 
 def connect(data_dir: str = DATA_DIR) -> duckdb.DuckDBPyConnection:

@@ -20,4 +20,4 @@ FROM review_product v
 LEFT JOIN dim_products p ON v.product_id = p.product_id
 GROUP BY 1, 2
 HAVING COUNT(*) >= 30
-ORDER BY negative_sentiment_rate DESC;
+ORDER BY negative_sentiment_rate DESC, total_reviews DESC, v.product_id;

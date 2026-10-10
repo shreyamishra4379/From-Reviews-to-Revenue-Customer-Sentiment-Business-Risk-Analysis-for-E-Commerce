@@ -1,152 +1,146 @@
 "use client";
-import { useEffect, useState } from "react";
-import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
-  PieChart, Pie, Legend,
-} from "recharts";
+import Link from "next/link";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid, LabelList } from "recharts";
+import { MessageSquareText, PackageX, Boxes, Wallet } from "lucide-react";
 import type { Overview } from "./types";
+import { useData, Loading, ErrorState, PageHeader, Panel, Note, SentimentMix, SentimentLegend } from "./components/ui";
+import { axis, grid, tooltip, STAR, barLabel } from "@/lib/chart";
+import { int, pct, pctOf, brl, brlShort, label } from "@/lib/format";
 
-const fmt = (n: number) => n.toLocaleString("en-US");
-const R = (n: number) => `R$ ${n.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
-
-const SCORE_COLORS = ["#FF6B6B", "#FF9F43", "#FFD93D", "#54A0FF", "#00D4AA"];
-const SENT_COLORS  = { Positive: "#00D4AA", Negative: "#FF6B6B", Neutral: "#FFD93D" };
-
-function Loading() {
-  return <div className="loading"><div className="spinner" /><span>Loading data…</span></div>;
+function StarRuler({ ontime, late }: { ontime: number; late: number }) {
+  const pos = (score: number) => `${((score - 1) / 4) * 100}%`;
+  const seg = (a: string, b: string) => ({ background: `linear-gradient(90deg, ${a}, ${b})` });
+  return (
+    <div className="ruler" role="img" aria-label={`On a 1 to 5 star scale, late orders average ${late} and on-time orders average ${ontime}`}>
+      {[{ v: late, t: "Late" }, { v: ontime, t: "On time" }].map(m => (
+        <div className="ruler-mark" key={m.t} style={{ left: pos(m.v) }}>
+          <div className="lbl">{m.t}<br /><strong>{m.v.toFixed(2)} ★</strong></div>
+          <div className="pin" />
+          <div className="dot" />
+        </div>
+      ))}
+      <div className="ruler-track">
+        <span style={seg(STAR[0], STAR[1])} />
+        <span style={seg(STAR[1], STAR[2])} />
+        <span style={seg(STAR[2], STAR[3])} />
+        <span style={seg(STAR[3], STAR[4])} />
+      </div>
+      <div className="ruler-ticks">
+        {[1, 2, 3, 4, 5].map(n => <span key={n}>{n} ★</span>)}
+      </div>
+    </div>
+  );
 }
 
 export default function OverviewPage() {
-  const [data, setData] = useState<Overview | null>(null);
-
-  useEffect(() => {
-    fetch("/api/overview").then(r => r.json()).then(setData);
-  }, []);
-
+  const { data, error } = useData<Overview>("/api/overview");
+  if (error) return <ErrorState message={error} />;
   if (!data) return <Loading />;
 
-  const scoreData = Object.entries(data.review_score_distribution).map(([k, v]) => ({
-    score: `Score ${k}`, count: v,
-  }));
-
-  const sentData = Object.entries(data.sentiment_distribution).map(([k, v]) => ({
-    name: k, value: v,
-  }));
-
-  const corrData = data.correlations.map(c => ({
-    pair: c.pair.length > 30 ? c.pair.slice(0, 28) + "…" : c.pair,
-    fullPair: c.pair,
-    rho: c.rho,
-    fill: c.rho < 0 ? "#FF6B6B" : "#00D4AA",
-  }));
+  const o = data.ontime_vs_late;
+  const h = data.headlines;
+  const top = h.top_aspects_by_negative[0];
+  const first = h.act_first.categories[0];
+  const scores = Object.entries(data.review_score_distribution).map(([k, v]) => ({ score: `${k} ★`, n: v }));
+  const totalReviews = scores.reduce((s, r) => s + r.n, 0);
+  const sent = data.sentiment_distribution;
 
   return (
     <>
-      <div className="page-header">
-        <h1 className="page-title">Customer Voice &amp; Business Impact</h1>
-        <p className="page-subtitle">
-          NLP-Driven Risk Assessment · Olist E-Commerce Dataset · BRL (R$) · Stages 1–4
-        </p>
-      </div>
+      <PageHeader
+        name="Overview"
+        finding={<>Late orders average {o.late_mean.toFixed(1)} stars. Orders that arrive on time average {o.ontime_mean.toFixed(1)}.</>}
+        lede={<>
+          In {int(o.ontime_n + o.late_n)} text reviews of delivered orders, {pct(o.late_neg_review_rate)} of reviews on late
+          orders are negative (1–2 stars), compared with {pct(o.ontime_neg_review_rate)} when the order arrives on time.
+          Delivery timing is the clearest operational signal in the data. It is an association, not proof of cause.
+        </>}
+      />
 
-      {/* KPI Cards */}
-      <div className="kpi-grid">
-        {[
-          { val: fmt(data.total_orders),         label: "Total Orders",        sub: "fact_orders" },
-          { val: fmt(data.reviews_with_text),     label: "Reviews Analyzed",    sub: `${data.text_coverage_pct}% of ${fmt(data.total_reviews)} total` },
-          { val: `${data.nlp_agreement_pct}%`,    label: "NLP Agreement",       sub: "Transformer vs Star Rating" },
-          { val: `${data.complaint_topics_count}`,label: "Complaint Aspects",   sub: "7 discovered + Uncategorized" },
-          { val: `${data.ontime_vs_late.ontime_mean}`,  label: "On-Time Avg Score", sub: `vs Late: ${data.ontime_vs_late.late_mean}` },
-        ].map(k => (
-          <div className="kpi-card" key={k.label}>
-            <div className="kpi-value">{k.val}</div>
-            <div className="kpi-label">{k.label}</div>
-            <div className="kpi-sub">{k.sub}</div>
+      <section className="panel ruler-panel">
+        <div className="ruler-area">
+          <h2 className="panel-title">Average review score by delivery timing</h2>
+          <p className="panel-sub">Text reviews on delivered orders, one row per review.</p>
+          <StarRuler ontime={o.ontime_mean} late={o.late_mean} />
+          <div className="ruler-legend">
+            <div><strong className="tone-neg">{pct(o.late_neg_review_rate)}</strong>of late-order reviews are negative ({int(o.late_n)} reviews)</div>
+            <div><strong className="tone-pos">{pct(o.ontime_neg_review_rate)}</strong>of on-time reviews are negative ({int(o.ontime_n)} reviews)</div>
           </div>
-        ))}
+        </div>
+        <dl className="ruler-facts facts">
+          <dt>Orders</dt>
+          <dd>{int(data.total_orders)}</dd>
+          <dt>Reviews</dt>
+          <dd>{int(data.total_reviews)} <small>{int(data.reviews_with_text)} with text ({pctOf(data.text_coverage_pct)})</small></dd>
+          <dt>Delivered orders that arrived late</dt>
+          <dd>{pctOf(h.late_delivery.late_pct)} <small>{int(h.late_delivery.late_orders)} of {int(h.late_delivery.delivered_orders)}</small></dd>
+          <dt>Sentiment model agrees with the star rating</dt>
+          <dd>{pctOf(data.nlp_agreement_pct)} <small>of text reviews</small></dd>
+        </dl>
+      </section>
+
+      <h2 className="section-title">What the data shows</h2>
+      <div className="findings">
+        <Link className="finding" href="/nlp-insights">
+          <h3><MessageSquareText size={16} />Most complaints</h3>
+          <p>{top.aspect} is the most common complaint: {pctOf(top.share_of_negative_pct)} of negative aspect mentions ({int(top.negative)}).</p>
+          <span className="go">See customer voice</span>
+        </Link>
+        <Link className="finding" href="/nlp-insights">
+          <h3><PackageX size={16} />Most reliably negative</h3>
+          <p>When a review mentions a {h.highest_negative_rate_aspect.aspect.toLowerCase()}, it is negative {pctOf(h.highest_negative_rate_aspect.neg_pct)} of the time.</p>
+          <span className="go">See aspect breakdown</span>
+        </Link>
+        <Link className="finding" href="/category-deep-dive">
+          <h3><Boxes size={16} />Where to act first</h3>
+          <p>{h.act_first.count} categories pair high complaint rates with high order value, led by {label(first.category).toLowerCase()} at {pct(first.neg_sentiment_rate)} negative.</p>
+          <span className="go">See categories</span>
+        </Link>
+        <Link className="finding" href="/business-impact">
+          <h3><Wallet size={16} />Order value at stake</h3>
+          <p>{brlShort(h.exposure.affected_order_value_BRL)} of order value sits in {int(h.exposure.affected_orders)} orders with a negative review. A 5% impact scenario puts {brl(h.exposure.at_5_pct_BRL)} at risk.</p>
+          <span className="go">See business impact</span>
+        </Link>
       </div>
 
-      {/* Charts row */}
-      <div className="grid-2 mb">
-        <div className="card">
-          <div className="card-title">Review Score Distribution</div>
-          <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={scoreData} margin={{ top: 8, right: 8, left: -10, bottom: 0 }}>
-              <XAxis dataKey="score" tick={{ fill: "#8B90A7", fontSize: 12 }} />
-              <YAxis tick={{ fill: "#8B90A7", fontSize: 11 }} />
-              <Tooltip
-                contentStyle={{ background: "#161B2C", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "#F0F2FA" }}
-                formatter={(v: any) => [fmt(v), "Reviews"]}
-              />
-              <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                {scoreData.map((_, i) => <Cell key={i} fill={SCORE_COLORS[i]} />)}
+      <h2 className="section-title">How customers rate and write about their orders</h2>
+      <div className="grid grid-2">
+        <Panel title="Star ratings" sub={`All ${int(totalReviews)} reviews. Most customers give 5 stars, so complaints are a minority.`}>
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={scores} margin={{ top: 22, right: 4, left: 0, bottom: 0 }}>
+              <CartesianGrid {...grid} />
+              <XAxis dataKey="score" {...axis} />
+              <YAxis {...axis} width={48} tickFormatter={v => `${v / 1000}K`} />
+              <Tooltip {...tooltip} formatter={(v: any) => [int(v), "Reviews"]} />
+              <Bar dataKey="n" radius={[3, 3, 0, 0]} maxBarSize={64}>
+                {scores.map((_, i) => <Cell key={i} fill={STAR[i]} />)}
+                <LabelList dataKey="n" position="top" style={barLabel} formatter={(v: any) => pct(v / totalReviews, 0)} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
-        </div>
-
-        <div className="card">
-          <div className="card-title">NLP Sentiment Distribution</div>
-          <ResponsiveContainer width="100%" height={260}>
-            <PieChart>
-              <Pie
-                data={sentData}
-                cx="50%" cy="50%"
-                innerRadius={65} outerRadius={100}
-                paddingAngle={3}
-                dataKey="value"
-                label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(1)}%`}
-                labelLine={false}
-              >
-                {sentData.map((entry, i) => (
-                  <Cell key={i} fill={SENT_COLORS[entry.name as keyof typeof SENT_COLORS] ?? "#8B90A7"} />
-                ))}
-              </Pie>
-              <Tooltip
-                contentStyle={{ background: "#161B2C", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "#F0F2FA" }}
-                formatter={(v: any) => [fmt(v), "Reviews"]}
-              />
-              <Legend wrapperStyle={{ color: "#8B90A7", fontSize: 13 }} />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* Correlations */}
-      <div className="card mb">
-        <div className="card-title">Spearman Rank Correlations</div>
-        <div className="alert alert-info">
-          <span className="alert-icon">ℹ️</span>
-          <span>All results are <strong>associations only</strong>. This project uses observational data and does not establish causation.</span>
-        </div>
-        <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={corrData} layout="vertical" margin={{ top: 4, right: 60, left: 8, bottom: 4 }}>
-            <XAxis type="number" domain={[-1, 0.3]} tick={{ fill: "#8B90A7", fontSize: 11 }} />
-            <YAxis type="category" dataKey="pair" width={240} tick={{ fill: "#C8CCD8", fontSize: 12 }} />
-            <Tooltip
-              contentStyle={{ background: "#161B2C", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 8, color: "#F0F2FA" }}
-              formatter={(v: any) => [`ρ = ${v.toFixed(4)}`, "Spearman ρ"]}
-            />
-            <Bar dataKey="rho" radius={[0, 4, 4, 0]}>
-              {corrData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* On-time vs Late */}
-      <div className="stat-row">
-        {[
-          { val: data.ontime_vs_late.ontime_mean, lbl: "On-Time Mean Score",  sub: `N = ${fmt(data.ontime_vs_late.ontime_n)}`, cls: "positive" },
-          { val: data.ontime_vs_late.late_mean,   lbl: "Late Delivery Score",  sub: `N = ${fmt(data.ontime_vs_late.late_n)}`,   cls: "negative" },
-          { val: "p < 0.0001",                    lbl: "Mann-Whitney U Test",  sub: "Highly significant",                        cls: "neutral"  },
-        ].map(s => (
-          <div className="stat-item" key={s.lbl}>
-            <div className={`stat-val ${s.cls}`}>{s.val}</div>
-            <div className="stat-lbl">{s.lbl}</div>
-            <div className="stat-sub">{s.sub}</div>
+        </Panel>
+        <Panel title="What the review text says" sub={`XLM-RoBERTa sentiment on the ${int(data.reviews_with_text)} reviews that include text.`}>
+          <div style={{ marginTop: 28 }}>
+            <SentimentMix neg={sent.Negative} neu={sent.Neutral} pos={sent.Positive} />
           </div>
-        ))}
+          <div className="grid grid-3" style={{ marginTop: 18, gap: 12 }}>
+            {(["Negative", "Neutral", "Positive"] as const).map(k => (
+              <div key={k}>
+                <div className={`stat-value tone-${k === "Negative" ? "neg" : k === "Neutral" ? "neu" : "pos"}`}>{pct(sent[k] / data.reviews_with_text)}</div>
+                <div className="stat-label">{k}</div>
+                <div className="stat-detail">{int(sent[k])} reviews</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 22 }}><SentimentLegend /></div>
+        </Panel>
+      </div>
+
+      <div style={{ marginTop: 18 }}>
+        <Note>
+          Money is in Brazilian reais (R$). Statistics describe associations in observational data, not causes.
+          Text-based results cover the {pctOf(data.text_coverage_pct)} of reviews that include written comments.
+        </Note>
       </div>
     </>
   );

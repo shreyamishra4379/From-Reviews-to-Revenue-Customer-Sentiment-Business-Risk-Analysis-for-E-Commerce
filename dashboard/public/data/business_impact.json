@@ -371,6 +371,10 @@
     }
   ],
   "low_n_threshold": 100,
+  "prioritization_thresholds": {
+    "median_neg_sentiment_rate": 0.2348,
+    "median_total_value_BRL": 93451.43
+  },
   "ontime_vs_late": {
     "ontime_mean": 3.98,
     "late_mean": 2.12,

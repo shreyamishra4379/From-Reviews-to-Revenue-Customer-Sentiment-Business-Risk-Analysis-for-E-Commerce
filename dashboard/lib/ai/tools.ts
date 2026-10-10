@@ -109,7 +109,7 @@ export interface ToolOutcome {
 
 const PREVIEW_ROWS = 10;
 
-export function executeTool(name: string, rawArgs: string): ToolOutcome {
+export async function executeTool(name: string, rawArgs: string): Promise<ToolOutcome> {
   let args: Record<string, unknown>;
   try {
     args = rawArgs ? JSON.parse(rawArgs) : {};
@@ -126,7 +126,7 @@ export function executeTool(name: string, rawArgs: string): ToolOutcome {
     if (name === "run_sql") {
       const query = String(args.query ?? "").trim();
       if (!query) throw new Error("Empty query");
-      const r = runSql(query, MAX_SQL_ROWS_FOR_MODEL);
+      const r = await runSql(query, MAX_SQL_ROWS_FOR_MODEL);
       const out = { columns: r.columns, rows: r.rows, rows_returned: r.row_count, truncated: r.truncated };
       return {
         ok: true,
@@ -145,9 +145,9 @@ export function executeTool(name: string, rawArgs: string): ToolOutcome {
 let factsCache: string | null = null;
 
 /** Headline row counts, computed live so the model never confuses e.g. reviews with customers. */
-export function datasetFacts(): string {
+export async function datasetFacts(): Promise<string> {
   if (factsCache) return factsCache;
-  const r = runSql(
+  const r = await runSql(
     "SELECT (SELECT COUNT(*) FROM fact_orders), " +
     "(SELECT COUNT(DISTINCT customer_unique_id) FROM dim_customers), " +
     "(SELECT COUNT(*) FROM fact_order_items), " +
@@ -173,9 +173,9 @@ export function datasetFacts(): string {
 let schemaCache: string | null = null;
 
 /** Table/column list for the system prompt, read live from DuckDB once per server process. */
-export function schemaText(): string {
+export async function schemaText(): Promise<string> {
   if (schemaCache) return schemaCache;
-  const r = runSql(
+  const r = await runSql(
     "SELECT table_name, string_agg(column_name || ' ' || data_type, ', ' ORDER BY ordinal_position) " +
     "FROM information_schema.columns GROUP BY 1 ORDER BY 1",
     100,

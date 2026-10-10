@@ -2,6 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { Sparkles, Search } from "lucide-react";
+import { PageHeader } from "../components/ui";
 
 interface ToolEvent {
   name: string;
@@ -131,7 +133,7 @@ export default function AskAIPage() {
           if (ev.type === "text") update(m => ({ ...m, content: m.content + ev.delta }));
           else if (ev.type === "tool") update(m => ({ ...m, tools: [...(m.tools ?? []), ev] }));
           else if (ev.type === "provider")
-            update(m => ({ ...m, provider: `${ev.label} · ${ev.model}`, fallback: ev.fallback, tools: ev.fallback ? [] : m.tools }));
+            update(m => ({ ...m, provider: `${ev.label} (${ev.model})`, fallback: ev.fallback, tools: ev.fallback ? [] : m.tools }));
           else if (ev.type === "error") update(m => ({ ...m, error: ev.message }));
         }
       }
@@ -146,17 +148,17 @@ export default function AskAIPage() {
 
   return (
     <div className="chat-page">
-      <div className="page-header">
-        <h1 className="page-title">💬 Ask AI</h1>
-        <p className="page-subtitle">
-          Ask anything about the analysis. Answers are computed from the project&apos;s data with live SQL · Groq with Gemini fallback
-        </p>
-      </div>
+      <PageHeader
+        name="Ask AI"
+        icon={<Sparkles size={16} />}
+        finding="Ask a question about the data in plain words."
+        lede="The assistant looks up the saved results or runs SQL on the project tables before it answers, and shows each lookup under its reply. It uses Groq, and switches to Gemini if Groq is busy."
+      />
 
       <div className="chat-scroll">
         {messages.length === 0 && (
           <div className="chat-empty">
-            <p>Try one of these, or ask your own question:</p>
+            <p>Start with one of these, or type your own question below.</p>
             <div className="chat-suggestions">
               {SUGGESTIONS.map(s => (
                 <button key={s} className="chat-chip" onClick={() => send(s)}>{s}</button>
@@ -169,7 +171,7 @@ export default function AskAIPage() {
           <div key={i} className={`chat-msg ${m.role}`}>
             {m.role === "assistant" && (m.tools?.length ?? 0) > 0 && (
               <details className="chat-tools">
-                <summary>{m.tools!.length} data lookup{m.tools!.length > 1 ? "s" : ""}</summary>
+                <summary><Search size={13} />{m.tools!.length} data lookup{m.tools!.length > 1 ? "s" : ""}</summary>
                 {m.tools!.map((t, j) => (
                   <div key={j} className={`chat-tool ${t.ok ? "" : "failed"}`}>
                     <strong>{toolLabel(t)}</strong> — {t.summary}
@@ -190,10 +192,10 @@ export default function AskAIPage() {
                   ? <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
                   : m.pending && <span className="chat-typing">Thinking<span>.</span><span>.</span><span>.</span></span>
               ) : m.content}
-              {m.error && <div className="chat-error">⚠️ {m.error}</div>}
+              {m.error && <div className="chat-error">{m.error}</div>}
             </div>
             {m.role === "assistant" && m.provider && !m.pending && (
-              <div className="chat-meta">{m.fallback ? "Fallback · " : ""}{m.provider}</div>
+              <div className="chat-meta">{m.fallback ? "Answered by the fallback provider, " : "Answered by "}{m.provider}</div>
             )}
           </div>
         ))}
@@ -211,13 +213,13 @@ export default function AskAIPage() {
         />
         <div className="chat-actions">
           {busy
-            ? <button type="button" className="btn-secondary" onClick={() => abortRef.current?.abort()}>Stop</button>
-            : messages.length > 0 && <button type="button" className="btn-secondary" onClick={() => setMessages([])}>New chat</button>}
-          <button type="submit" className="btn-primary" disabled={busy || !input.trim()}>Send</button>
+            ? <button type="button" className="btn" onClick={() => abortRef.current?.abort()}>Stop</button>
+            : messages.length > 0 && <button type="button" className="btn" onClick={() => setMessages([])}>New chat</button>}
+          <button type="submit" className="btn btn-primary" disabled={busy || !input.trim()}>Send</button>
         </div>
       </form>
       <p className="chat-footnote">
-        AI answers can be wrong — check the data lookups. Statistics are associations, not causes; exposure figures are scenario-based estimates.
+        AI answers can be wrong, so check the data lookups. Statistics are associations, not causes, and exposure figures are scenario-based estimates.
       </p>
     </div>
   );

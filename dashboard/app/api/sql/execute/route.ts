@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     if (invalid) {
       return NextResponse.json({ error: invalid }, { status: 400 });
     }
-    return NextResponse.json(runSql(sql, 500));
+    return NextResponse.json(await runSql(sql, 500));
   } catch (err) {
     return NextResponse.json({ error: err instanceof Error ? err.message : String(err) }, { status: 400 });
   }
