@@ -10,6 +10,7 @@ const NAV = [
   { href: "/business-impact",       icon: "💰", label: "Business Impact" },
   { href: "/category-deep-dive",    icon: "🏢", label: "Category Deep Dive" },
   { href: "/sql-analytics",         icon: "🗄️", label: "SQL Analytics" },
+  { href: "/ask-ai",                icon: "💬", label: "Ask AI" },
 ];
 
 export default function Sidebar() {

@@ -333,6 +333,18 @@ A 7-page dashboard in `dashboard/` (Next.js 15, React 19, TypeScript, Recharts).
 | Business Impact | Sensitivity table, 2×2 prioritization |
 | Category Deep Dive | Rankings (N ≥ 100 only), category × aspect heatmap, sortable table with LOW-N flags |
 | SQL Analytics | Run the 11 project queries or ad-hoc SELECTs |
+| Ask AI | Chat assistant that answers questions from the project's data |
+
+### Ask AI — chat assistant
+
+The **Ask AI** page is a streaming chat assistant. It does not answer from memory: it calls two tools on the server and shows each lookup under its answer.
+
+- `get_project_results` — reads the validated results that the dashboard pages use.
+- `run_sql` — runs a read-only DuckDB query on the processed tables, through the same sandbox as the SQL page.
+
+**Providers:** Groq is the primary provider (`openai/gpt-oss-120b`) and Gemini is the fallback (`gemini-3.8-flash`). Both are called through their OpenAI-compatible APIs. If Groq fails or is rate-limited before it starts answering, Gemini answers the question from scratch. The project's rules (R$, association rather than causation, scenario labels, low-N warnings) are part of the system prompt in `dashboard/lib/ai/prompt.ts`.
+
+**Setup:** copy `dashboard/.env.example` to `dashboard/.env.local`, add `GROQ_API_KEY` and `GEMINI_API_KEY`, then restart the server. Either key on its own also works. `.env.local` is gitignored; the keys stay on the server and are never sent to the browser.
 
 | | |
 |---|---|
@@ -377,6 +389,7 @@ A 7-page dashboard in `dashboard/` (Next.js 15, React 19, TypeScript, Recharts).
 | Statistics | SciPy, statsmodels |
 | SQL engine | DuckDB |
 | Dashboard | Next.js 15, React 19, Recharts |
+| AI assistant | Groq (gpt-oss-120b) with Gemini fallback, OpenAI-compatible tool calling over DuckDB |
 | Testing | pytest |
 
 ---

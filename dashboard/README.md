@@ -27,4 +27,8 @@ npm run dev      # http://localhost:3000
 
 ## Pages
 
-Overview · NLP Insights · Statistical Analysis · Delivery Analysis · Business Impact · Category Deep Dive · SQL Analytics
+Overview · NLP Insights · Statistical Analysis · Delivery Analysis · Business Impact · Category Deep Dive · SQL Analytics · Ask AI
+
+## Ask AI
+
+Copy `.env.example` to `.env.local` and add `GROQ_API_KEY` (primary) and/or `GEMINI_API_KEY` (fallback). The chat route is `app/api/chat/route.ts`; providers, tools and the system prompt are in `lib/ai/`.
