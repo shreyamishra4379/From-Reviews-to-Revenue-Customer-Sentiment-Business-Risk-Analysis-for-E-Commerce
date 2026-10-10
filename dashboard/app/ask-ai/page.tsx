@@ -3,7 +3,13 @@ import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-interface ToolEvent { name: string; input: unknown; ok: boolean; summary: string }
+interface ToolEvent {
+  name: string;
+  input: unknown;
+  ok: boolean;
+  summary: string;
+  preview?: { columns: string[]; rows: unknown[][] };
+}
 interface Msg {
   role: "user" | "assistant";
   content: string;
@@ -24,6 +30,36 @@ const SUGGESTIONS = [
 ];
 
 const STORAGE_KEY = "ask-ai-chat";
+
+// "avg_review_score" -> "Avg review score"
+const prettyHeader = (c: string) => c.replace(/_/g, " ").replace(/^\w/, ch => ch.toUpperCase());
+
+function prettyCell(v: unknown): string {
+  if (v === null || v === undefined) return "—";
+  if (typeof v === "number") {
+    return Number.isInteger(v) ? v.toLocaleString("en-US") : v.toLocaleString("en-US", { maximumFractionDigits: 4 });
+  }
+  return String(v);
+}
+
+function ResultTable({ preview, total }: { preview: NonNullable<ToolEvent["preview"]>; total: string }) {
+  if (preview.rows.length === 0) return <div className="chat-tool-empty">No rows returned.</div>;
+  return (
+    <div className="chat-result">
+      <table>
+        <thead><tr>{preview.columns.map(c => <th key={c}>{prettyHeader(c)}</th>)}</tr></thead>
+        <tbody>
+          {preview.rows.map((r, i) => (
+            <tr key={i}>{r.map((v, j) => <td key={j} className={typeof v === "number" ? "num" : ""}>{prettyCell(v)}</td>)}</tr>
+          ))}
+        </tbody>
+      </table>
+      {total !== String(preview.rows.length) && (
+        <div className="chat-tool-empty">Showing first {preview.rows.length} of {total} rows.</div>
+      )}
+    </div>
+  );
+}
 
 function toolLabel(t: ToolEvent): string {
   if (t.name === "run_sql") return "Ran SQL";
@@ -137,7 +173,13 @@ export default function AskAIPage() {
                 {m.tools!.map((t, j) => (
                   <div key={j} className={`chat-tool ${t.ok ? "" : "failed"}`}>
                     <strong>{toolLabel(t)}</strong> — {t.summary}
-                    {t.name === "run_sql" && <pre>{String((t.input as { query?: string })?.query ?? "")}</pre>}
+                    {t.name === "run_sql" && (
+                      <details className="chat-sql">
+                        <summary>Show SQL</summary>
+                        <pre>{String((t.input as { query?: string })?.query ?? "")}</pre>
+                      </details>
+                    )}
+                    {t.preview && <ResultTable preview={t.preview} total={t.summary.replace(/ rows$/, "")} />}
                   </div>
                 ))}
               </details>

@@ -11,7 +11,7 @@ import { systemPrompt } from "@/lib/ai/prompt";
 // Streams newline-delimited JSON events:
 //   { type: "provider", id, label, model, fallback }
 //   { type: "text", delta }
-//   { type: "tool", name, input, ok, summary }
+//   { type: "tool", name, input, ok, summary, preview? }
 //   { type: "error", message }
 //   { type: "done" }
 //
@@ -56,7 +56,8 @@ async function runTurn(p: ProviderConfig, base: ChatMessage[], emit: Emit, signa
       const outcome = executeTool(call.function.name, call.function.arguments);
       let input: unknown = call.function.arguments;
       try { input = JSON.parse(call.function.arguments); } catch { /* show raw */ }
-      emit({ type: "tool", name: call.function.name, input, ok: outcome.ok, summary: outcome.summary });
+      emit({ type: "tool", name: call.function.name, input, ok: outcome.ok,
+             summary: outcome.summary, preview: outcome.preview });
       messages.push({ role: "tool", tool_call_id: call.id, content: outcome.output });
     }
     if (result.content) emit({ type: "text", delta: "\n\n" });

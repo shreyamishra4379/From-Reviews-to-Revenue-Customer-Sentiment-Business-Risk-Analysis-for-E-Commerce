@@ -412,3 +412,10 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 .btn-secondary:hover { color: var(--text); }
 .chat-footnote { font-size: 0.72rem; color: var(--dim); margin-top: 8px; }
 @media (max-width: 640px) { .chat-page { height: auto; } .chat-msg { max-width: 100%; } }
+.chat-result { margin-top: 6px; overflow-x: auto; max-width: 100%; }
+.chat-result table { font-size: 0.78rem; width: auto; }
+.chat-result th, .chat-result td { padding: 4px 10px; }
+.chat-result td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.chat-sql { margin-top: 4px; }
+.chat-sql summary { cursor: pointer; color: var(--dim); }
+.chat-tool-empty { color: var(--dim); margin-top: 4px; }

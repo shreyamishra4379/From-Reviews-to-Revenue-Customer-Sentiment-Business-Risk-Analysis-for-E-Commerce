@@ -6,8 +6,9 @@ import type { ToolSpec } from "./providers";
 // Tools the assistant can call. Every number it reports should come from one of these.
 
 const DATA = join(process.cwd(), "public", "data");
-const MAX_SQL_ROWS_FOR_MODEL = 50;
-const MAX_TOOL_CHARS = 12_000;
+// Kept small: Groq free tier allows ~8K tokens per minute across all requests.
+const MAX_SQL_ROWS_FOR_MODEL = 25;
+const MAX_TOOL_CHARS = 9_000;
 
 const SECTIONS = [
   "overview", "nlp_insights", "statistical_analysis", "delivery",
@@ -57,7 +58,29 @@ function readJson(name: string): Record<string, unknown> {
   return JSON.parse(readFileSync(join(DATA, `${name}.json`), "utf-8"));
 }
 
+type AspectRow = { aspect: string; total_mentions: number; negative: number; neg_pct: number };
+
 function sectionData(section: Section): unknown {
+  if (section === "nlp_insights") {
+    // Give the model explicit rankings so it never has to compare numbers itself
+    // (the stored list is ordered by negative *rate*, which is easy to misread as volume).
+    const d = readJson("nlp_insights") as { aspects: AspectRow[]; [k: string]: unknown };
+    const real = d.aspects.filter(a => a.aspect !== "Uncategorized");
+    const negTotal = real.reduce((s, a) => s + a.negative, 0);
+    return {
+      ...d,
+      aspects_ranked_by_negative_mentions: [...real]
+        .sort((a, b) => b.negative - a.negative)
+        .map((a, i) => ({
+          rank: i + 1, aspect: a.aspect, negative_mentions: a.negative,
+          share_of_negative_aspect_mentions_pct: +(a.negative / negTotal * 100).toFixed(1),
+        })),
+      aspects_ranked_by_negative_rate: [...real]
+        .sort((a, b) => b.neg_pct - a.neg_pct)
+        .map((a, i) => ({ rank: i + 1, aspect: a.aspect, neg_pct: a.neg_pct, total_mentions: a.total_mentions })),
+      note: "Aspect mentions overlap (one review can mention several). 'Uncategorized' is excluded from the rankings.",
+    };
+  }
   if (section !== "categories") return readJson(section);
   // Full file is ~30 KB; send only categories above the sample-size threshold.
   const d = readJson("category_intelligence") as {
@@ -81,7 +104,10 @@ export interface ToolOutcome {
   ok: boolean;
   output: string;     // sent back to the model
   summary: string;    // shown in the UI
+  preview?: { columns: string[]; rows: unknown[][] };  // first rows of a SQL result, for the UI
 }
+
+const PREVIEW_ROWS = 10;
 
 export function executeTool(name: string, rawArgs: string): ToolOutcome {
   let args: Record<string, unknown>;
@@ -102,13 +128,46 @@ export function executeTool(name: string, rawArgs: string): ToolOutcome {
       if (!query) throw new Error("Empty query");
       const r = runSql(query, MAX_SQL_ROWS_FOR_MODEL);
       const out = { columns: r.columns, rows: r.rows, rows_returned: r.row_count, truncated: r.truncated };
-      return { ok: true, output: clip(JSON.stringify(out)), summary: `${r.row_count}${r.truncated ? "+" : ""} rows` };
+      return {
+        ok: true,
+        output: clip(JSON.stringify(out)),
+        summary: `${r.row_count}${r.truncated ? "+" : ""} rows`,
+        preview: { columns: r.columns, rows: r.rows.slice(0, PREVIEW_ROWS) },
+      };
     }
     throw new Error(`Unknown tool "${name}"`);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     return { ok: false, output: `Error: ${msg}`, summary: msg.slice(0, 160) };
   }
+}
+
+let factsCache: string | null = null;
+
+/** Headline row counts, computed live so the model never confuses e.g. reviews with customers. */
+export function datasetFacts(): string {
+  if (factsCache) return factsCache;
+  const r = runSql(
+    "SELECT (SELECT COUNT(*) FROM fact_orders), " +
+    "(SELECT COUNT(DISTINCT customer_unique_id) FROM dim_customers), " +
+    "(SELECT COUNT(*) FROM fact_order_items), " +
+    "(SELECT COUNT(*) FROM fact_order_reviews), " +
+    "(SELECT COUNT(*) FROM nlp_reviews), " +
+    "(SELECT COUNT(*) FROM dim_products), " +
+    "(SELECT COUNT(*) FROM dim_sellers), " +
+    "(SELECT COUNT(*) FROM fact_orders WHERE order_delivered_customer_date IS NOT NULL)",
+    1,
+  );
+  const [orders, customers, items, reviews, textReviews, products, sellers, delivered] =
+    (r.rows[0] as number[]).map(n => n.toLocaleString("en-US"));
+  factsCache = [
+    `- Orders: ${orders} (one customer_id per order, so dim_customers also has ${orders} rows)`,
+    `- Unique customers (customer_unique_id): ${customers}`,
+    `- Order items: ${items}; products: ${products}; sellers: ${sellers}`,
+    `- Reviews: ${reviews}; reviews with text (nlp_reviews): ${textReviews}`,
+    `- Orders with a delivery date: ${delivered}`,
+  ].join("\n");
+  return factsCache;
 }
 
 let schemaCache: string | null = null;
