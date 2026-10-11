@@ -322,18 +322,25 @@ Full table: `data/processed/stage4/business_prioritization.csv`.
 
 ## 10. Web Dashboard (Next.js)
 
-A 7-page dashboard in `dashboard/` (Next.js 15, React 19, TypeScript, Recharts). It only **reads** precomputed outputs: `export_dashboard_data.py` writes small JSON files to `dashboard/public/data/` after reconciling them against the Parquet sources, and Next.js API routes serve them. No metric is recomputed in JavaScript. The SQL page runs the `sql/` queries (or your own SELECT) through DuckDB, sandboxed to `data/processed/` and read-only.
+A 9-page dashboard in `dashboard/` (Next.js 15, React 19, TypeScript, Recharts) with light, dark and system themes. It only **reads** precomputed outputs: `export_dashboard_data.py` writes small JSON files to `dashboard/public/data/` after reconciling them against the Parquet sources, and Next.js API routes serve them. No metric is recomputed in JavaScript. The SQL page runs the `sql/` queries (or your own SELECT) through DuckDB, sandboxed to `data/processed/` and read-only.
 
 | Page | What it shows |
 |---|---|
-| Overview | KPIs, score and sentiment distributions, correlations |
-| NLP Insights | Agreement by star rating, aspects, named topics |
-| Statistical Analysis | Correlations, group tests, logistic regression |
-| Delivery Analysis | Late rates by state/category, aspects in late vs on-time complaints, monthly trend |
-| Business Impact | Sensitivity table, 2×2 prioritization |
-| Category Deep Dive | Rankings (N ≥ 100 only), category × aspect heatmap, sortable table with LOW-N flags |
-| SQL Analytics | Run the 11 project queries or ad-hoc SELECTs |
+| Overview | Star ruler (late vs on-time ratings), headline findings, rating and sentiment distributions |
+| Customer voice | Complaint aspects by volume and by negative rate, sentiment mix, named topics, model agreement |
+| Delivery | Late rates by state and category, which complaints come from late orders, monthly trend |
+| Categories | Rankings (N ≥ 100 only), price vs complaints, category × aspect heatmap, sortable table with low-N flags |
+| Business impact | Scenario exposure, 2×2 prioritization, category table by group |
+| Statistics | Spearman correlations, group tests, logistic regression with odds ratios |
+| SQL workbench | Run the 11 project queries or your own SELECT |
+| Security | Controls, penetration-test results, data integrity, security events, fraud signals |
 | Ask AI | Chat assistant that answers questions from the project's data |
+
+The sidebar switch chooses **Light**, **Dark** or **System** (follows the device). Every chart reads its colors from the theme, and sentiment always uses the same 1★ (red) to 5★ (green) scale.
+
+| Light | Dark |
+|---|---|
+| ![Overview, light theme](reports/figures/dashboard/overview.png) | ![Overview, dark theme](reports/figures/dashboard/overview_dark.png) |
 
 ### Ask AI — chat assistant
 
@@ -348,13 +355,16 @@ The **Ask AI** page is a streaming chat assistant. It does not answer from memor
 
 | | |
 |---|---|
-| ![NLP insights](reports/figures/dashboard/nlp_insights.png) | ![Business impact](reports/figures/dashboard/business_impact.png) |
-| ![Delivery](reports/figures/dashboard/delivery.png) | ![Category deep dive](reports/figures/dashboard/category_deep_dive.png) |
-| ![Statistical analysis](reports/figures/dashboard/statistical_analysis.png) | ![SQL analytics](reports/figures/dashboard/sql_analytics.png) |
+| **Customer voice**<br>![Customer voice](reports/figures/dashboard/nlp_insights.png) | **Business impact**<br>![Business impact](reports/figures/dashboard/business_impact.png) |
+| **Delivery**<br>![Delivery](reports/figures/dashboard/delivery.png) | **Categories**<br>![Categories](reports/figures/dashboard/category_deep_dive.png) |
+| **Statistics**<br>![Statistics](reports/figures/dashboard/statistical_analysis.png) | **SQL workbench**<br>![SQL workbench](reports/figures/dashboard/sql_analytics.png) |
+| **Security**<br>![Security](reports/figures/dashboard/security.png) | **Ask AI**<br>![Ask AI](reports/figures/dashboard/ask_ai.png) |
 
 **Power BI:** not built yet. The star-schema Parquet files and `stage4/*.csv` are ready to import into Power BI Desktop if a BI version is needed.
 
 ### Security
+
+![Security page, dark theme](reports/figures/dashboard/security_dark.png)
 
 The dashboard treats every request as untrusted. Its **Security** page shows the controls, the last penetration test, blocked requests and fraud signals in the reviews.
 

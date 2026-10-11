@@ -27,10 +27,23 @@ const g = globalThis as unknown as { __securityEvents?: SecurityEvent[] };
 const events = (g.__securityEvents ??= []);
 
 // Never write secrets to the log, even if a user pastes one into a request.
-const SECRET_PATTERNS = [/gsk_[A-Za-z0-9]{10,}/g, /AIza[0-9A-Za-z_-]{20,}/g, /sk-[A-Za-z0-9_-]{16,}/g];
+// Key shapes only (a loose "sk-..." pattern also matched words like "Risk-Analysis").
+const SECRET_PATTERNS = [
+  /\bgsk_[A-Za-z0-9]{20,}/g,                  // Groq
+  /\bAIza[0-9A-Za-z_-]{30,}/g,                // Google / Gemini
+  /\bsk-(?:proj-|ant-)?[A-Za-z0-9]{20,}/g,    // OpenAI / Anthropic style
+];
 
 export function redact(text: string): string {
   return SECRET_PATTERNS.reduce((t, p) => t.replace(p, "[REDACTED]"), text);
+}
+
+// Absolute paths reveal the server's folder layout; keep only the file name, which is
+// what matters for forensics ("which file did they try to read?").
+function shortenPaths(text: string): string {
+  return text
+    .replace(/[A-Za-z]:[\\/](?:[^\s'"`\\/]+[\\/])*([^\s'"`\\/]*)/g, "…/$1")
+    .replace(/(?<![\w.])\/(?:[^\s'"`/]+\/)+([^\s'"`/]*)/g, "…/$1");
 }
 
 /** Short, non-reversible client id from the request (no raw IPs in logs). */
@@ -47,7 +60,7 @@ export function logSecurityEvent(type: SecurityEventType, route: string, client:
     type,
     route,
     client,
-    detail: redact(detail).slice(0, 300),
+    detail: shortenPaths(redact(detail)).slice(0, 300),
   };
   events.unshift(event);
   if (events.length > MAX_EVENTS) events.length = MAX_EVENTS;

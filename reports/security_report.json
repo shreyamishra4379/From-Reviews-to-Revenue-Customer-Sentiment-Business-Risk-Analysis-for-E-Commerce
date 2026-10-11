@@ -1,6 +1,6 @@
 {
   "target": "http://localhost:3123",
-  "run_at": "2026-10-11T05:06:56Z",
+  "run_at": "2026-10-11T05:13:34Z",
   "passed": 29,
   "total": 29,
   "results": [
@@ -77,14 +77,14 @@
     {
       "category": "File access",
       "name": "Read raw data outside data/processed",
-      "attack": "SELECT * FROM read_csv_auto('C:/ProjectWS/From-Reviews-to-Revenue-Customer-Sentiment-Business-Risk-Analysis-for-E-Commerce-main/data/raw/olist_customers_dataset.csv')",
+      "attack": "SELECT * FROM read_csv_auto('<project>/data/raw/olist_customers_dataset.csv')",
       "passed": true,
       "evidence": "HTTP 403: {\"error\":\"Access denied: queries can only read the project's processed tables, n"
     },
     {
       "category": "File access",
       "name": "Read the API key file",
-      "attack": "SELECT * FROM read_text('C:/ProjectWS/From-Reviews-to-Revenue-Customer-Sentiment-Business-Risk-Analysis-for-E-Commerce-main/dashboard/.env.local')",
+      "attack": "SELECT * FROM read_text('<project>/dashboard/.env.local')",
       "passed": true,
       "evidence": "HTTP 403: {\"error\":\"Access denied: queries can only read the project's processed tables, n"
     },
