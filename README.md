@@ -8,7 +8,7 @@ An end-to-end analytics project on the Olist Brazilian E-Commerce dataset. It co
 > **Causality:** all statistics are **associations**, not causal effects (observational data).
 > **Exposure:** all exposure figures are **scenario-based estimates, not observed revenue loss**.
 
-![Dashboard overview](reports/figures/dashboard/overview.png)
+![Dashboard overview](reports/screenshots/1_overview_light.png)
 
 ---
 
@@ -340,7 +340,7 @@ The sidebar switch chooses **Light**, **Dark** or **System** (follows the device
 
 | Light | Dark |
 |---|---|
-| ![Overview, light theme](reports/figures/dashboard/overview.png) | ![Overview, dark theme](reports/figures/dashboard/overview_dark.png) |
+| ![Overview, light theme](reports/screenshots/1_overview_light.png) | ![Overview, dark theme](reports/screenshots/1_overview_dark.png) |
 
 ### Ask AI — chat assistant
 
@@ -355,16 +355,16 @@ The **Ask AI** page is a streaming chat assistant. It does not answer from memor
 
 | | |
 |---|---|
-| **Customer voice**<br>![Customer voice](reports/figures/dashboard/nlp_insights.png) | **Business impact**<br>![Business impact](reports/figures/dashboard/business_impact.png) |
-| **Delivery**<br>![Delivery](reports/figures/dashboard/delivery.png) | **Categories**<br>![Categories](reports/figures/dashboard/category_deep_dive.png) |
-| **Statistics**<br>![Statistics](reports/figures/dashboard/statistical_analysis.png) | **SQL workbench**<br>![SQL workbench](reports/figures/dashboard/sql_analytics.png) |
-| **Security**<br>![Security](reports/figures/dashboard/security.png) | **Ask AI**<br>![Ask AI](reports/figures/dashboard/ask_ai.png) |
+| **Customer voice**<br>![Customer voice](reports/screenshots/2_customer_voice.png) | **Business impact**<br>![Business impact](reports/screenshots/5_business_impact.png) |
+| **Delivery**<br>![Delivery](reports/screenshots/3_delivery.png) | **Categories**<br>![Categories](reports/screenshots/4_categories.png) |
+| **Statistics**<br>![Statistics](reports/screenshots/6_statistics.png) | **SQL workbench**<br>![SQL workbench](reports/screenshots/7_sql_workbench.png) |
+| **Security**<br>![Security](reports/screenshots/8_security_light.png) | **Ask AI**<br>![Ask AI](reports/screenshots/9_ask_ai.png) |
 
 **Power BI:** not built yet. The star-schema Parquet files and `stage4/*.csv` are ready to import into Power BI Desktop if a BI version is needed.
 
 ### Security
 
-![Security page, dark theme](reports/figures/dashboard/security_dark.png)
+![Security page, dark theme](reports/screenshots/8_security_dark.png)
 
 The dashboard treats every request as untrusted. Its **Security** page shows the controls, the last penetration test, blocked requests and fraud signals in the reviews.
 
@@ -455,7 +455,8 @@ The dashboard treats every request as untrusted. Its **Security** page shows the
 └── reports/
     ├── data_dictionary.md
     ├── security_report.md          # latest penetration-test results
-    └── figures/                    # 14 EDA charts + dashboard/ screenshots
+    ├── figures/                    # 14 EDA charts (Stage 2)
+    └── screenshots/                # dashboard screenshots, light and dark
 ```
 
 ---
