@@ -27,12 +27,6 @@ export const STAR = [C.s1, C.s2, C.s3, C.s4, C.s5];
 /** Same hues darkened for text, so labels pass 4.5:1 contrast in both themes. */
 export const STAR_TEXT = ["var(--t1)", "var(--t2)", "var(--t3)", "var(--t4)", "var(--t5)"];
 
-export const SENTIMENT: Record<string, string> = {
-  Negative: C.s1,
-  Neutral: C.s3,
-  Positive: C.s5,
-};
-
 /** Map a 0-1 "badness" rate onto the star scale (high rate = red). */
 export function rateColor(rate: number, low = 0.15, high = 0.35): string {
   return STAR[rateStep(rate, low, high)];

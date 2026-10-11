@@ -51,7 +51,7 @@ def write_dim_topics() -> pd.DataFrame:
         "evidence": TOPIC_NAMES[t["topic_id"]][1],
     } for t in topics]
     df = pd.DataFrame(rows).sort_values("topic_id")
-    df.to_csv(os.path.join(DATA_DIR, "dim_topics.csv"), index=False, encoding="utf-8")
+    df.to_csv(os.path.join(DATA_DIR, "dim_topics.csv"), index=False, encoding="utf-8", lineterminator="\n")
     return df
 
 

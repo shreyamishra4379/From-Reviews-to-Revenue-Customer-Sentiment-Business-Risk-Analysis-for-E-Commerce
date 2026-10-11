@@ -3,6 +3,7 @@ run.py — run the whole project with one command (Windows, macOS, Linux).
 
     python run.py            build anything missing, then start the dashboard
     python run.py --dev      same, but start Next.js in development mode
+    python run.py --no-browser   don't open a browser tab (servers, CI)
 
 Steps (each is skipped when its outputs already exist):
   1. Stage 1  download data (kagglehub) and build the star schema
@@ -13,8 +14,9 @@ Steps (each is skipped when its outputs already exist):
   6. Export   topic names, dashboard JSON and SHA-256 integrity manifest (always)
   7. Dashboard  npm install (first run), build, start on http://localhost:3000
 
-Security check of the running dashboard: python security/pentest.py
+Security check of the running dashboard: python src/security/pentest.py
 """
+import importlib.util
 import os
 import shutil
 import subprocess
@@ -52,14 +54,13 @@ def stage(name, marker, scripts):
 
 def main():
     dev = "--dev" in sys.argv
+    open_browser = "--no-browser" not in sys.argv
     step("Checking tools")
     if sys.version_info < (3, 10):
         sys.exit("[ERROR] Python 3.10+ is required.")
     if not shutil.which("node") or not shutil.which("npm"):
         sys.exit("[ERROR] Node.js 18+ is required: https://nodejs.org")
-    try:
-        import duckdb, pandas, pyarrow  # noqa: F401
-    except ImportError:
+    if not all(importlib.util.find_spec(m) for m in ("duckdb", "pandas", "pyarrow")):
         print("  Installing Python packages from requirements.txt ...")
         run([PY, "-m", "pip", "install", "-r", str(ROOT / "requirements.txt")])
     print("  [ok] Python and Node.js found")
@@ -76,7 +77,7 @@ def main():
 
     step("Exporting dashboard data")
     run([PY, str(ROOT / "src/nlp/topic_names.py")])
-    run([PY, str(ROOT / "export_dashboard_data.py")])
+    run([PY, str(ROOT / "src/export_dashboard_data.py")])
 
     step("Dashboard")
     if not (DASH / "node_modules").exists():
@@ -88,8 +89,9 @@ def main():
 
     url = f"http://localhost:{PORT}"
     print(f"\n  Starting the dashboard at {url}  (Ctrl+C to stop)")
-    print(f"  Security check (in another terminal): python security/pentest.py {url}\n", flush=True)
-    threading.Thread(target=lambda: (time.sleep(6), webbrowser.open(url)), daemon=True).start()
+    print(f"  Security check (in another terminal): python src/security/pentest.py {url}\n", flush=True)
+    if open_browser:
+        threading.Thread(target=lambda: (time.sleep(6), webbrowser.open(url)), daemon=True).start()
     cmd = ["npx", "next", "dev" if dev else "start", "-p", str(PORT)]
     try:
         subprocess.run(cmd, cwd=DASH, shell=(os.name == "nt"))

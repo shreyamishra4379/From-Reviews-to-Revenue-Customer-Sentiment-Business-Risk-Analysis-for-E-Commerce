@@ -1,4 +1,4 @@
-// Shared TypeScript types — mirror the JSON written by export_dashboard_data.py
+// Shared TypeScript types — mirror the JSON written by src/export_dashboard_data.py
 
 export interface Correlation { pair: string; rho: number; n?: number; p_value: number; p_label: string; significant?: boolean }
 

@@ -82,7 +82,7 @@ export default function SecurityPage() {
 
       <Stats items={[
         { value: `${integ.checked - integ.modified.length - integ.missing.length} / ${integ.checked}`, label: "Result files verified", detail: `${integ.algorithm} fingerprints`, tone: integ.ok ? "pos" : "neg" },
-        { value: pentest ? `${pentest.passed} / ${pentest.total}` : "Not run", label: "Penetration test checks passed", detail: pentest ? `Run ${when(pentest.run_at)}` : "python security/pentest.py", tone: pentest ? (pentest.passed === pentest.total ? "pos" : "neg") : undefined },
+        { value: pentest ? `${pentest.passed} / ${pentest.total}` : "Not run", label: "Penetration test checks passed", detail: pentest ? `Run ${when(pentest.run_at)}` : "python src/security/pentest.py", tone: pentest ? (pentest.passed === pentest.total ? "pos" : "neg") : undefined },
         { value: int(data.events.length), label: "Security events this session", detail: "Since the server started" },
         { value: fraud ? int(fraud.flagged_reviews) : "—", label: "Reviews mentioning fraud or fakes", detail: fraud ? `${pctOf(fraud.flagged_pct, 2)} of text reviews` : undefined, tone: "neg" },
       ]} />
@@ -109,10 +109,10 @@ export default function SecurityPage() {
         <Panel
           title="Penetration test"
           sub={pentest ? `Last run ${when(pentest.run_at)} against ${pentest.target}.` : undefined}
-          foot={pentest ? "Re-run with: python security/pentest.py" : undefined}
+          foot={pentest ? "Re-run with: python src/security/pentest.py" : undefined}
         >
           {!pentest ? (
-            <p style={{ color: "var(--muted)" }}>No report yet. Start the dashboard, then run <code>python security/pentest.py</code> to attack it and record the results here.</p>
+            <p style={{ color: "var(--muted)" }}>No report yet. Start the dashboard, then run <code>python src/security/pentest.py</code> to attack it and record the results here.</p>
           ) : (
             <div className="tbl-wrap" style={{ maxHeight: 420 }}>
               <table>

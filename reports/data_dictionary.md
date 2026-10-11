@@ -1,4 +1,4 @@
-# Data Dictionary — Sentiment-to-Outcome Analytics
+# Data Dictionary — From Reviews to Revenue
 
 ## Star Schema Tables (Stage 1)
 
@@ -131,3 +131,72 @@ Grain: **order_id** (one row per order). Built by joining fact_orders with aggre
 | product_rating_history | No time-series product ratings |
 | discount_amount | No coupon/discount data; voucher ≠ discount |
 | delivery_distance_km | Would require haversine on seller/customer geo — approximation not engineered |
+
+---
+
+## NLP Outputs (Stage 3)
+
+### `nlp_reviews.parquet` (40,977 rows)
+
+Grain: one row per text review. **Key: (review_id, order_id)** — `review_id` alone is not unique in Olist.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| review_id, order_id | str | Review and order keys |
+| review_score | int | Star rating 1–5 |
+| review_comment_message | str | Portuguese review text (company names anonymised as Game of Thrones houses) |
+| baseline_sentiment_label / _score | str / float | Portuguese lexicon baseline |
+| sentiment_label / sentiment_score | str / float | XLM-RoBERTa label (Positive, Neutral, Negative) and confidence |
+| tfidf_topic_id | int | TF-IDF + NMF topic (baseline) |
+| emb_topic_id | int | Sentence-embedding + KMeans topic; joins `dim_topics.topic_id` |
+| topic_label | str | Term-based label from the pipeline (use `dim_topics.business_topic_name` instead) |
+| extracted_aspects | list[str] | Aspects mentioned; not mutually exclusive |
+| expected_sentiment | str | Sentiment implied by the star rating (1–2 Negative, 3 Neutral, 4–5 Positive) |
+| sentiment_agrees | bool | `sentiment_label == expected_sentiment` |
+
+### `dim_topics.csv` (8 rows)
+
+| Column | Description |
+|--------|-------------|
+| topic_id | Embedding topic id |
+| business_topic_name | Analyst name for the cluster (from `src/nlp/topic_names.py`) |
+| term_label | The pipeline's term-based label |
+| representative_terms | Top c-TF-IDF terms |
+| review_count | Reviews in the topic |
+| evidence | Terms and sample-review evidence behind the name |
+
+Also: `nlp_topics.json` (topic terms and sample reviews), `nlp_aspects.json`, `nlp_summary_metrics.json` (coverage, benchmarks, sentiment distribution, agreement rates).
+
+---
+
+## Business Analytics Outputs (Stage 4) — `data/processed/stage4/`
+
+All rates are computed over **unique reviews** (one row per review, or per review and group), so multi-item orders are not double-counted. Late rates use delivered orders only.
+
+| File | Grain | Key columns |
+|------|-------|-------------|
+| `agg_category.csv` | category | review_count, avg_review_score, neg_review_rate, neg_sentiment_rate, avg_order_value, avg_item_price, avg_freight, late_delivery_rate, delivered_reviews, total_item_value, top_complaint_aspect, confidence (HIGH ≥ 100 reviews, else LOW-N) |
+| `agg_seller.csv` | seller_id | same metrics; confidence HIGH ≥ 30 reviews |
+| `agg_state.csv`, `agg_monthly.csv`, `agg_quarterly.csv` | state / month / quarter | same metrics |
+| `complaint_matrix.csv` | category × aspect | share of aspect mentions with negative sentiment (categories with ≥ 100 reviews) |
+| `complaint_matrix_long.csv` | category, aspect | mention_count, neg_count, complaint_rate |
+| `business_prioritization.csv` | category | review_count, neg_review_rate, neg_sentiment_rate, avg_order_value, total_value (item value in text-reviewed orders, R$), segment (2×2 at the medians) |
+| `stage4_metrics.json` | — | sample-size validation, correlations, group tests, logistic regression, delivery analysis, scenario exposure, prioritization thresholds |
+| `fraud_signals.json` | — | reviews mentioning scams, fraud, counterfeit or stolen goods (keyword-based mentions, not confirmed fraud); rates by signal, seller (≥ 30 reviews) and category (≥ 100 reviews) |
+
+| Metric | Definition |
+|--------|------------|
+| neg_review_rate | share of reviews with review_score ≤ 2 |
+| neg_sentiment_rate | share of text reviews whose sentiment_label is Negative |
+| late_delivery_rate | delivered after the estimated date, among delivered orders |
+| order_value | sum of price + freight_value over the order's items (R$) |
+| scenario exposure | affected order value × assumed impact rate — not observed revenue loss |
+
+---
+
+## Integrity Manifest
+
+### `integrity_manifest.json`
+
+SHA-256 hash and size of every processed data file, every dashboard JSON file and every SQL file, written by `src/export_dashboard_data.py` and verified by `python src/security/integrity.py` and by the dashboard's Security page.
+

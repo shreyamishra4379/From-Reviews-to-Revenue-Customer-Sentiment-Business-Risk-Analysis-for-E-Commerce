@@ -11,7 +11,6 @@ Usage:
 import sys
 import os
 import pandas as pd
-import numpy as np
 
 # Allow imports from project root
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
@@ -27,7 +26,6 @@ from src.data.load_raw import load_all_raw
 
 def _log(msg: str) -> None:
     """Print a tagged log line for traceability."""
-    import sys
     try:
         print(f"[CLEAN] {msg}")
     except UnicodeEncodeError:

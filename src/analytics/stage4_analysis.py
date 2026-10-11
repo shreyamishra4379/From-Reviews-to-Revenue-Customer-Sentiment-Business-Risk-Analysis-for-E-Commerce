@@ -137,7 +137,7 @@ def sample_size_validation(by_prod, by_cat):
     low_n = prod_n[(prod_n['n_reviews']<=2) & (prod_n['neg_rate']==1.0)].iloc[0]
     high_n = prod_n[(prod_n['n_reviews']>=50) & (prod_n['neg_rate'].between(0.15,0.30))].iloc[0]
 
-    _log(f"\nMisleading ranking example (REAL DATA):")
+    _log("\nMisleading ranking example (REAL DATA):")
     _log(f"  Product A: {low_n['product_id']}")
     _log(f"    Reviews: {int(low_n['n_reviews'])}, Negative rate: {low_n['neg_rate']*100:.0f}%")
     _log(f"  Product B: {high_n['product_id']}")
@@ -248,13 +248,13 @@ def aggregate_metrics(rev, by_cat, by_seller, prod_min, cat_min):
          f"{complaint_matrix_valid.shape[1]} aspects: {list(complaint_matrix_valid.columns)}")
 
     # Save
-    cat_agg.to_csv(f"{OUT_DIR}/agg_category.csv", index=False)
-    seller_agg.to_csv(f"{OUT_DIR}/agg_seller.csv", index=False)
-    state_agg.to_csv(f"{OUT_DIR}/agg_state.csv", index=False)
-    month_agg.to_csv(f"{OUT_DIR}/agg_monthly.csv", index=False)
-    qtr_agg.to_csv(f"{OUT_DIR}/agg_quarterly.csv", index=False)
-    complaint_matrix_valid.to_csv(f"{OUT_DIR}/complaint_matrix.csv")
-    complaint_matrix_long.to_csv(f"{OUT_DIR}/complaint_matrix_long.csv", index=False)
+    cat_agg.to_csv(f"{OUT_DIR}/agg_category.csv", index=False, lineterminator="\n")
+    seller_agg.to_csv(f"{OUT_DIR}/agg_seller.csv", index=False, lineterminator="\n")
+    state_agg.to_csv(f"{OUT_DIR}/agg_state.csv", index=False, lineterminator="\n")
+    month_agg.to_csv(f"{OUT_DIR}/agg_monthly.csv", index=False, lineterminator="\n")
+    qtr_agg.to_csv(f"{OUT_DIR}/agg_quarterly.csv", index=False, lineterminator="\n")
+    complaint_matrix_valid.to_csv(f"{OUT_DIR}/complaint_matrix.csv", lineterminator="\n")
+    complaint_matrix_long.to_csv(f"{OUT_DIR}/complaint_matrix_long.csv", index=False, lineterminator="\n")
 
     return cat_agg, cat_rows, complaint_matrix_valid
 
@@ -312,7 +312,7 @@ def statistical_analysis(rev, cat_rows, cat_agg):
     late = dfc[dfc['is_late']]['review_score']
     ontime = dfc[~dfc['is_late']]['review_score']
     u_stat, u_p = stats.mannwhitneyu(ontime, late, alternative='greater')
-    _log(f"  On-time vs Late Delivery (Mann-Whitney U, one-sided):")
+    _log("  On-time vs Late Delivery (Mann-Whitney U, one-sided):")
     _log(f"    On-time mean: {ontime.mean():.2f} (N={len(ontime):,})")
     _log(f"    Late mean:    {late.mean():.2f} (N={len(late):,})")
     _log(f"    U={u_stat:,.0f}, p={u_p:.2e}")
@@ -345,7 +345,7 @@ def statistical_analysis(rev, cat_rows, cat_agg):
     groups_price = [g['review_score'].values for _, g in dfc.groupby('price_band', observed=True)]
     kw_stat, kw_p = stats.kruskal(*groups_price)
     price_means = dfc.groupby('price_band', observed=True)['review_score'].agg(['mean','count'])
-    _log(f"\n  Order Price Bands (Kruskal-Wallis H test):")
+    _log("\n  Order Price Bands (Kruskal-Wallis H test):")
     for band, row in price_means.iterrows():
         _log(f"    {band}: mean={row['mean']:.2f}, N={int(row['count']):,}")
     _log(f"    H={kw_stat:.2f}, p={kw_p:.2e}")
@@ -458,7 +458,7 @@ def commercial_exposure(rev):
     _log(f"Affected orders: {affected_orders:,}")
 
     assumptions = [0.01, 0.02, 0.05, 0.10, 0.15, 0.20]
-    _log(f"\nSensitivity Table:")
+    _log("\nSensitivity Table:")
     _log(f"  {'Impact %':>10} {'Scenario Exposure (R$)':>25}")
     _log(f"  {'-'*10} {'-'*25}")
     table = []
@@ -513,7 +513,7 @@ def business_prioritization(cat_agg):
                  f"value=R$ {r['total_value']:>10,.0f}  N={int(r['review_count'])}")
 
     ca[['category','review_count','neg_review_rate','neg_sentiment_rate',
-        'avg_order_value','total_value','segment']].to_csv(f"{OUT_DIR}/business_prioritization.csv", index=False)
+        'avg_order_value','total_value','segment']].to_csv(f"{OUT_DIR}/business_prioritization.csv", index=False, lineterminator="\n")
 
     return ca, {'median_neg_sentiment_rate': round(float(med_neg), 4),
                 'median_total_value_BRL': round(float(med_val), 2)}
@@ -546,7 +546,7 @@ def main():
         'commercial_exposure': exposure_res,
         'prioritization_thresholds': prio_thresholds,
     }
-    with open(f"{OUT_DIR}/stage4_metrics.json", 'w', encoding='utf-8') as f:
+    with open(f"{OUT_DIR}/stage4_metrics.json", 'w', encoding='utf-8', newline='\n') as f:
         json.dump(all_metrics, f, indent=2, ensure_ascii=False, default=str)
 
     _log(f"\nAll outputs saved to {OUT_DIR}/")

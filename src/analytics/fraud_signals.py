@@ -14,7 +14,6 @@ Usage:
 """
 import json
 import os
-import re
 import sys
 import unicodedata
 
@@ -108,7 +107,7 @@ def main() -> None:
         "category_min_reviews": CATEGORY_MIN,
         "examples": examples,
     }
-    with open(OUT, "w", encoding="utf-8") as f:
+    with open(OUT, "w", encoding="utf-8", newline="\n") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
 
     print(f"Flagged {result['flagged_reviews']:,} of {result['text_reviews']:,} text reviews "

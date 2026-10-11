@@ -4,23 +4,23 @@ Reads ONLY from data/processed/ (no NLP recomputation).
 Writes to dashboard/public/data/*.json
 Prints reconciliation report against source parquets.
 """
-import sys, json, math
+import sys, json
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 import pandas as pd
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from src.nlp.topic_names import topic_name
 
-ROOT   = Path(__file__).resolve().parent
+ROOT   = Path(__file__).resolve().parent.parent
 DATA   = ROOT / "data" / "processed"
 S4     = DATA / "stage4"
 OUT    = ROOT / "dashboard" / "public" / "data"
 OUT.mkdir(parents=True, exist_ok=True)
 
 def jdump(obj, path: Path):
-    path.write_text(json.dumps(obj, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
+    path.write_text(json.dumps(obj, ensure_ascii=False, indent=2, default=str), encoding="utf-8", newline="\n")
     print(f"  Wrote {path.name}  ({path.stat().st_size // 1024} KB)")
 
 errors = []

@@ -2,9 +2,6 @@
 
 export const int = (n: number) => Math.round(n).toLocaleString("en-US");
 
-export const dec = (n: number, digits = 2) =>
-  n.toLocaleString("en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits });
-
 /** 0.183 -> "18.3%" */
 export const pct = (fraction: number, digits = 1) => `${(fraction * 100).toFixed(digits)}%`;
 

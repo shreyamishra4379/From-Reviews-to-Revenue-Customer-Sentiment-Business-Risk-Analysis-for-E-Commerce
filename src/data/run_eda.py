@@ -273,7 +273,7 @@ print(f"Orders with delivery date (delivered): {len(delivered):,}")
 print(f"Orders without delivery date: {len(fact_orders) - len(delivered):,}")
 
 print("\n--- Delivery Delay (days) Summary ---")
-print(f"  (negative = delivered early, positive = delivered late)")
+print("  (negative = delivered early, positive = delivered late)")
 print(delivered["delivery_delay_days"].describe(
     percentiles=[0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.99]
 ).to_string())
@@ -603,7 +603,7 @@ seller_agg["pct_orders"] = seller_agg["order_count"] / seller_agg["order_count"]
 seller_agg["cum_pct_orders"] = seller_agg["pct_orders"].cumsum()
 
 print(f"\nTotal unique sellers: {len(seller_agg):,}")
-print(f"\nSeller Revenue Summary:")
+print("\nSeller Revenue Summary:")
 print(seller_agg["total_revenue"].describe(
     percentiles=[0.25, 0.5, 0.75, 0.9, 0.95, 0.99]).to_string())
 

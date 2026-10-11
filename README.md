@@ -322,7 +322,7 @@ Full table: `data/processed/stage4/business_prioritization.csv`.
 
 ## 10. Web Dashboard (Next.js)
 
-A 9-page dashboard in `dashboard/` (Next.js 15, React 19, TypeScript, Recharts) with light, dark and system themes. It only **reads** precomputed outputs: `export_dashboard_data.py` writes small JSON files to `dashboard/public/data/` after reconciling them against the Parquet sources, and Next.js API routes serve them. No metric is recomputed in JavaScript. The SQL page runs the `sql/` queries (or your own SELECT) through DuckDB, sandboxed to `data/processed/` and read-only.
+A 9-page dashboard in `dashboard/` (Next.js 15, React 19, TypeScript, Recharts) with light, dark and system themes. It only **reads** precomputed outputs: `src/export_dashboard_data.py` writes small JSON files to `dashboard/public/data/` after reconciling them against the Parquet sources, and Next.js API routes serve them. No metric is recomputed in JavaScript. The SQL page runs the `sql/` queries (or your own SELECT) through DuckDB, sandboxed to `data/processed/` and read-only.
 
 | Page | What it shows |
 |---|---|
@@ -378,7 +378,7 @@ The dashboard treats every request as untrusted. Its **Security** page shows the
 | Integrity | SHA-256 fingerprints of the 44 result files (`data/processed/integrity_manifest.json`), re-checked by the dashboard every minute |
 | Detection | Blocked and flagged requests go to an event log (`dashboard/logs/security.log`) with anonymised client IDs |
 
-**Penetration test:** `python security/pentest.py` attacks a running dashboard (SQL injection, file theft, path traversal, oversized and malformed requests, request flooding, header checks) and writes `reports/security_report.md`. Latest run: **29 of 29 checks passed**.
+**Penetration test:** `python src/security/pentest.py` attacks a running dashboard (SQL injection, file theft, path traversal, oversized and malformed requests, request flooding, header checks) and writes `reports/security_report.md`. Latest run: **29 of 29 checks passed**.
 
 **Fraud and counterfeit signals:** `src/analytics/fraud_signals.py` flags review text that mentions scams, fraud, counterfeit or stolen goods, using Portuguese keyword patterns. **282 text reviews (0.69%)** are flagged; they average **1.55 stars**, against 3.67 for all text reviews. One seller has flags in **36.8%** of its 76 text reviews. These are customers' claims, not confirmed fraud.
 
@@ -411,7 +411,7 @@ The dashboard treats every request as untrusted. Its **Security** page shows the
 
 | Layer | Tools |
 |---|---|
-| Languages | Python 3.12+, SQL, TypeScript |
+| Languages | Python 3.10+, SQL, TypeScript |
 | Data | pandas, NumPy, PyArrow (Parquet), kagglehub |
 | NLP / ML | Hugging Face Transformers (XLM-RoBERTa), Sentence Transformers, scikit-learn (TF-IDF, NMF, MiniBatch KMeans), NLTK, PyTorch |
 | Statistics | SciPy, statsmodels |
@@ -426,29 +426,36 @@ The dashboard treats every request as untrusted. Its **Security** page shows the
 ## 14. Project Structure
 
 ```
+├── run.py                          # one command: pipeline (missing stages) + export + dashboard
+├── run.bat                         # Windows double-click launcher for run.py
+├── requirements.txt
 ├── config/settings.py              # paths, raw file names, constants
 ├── data/
-│   ├── raw/                        # 9 Olist CSVs (gitignored; see download_data.py)
-│   └── processed/                  # star schema + NLP + Stage 4 outputs
+│   ├── raw/                        # 9 Olist CSVs (gitignored; fetched by download_data.py)
+│   └── processed/                  # star schema, NLP and Stage 4 outputs (committed)
 │       ├── fact_*.parquet, dim_*.parquet, features_orders.parquet
 │       ├── nlp_reviews.parquet, nlp_topics.json, nlp_aspects.json, nlp_summary_metrics.json
 │       ├── dim_topics.csv          # business names for the 8 topics
-│       └── stage4/                 # agg_*.csv, complaint_matrix*.csv, business_prioritization.csv, stage4_metrics.json
+│       ├── integrity_manifest.json # SHA-256 fingerprints of every result file
+│       └── stage4/                 # aggregates, complaint matrix, prioritization, metrics, fraud signals
 ├── src/
 │   ├── data/                       # download_data, load_raw, make_dataset, run_eda, build_features
 │   ├── nlp/                        # nlp_pipeline (Stage 3), topic_names
-│   ├── analytics/                  # stage4_analysis, validate_sql
-│   └── utils/metrics.py            # shared metric definitions
-├── sql/                            # 11 analytical DuckDB queries
+│   ├── analytics/                  # stage4_analysis, fraud_signals, validate_sql
+│   ├── security/                   # integrity (SHA-256 manifest), pentest (attacks a running dashboard)
+│   ├── utils/metrics.py            # shared metric definitions
+│   └── export_dashboard_data.py    # reconciled JSON export for the dashboard
+├── sql/                            # 11 analytical DuckDB queries + views.json (shared table list)
+├── dashboard/                      # Next.js app: pages, API routes, in-process DuckDB, AI assistant
+│   ├── app/                        # 9 pages + API routes
+│   ├── lib/                        # sql, chart theme, formatting, ai/, security/
+│   └── public/data/                # exported JSON the pages read
 ├── notebooks/01_results_walkthrough.ipynb
-├── tests/                          # pytest: metric unit tests + data reconciliation
-├── dashboard/                      # Next.js dashboard
-├── reports/
-│   ├── data_dictionary.md
-│   └── figures/                    # 14 EDA charts + dashboard/ screenshots
-├── export_dashboard_data.py        # Stage 6: reconciled JSON export for the dashboard
-├── run.bat                         # one-click launcher (Windows)
-└── requirements.txt
+├── tests/                          # pytest: metrics, data reconciliation, SQL, security
+└── reports/
+    ├── data_dictionary.md
+    ├── security_report.md          # latest penetration-test results
+    └── figures/                    # 14 EDA charts + dashboard/ screenshots
 ```
 
 ---
@@ -456,19 +463,22 @@ The dashboard treats every request as untrusted. Its **Security** page shows the
 ## 15. Setup & Reproduction
 
 ### Requirements
-- Python 3.12+ and Node.js 18+
-- Kaggle credentials (`~/.kaggle/kaggle.json`, or `KAGGLE_USERNAME` / `KAGGLE_KEY`) — only needed to rebuild from raw data
+- Python 3.10+ and Node.js 18+
+- Kaggle credentials (`~/.kaggle/kaggle.json`, or `KAGGLE_USERNAME` / `KAGGLE_KEY`), only to rebuild from raw data
+- Optional, for Ask AI: copy `dashboard/.env.example` to `dashboard/.env.local` and add `GROQ_API_KEY` and/or `GEMINI_API_KEY`
+
+### One command
 
 ```bash
-pip install -r requirements.txt
+python run.py
 ```
 
-### One click (Windows)
-`run.bat` skips any stage whose outputs already exist, exports the dashboard data and starts the dashboard at http://localhost:3000.
+It installs missing Python packages, runs any pipeline stage whose outputs are missing, exports the dashboard data, installs and builds the dashboard, and opens it at http://localhost:3000. On Windows you can also double-click `run.bat`. `python run.py --dev` starts the dashboard in development mode.
 
 ### Step by step
 
 ```bash
+pip install -r requirements.txt
 python src/data/download_data.py          # Stage 1: fetch the 9 CSVs with kagglehub
 python src/data/make_dataset.py           # Stage 1: star schema
 python src/data/run_eda.py                # Stage 2: EDA charts
@@ -476,10 +486,12 @@ python src/data/build_features.py         # Stage 2: features
 python src/nlp/nlp_pipeline.py            # Stage 3: NLP (about 1.5 h on CPU, faster on GPU)
 python src/nlp/topic_names.py             # Stage 3: topic lookup (re-check names after a re-run)
 python src/analytics/stage4_analysis.py   # Stage 4: business analytics + statistics
+python src/analytics/fraud_signals.py     # Stage 4: fraud and counterfeit signals
 python src/analytics/validate_sql.py      # Stage 4: run all SQL queries
-python export_dashboard_data.py           # Stage 6: reconciled dashboard JSON
+python src/export_dashboard_data.py       # Stage 6: reconciled dashboard JSON + SHA-256 manifest
 python -m pytest                          # tests
-cd dashboard && npm install && npm run dev
+cd dashboard && npm install && npm run build && npm start
+python src/security/pentest.py            # in another terminal: attack the running dashboard
 ```
 
 The processed outputs are committed, so the dashboard, SQL, tests and notebook all work without re-running Stages 1–3.

@@ -16,7 +16,6 @@ Usage:
 """
 import hashlib
 import json
-import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -60,7 +59,7 @@ def write_manifest() -> dict:
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "files": entries,
     }
-    MANIFEST.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    MANIFEST.write_text(json.dumps(manifest, indent=2), encoding="utf-8", newline="\n")
     return manifest
 
 

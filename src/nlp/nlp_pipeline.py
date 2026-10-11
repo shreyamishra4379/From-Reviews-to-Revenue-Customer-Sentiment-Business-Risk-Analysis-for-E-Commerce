@@ -14,7 +14,7 @@ Pipeline Phases:
   Phase 7: Data-driven aspect/complaint extraction
   Phase 8: Save all outputs
 """
-import os, sys, json, time, warnings, re, pickle
+import os, json, time, warnings, re, pickle
 import pandas as pd
 import numpy as np
 from collections import Counter
@@ -339,7 +339,7 @@ def extract_aspects_data_driven(texts, sentiments):
     
     # Find terms disproportionately frequent in negative reviews
     # (aspect discovery, not pre-assumed)
-    _log(f"  Top 30 negative-skewed terms:")
+    _log("  Top 30 negative-skewed terms:")
     neg_ratio = {}
     for term, freq in neg_term_freq.items():
         pos_freq = pos_term_freq.get(term, 1)
@@ -596,7 +596,7 @@ def main():
     # Convert sample reviews for JSON serialization
     for t in interpreted:
         t['sample_reviews'] = [s[:300] for s in t['sample_reviews']]
-    with open(OUTPUT_TOPICS, 'w', encoding='utf-8') as f:
+    with open(OUTPUT_TOPICS, 'w', encoding='utf-8', newline='\n') as f:
         json.dump({
             'tfidf_topics': tfidf_topics,
             'embedding_topics': interpreted,
@@ -605,7 +605,7 @@ def main():
     _log(f"  Saved {OUTPUT_TOPICS}")
     
     # Save aspect details
-    with open(OUTPUT_ASPECTS, 'w', encoding='utf-8') as f:
+    with open(OUTPUT_ASPECTS, 'w', encoding='utf-8', newline='\n') as f:
         json.dump({
             'aspect_summary': aspect_summary,
             'top_negative_terms_discovered': {k: {'freq': int(v[0]), 'neg_pos_ratio': round(v[1], 2)} 
@@ -653,7 +653,7 @@ def main():
         'aspect_summary': aspect_summary
     }
     
-    with open(OUTPUT_METRICS, 'w', encoding='utf-8') as f:
+    with open(OUTPUT_METRICS, 'w', encoding='utf-8', newline='\n') as f:
         json.dump(metrics, f, indent=2, ensure_ascii=False, default=str)
     _log(f"  Saved {OUTPUT_METRICS}")
     
@@ -662,7 +662,7 @@ def main():
     _log("STAGE 3 COMPLETE")
     _log(f"  Sentiment agreement (transformer vs score): {agreement_rate:.2f}%")
     _log(f"  Sentiment agreement (lexicon vs score): {baseline_agreement:.2f}%")
-    _log(f"  Topics discovered: 8 (TF-IDF baseline) + 8 (embedding-based)")
+    _log("  Topics discovered: 8 (TF-IDF baseline) + 8 (embedding-based)")
     _log(f"  Aspects discovered: {len(aspect_summary)}")
     _log("=" * 70)
 

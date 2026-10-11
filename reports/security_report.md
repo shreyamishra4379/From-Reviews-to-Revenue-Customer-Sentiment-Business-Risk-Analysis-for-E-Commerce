@@ -1,6 +1,6 @@
 # Penetration test report
 
-Target: `http://localhost:3123`. Run at 2026-10-11T05:13:34Z. **29 of 29 checks passed.**
+Target: `http://localhost:3000`. Run at 2026-10-11T05:36:16Z. **29 of 29 checks passed.**
 
 | Category | Check | Result | Evidence |
 |---|---|---|---|

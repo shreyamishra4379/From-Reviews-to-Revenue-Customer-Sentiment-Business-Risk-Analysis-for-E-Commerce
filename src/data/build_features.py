@@ -16,7 +16,6 @@ sys.stdout.reconfigure(encoding='utf-8')
 
 import pandas as pd
 import numpy as np
-from pathlib import Path
 from config.settings import DATA_PROC
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -206,7 +205,7 @@ features = features.drop(columns=[
 # ═══════════════════════════════════════════════════════════════════════════
 
 print(f"\nFeature table shape: {features.shape}")
-print(f"Grain: order_id (1 row per order)")
+print("Grain: order_id (1 row per order)")
 print(f"Total rows: {len(features):,}")
 
 # ── Sample rows ─────────────────────────────────────────────────────────

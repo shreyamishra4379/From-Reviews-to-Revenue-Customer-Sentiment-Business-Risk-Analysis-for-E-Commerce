@@ -7,7 +7,7 @@ import {
 import { Boxes } from "lucide-react";
 import type { CategoryIntelligence, CategoryRow } from "../types";
 import { useData, Loading, ErrorState, PageHeader, Panel, Segmented, LowN } from "../components/ui";
-import { axis, categoryAxis, grid, tooltip, barLabel, rateColor, rateTextColor, C } from "@/lib/chart";
+import { axis, categoryAxis, tooltip, barLabel, rateColor, rateTextColor, C } from "@/lib/chart";
 import { int, pct, brl, label } from "@/lib/format";
 
 const FILTERS = ["reliable", "all", "low"] as const;
