@@ -1,0 +1,207 @@
+{
+  "method": "Keyword patterns on Portuguese review text (accents removed). Mentions, not confirmed fraud.",
+  "patterns": {
+    "Counterfeit or not original": [
+      "\\bfalsificad",
+      "\\bfals[oa]s?\\b",
+      "\\bpirata",
+      "\\breplica",
+      "nao (?:e|eh|era) original",
+      "\\bnao original"
+    ],
+    "Scam or fraud": [
+      "\\bgolpe",
+      "\\bfraud",
+      "\\bestelionat",
+      "\\benganad"
+    ],
+    "Stolen or cloned": [
+      "\\broubad",
+      "\\bclonad"
+    ]
+  },
+  "text_reviews": 40977,
+  "flagged_reviews": 282,
+  "flagged_pct": 0.69,
+  "flagged_avg_review_score": 1.55,
+  "all_avg_review_score": 3.67,
+  "flagged_negative_sentiment_pct": 87.2,
+  "by_signal": [
+    {
+      "signal": "Counterfeit or not original",
+      "reviews": 204,
+      "avg_review_score": 1.51,
+      "negative_sentiment_pct": 83.8
+    },
+    {
+      "signal": "Scam or fraud",
+      "reviews": 61,
+      "avg_review_score": 1.3,
+      "negative_sentiment_pct": 98.4
+    },
+    {
+      "signal": "Stolen or cloned",
+      "reviews": 27,
+      "avg_review_score": 2.22,
+      "negative_sentiment_pct": 92.6
+    }
+  ],
+  "top_sellers": [
+    {
+      "seller_id": "1ca7077d890b907f89be8c954a02686a",
+      "reviews": 76,
+      "flagged": 28,
+      "rate_pct": 36.84
+    },
+    {
+      "seller_id": "2eb70248d66e0e3ef83659f71b244378",
+      "reviews": 125,
+      "flagged": 18,
+      "rate_pct": 14.4
+    },
+    {
+      "seller_id": "8444e55c1f13cd5c179851e5ca5ebd00",
+      "reviews": 48,
+      "flagged": 4,
+      "rate_pct": 8.33
+    },
+    {
+      "seller_id": "88460e8ebdecbfecb5f9601833981930",
+      "reviews": 121,
+      "flagged": 10,
+      "rate_pct": 8.26
+    },
+    {
+      "seller_id": "44073f8b7e41514de3b7815dd0237f4f",
+      "reviews": 76,
+      "flagged": 6,
+      "rate_pct": 7.89
+    },
+    {
+      "seller_id": "0b90b6df587eb83608a64ea8b390cf07",
+      "reviews": 56,
+      "flagged": 4,
+      "rate_pct": 7.14
+    },
+    {
+      "seller_id": "229c3efbfb0ea2058de4ccdfbc3d784a",
+      "reviews": 58,
+      "flagged": 4,
+      "rate_pct": 6.9
+    },
+    {
+      "seller_id": "966cb4760537b1404caedd472cc610a5",
+      "reviews": 35,
+      "flagged": 2,
+      "rate_pct": 5.71
+    },
+    {
+      "seller_id": "7008613ea464bad5cb9b83456e1e6a8f",
+      "reviews": 36,
+      "flagged": 2,
+      "rate_pct": 5.56
+    },
+    {
+      "seller_id": "522620dcb18a6b31cd7bdf73665113a9",
+      "reviews": 81,
+      "flagged": 4,
+      "rate_pct": 4.94
+    }
+  ],
+  "top_categories": [
+    {
+      "category": "unknown",
+      "reviews": 628,
+      "flagged": 26,
+      "rate_pct": 4.14
+    },
+    {
+      "category": "computers_accessories",
+      "reviews": 2733,
+      "flagged": 55,
+      "rate_pct": 2.01
+    },
+    {
+      "category": "watches_gifts",
+      "reviews": 2491,
+      "flagged": 41,
+      "rate_pct": 1.65
+    },
+    {
+      "category": "audio",
+      "reviews": 156,
+      "flagged": 2,
+      "rate_pct": 1.28
+    },
+    {
+      "category": "consoles_games",
+      "reviews": 400,
+      "flagged": 5,
+      "rate_pct": 1.25
+    },
+    {
+      "category": "books_general_interest",
+      "reviews": 162,
+      "flagged": 2,
+      "rate_pct": 1.23
+    },
+    {
+      "category": "perfumery",
+      "reviews": 1240,
+      "flagged": 13,
+      "rate_pct": 1.05
+    },
+    {
+      "category": "electronics",
+      "reviews": 1052,
+      "flagged": 11,
+      "rate_pct": 1.05
+    },
+    {
+      "category": "cool_stuff",
+      "reviews": 1529,
+      "flagged": 15,
+      "rate_pct": 0.98
+    },
+    {
+      "category": "toys",
+      "reviews": 1448,
+      "flagged": 14,
+      "rate_pct": 0.97
+    }
+  ],
+  "seller_min_reviews": 30,
+  "category_min_reviews": 100,
+  "examples": [
+    {
+      "signal": "Counterfeit or not original",
+      "review_score": 1,
+      "text": "A targaryen não é de confiança não entregou a minha compra e colocou no rastreamento do pedido que foi entregue no dia 14/12/17 empresa falsa quero receber meus produtos que foram pagos com boleto bancari"
+    },
+    {
+      "signal": "Counterfeit or not original",
+      "review_score": 5,
+      "text": "Recebi o produto que eh falso quero meu dinheiro de volta"
+    },
+    {
+      "signal": "Scam or fraud",
+      "review_score": 1,
+      "text": "Produto não foi entregue, entregaram somente um envelope vazio, sem nada, nem um papel dentro, um absurdo, puro golpe, caso de POLICIA."
+    },
+    {
+      "signal": "Scam or fraud",
+      "review_score": 1,
+      "text": "O controle remoto e uma replica que se compra em qualquer esquina nao traz o nem o nome da marca cce me sinto enganado!"
+    },
+    {
+      "signal": "Stolen or cloned",
+      "review_score": 4,
+      "text": "gostaria de saber de houve o debito correto no meu cartão. tive cartão clonado."
+    },
+    {
+      "signal": "Stolen or cloned",
+      "review_score": 4,
+      "text": "O produto foi roubado do veículo dos correios. O vendedor reenviou um novo produto.Ainda não recebi, por isso estou avaliando a atitude da loja em me contactar e apresentar uma solução."
+    }
+  ]
+}

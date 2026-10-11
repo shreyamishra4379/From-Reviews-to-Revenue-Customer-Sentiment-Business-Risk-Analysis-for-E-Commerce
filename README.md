@@ -354,6 +354,24 @@ The **Ask AI** page is a streaming chat assistant. It does not answer from memor
 
 **Power BI:** not built yet. The star-schema Parquet files and `stage4/*.csv` are ready to import into Power BI Desktop if a BI version is needed.
 
+### Security
+
+The dashboard treats every request as untrusted. Its **Security** page shows the controls, the last penetration test, blocked requests and fraud signals in the reviews.
+
+| Area | What it does |
+|---|---|
+| SQL injection | A read-only validator allows one `SELECT`/`WITH` statement; the DuckDB sandbox cannot read files outside `data/processed/` or change its own settings |
+| Abuse | Per-client rate limits (30 SQL and 10 AI requests per minute) and request-size limits (16 KB SQL, 64 KB chat) |
+| Browser | Content Security Policy, `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`; no `X-Powered-By` |
+| Secrets | API keys stay on the server, are never sent to the browser or the model, and are redacted from logs; errors hide server file paths |
+| AI | Prompt-injection detection: suspicious messages are logged and the model is reminded of its rules |
+| Integrity | SHA-256 fingerprints of the 44 result files (`data/processed/integrity_manifest.json`), re-checked by the dashboard every minute |
+| Detection | Blocked and flagged requests go to an event log (`dashboard/logs/security.log`) with anonymised client IDs |
+
+**Penetration test:** `python security/pentest.py` attacks a running dashboard (SQL injection, file theft, path traversal, oversized and malformed requests, request flooding, header checks) and writes `reports/security_report.md`. Latest run: **29 of 29 checks passed**.
+
+**Fraud and counterfeit signals:** `src/analytics/fraud_signals.py` flags review text that mentions scams, fraud, counterfeit or stolen goods, using Portuguese keyword patterns. **282 text reviews (0.69%)** are flagged; they average **1.55 stars**, against 3.67 for all text reviews. One seller has flags in **36.8%** of its 76 text reviews. These are customers' claims, not confirmed fraud.
+
 ---
 
 ## 11. Limitations
@@ -390,6 +408,7 @@ The **Ask AI** page is a streaming chat assistant. It does not answer from memor
 | SQL engine | DuckDB |
 | Dashboard | Next.js 15, React 19, Recharts |
 | AI assistant | Groq (gpt-oss-120b) with Gemini fallback, OpenAI-compatible tool calling over DuckDB |
+| Security | CSP and security headers, rate limiting, DuckDB sandbox, SHA-256 integrity manifest, automated penetration test |
 | Testing | pytest |
 
 ---

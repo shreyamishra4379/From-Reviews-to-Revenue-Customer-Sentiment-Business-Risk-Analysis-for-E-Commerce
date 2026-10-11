@@ -9,8 +9,11 @@ Steps (each is skipped when its outputs already exist):
   2. Stage 2  EDA charts and features
   3. Stage 3  NLP pipeline (slow: about 1.5 h on CPU)
   4. Stage 4  business analytics, statistics, SQL validation
-  5. Export   topic names and dashboard JSON (always, a few seconds)
-  6. Dashboard  npm install (first run), build, start on http://localhost:3000
+  5. Fraud    fraud and counterfeit signals in review text
+  6. Export   topic names, dashboard JSON and SHA-256 integrity manifest (always)
+  7. Dashboard  npm install (first run), build, start on http://localhost:3000
+
+Security check of the running dashboard: python security/pentest.py
 """
 import os
 import shutil
@@ -69,6 +72,7 @@ def main():
     stage("Stage 3", PROC / "nlp_reviews.parquet", ["src/nlp/nlp_pipeline.py"])
     stage("Stage 4", PROC / "stage4" / "stage4_metrics.json",
           ["src/analytics/stage4_analysis.py", "src/analytics/validate_sql.py"])
+    stage("Fraud signals", PROC / "stage4" / "fraud_signals.json", ["src/analytics/fraud_signals.py"])
 
     step("Exporting dashboard data")
     run([PY, str(ROOT / "src/nlp/topic_names.py")])
@@ -83,7 +87,8 @@ def main():
         run(["npm", "run", "build"], cwd=DASH)
 
     url = f"http://localhost:{PORT}"
-    print(f"\n  Starting the dashboard at {url}  (Ctrl+C to stop)\n", flush=True)
+    print(f"\n  Starting the dashboard at {url}  (Ctrl+C to stop)")
+    print(f"  Security check (in another terminal): python security/pentest.py {url}\n", flush=True)
     threading.Thread(target=lambda: (time.sleep(6), webbrowser.open(url)), daemon=True).start()
     cmd = ["npx", "next", "dev" if dev else "start", "-p", str(PORT)]
     try:

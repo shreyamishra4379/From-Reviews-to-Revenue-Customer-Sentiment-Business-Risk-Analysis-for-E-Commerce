@@ -466,6 +466,17 @@ nlp_insights = {
 jdump(nlp_insights, OUT / "nlp_insights.json")
 
 # ─────────────────────────────────────────────────────────────────────────────
+# EXPORT 7 — security.json  (fraud and counterfeit signals in review text)
+# ─────────────────────────────────────────────────────────────────────────────
+fraud_path = S4 / "fraud_signals.json"
+if fraud_path.exists():
+    fraud = json.loads(fraud_path.read_text(encoding="utf-8"))
+    fraud.pop("patterns", None)   # the UI shows the method text; patterns stay in Python
+    jdump({"fraud_signals": fraud}, OUT / "security.json")
+else:
+    print("  [WARN] fraud_signals.json missing - run: python src/analytics/fraud_signals.py")
+
+# ─────────────────────────────────────────────────────────────────────────────
 # SUMMARY
 # ─────────────────────────────────────────────────────────────────────────────
 print()
@@ -483,3 +494,8 @@ if errors:
     sys.exit(1)
 else:
     print("All exports reconciled OK.")
+
+# Fingerprint every result file (SHA-256) so later tampering is detectable
+from src.security.integrity import write_manifest
+_m = write_manifest()
+print(f"Integrity manifest: {len(_m['files'])} files fingerprinted (SHA-256).")

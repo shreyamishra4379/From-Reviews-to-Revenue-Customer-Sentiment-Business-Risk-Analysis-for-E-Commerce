@@ -1,0 +1,182 @@
+{
+  "algorithm": "SHA-256",
+  "generated_at": "2026-10-11T04:56:13Z",
+  "files": {
+    "dashboard/public/data/business_impact.json": {
+      "sha256": "0c01f14ea2798432d3b9cbcc2be618c80251caf10d07bc4240c0599f2c220549",
+      "bytes": 11475
+    },
+    "dashboard/public/data/category_intelligence.json": {
+      "sha256": "66807e3de0563d65bd8d3c8f8e45182b323bf814cae94bcfa0e633305413d3b2",
+      "bytes": 31591
+    },
+    "dashboard/public/data/delivery.json": {
+      "sha256": "e959a84d8c12d5260a6b0a60d8e34c1bd8d7887e61acb443dede44a384857b61",
+      "bytes": 6395
+    },
+    "dashboard/public/data/nlp_insights.json": {
+      "sha256": "7ad13183cbea76d913763bc51ca0129b555b40603ee85dc4fec510859615d328",
+      "bytes": 5075
+    },
+    "dashboard/public/data/overview.json": {
+      "sha256": "46a050a7765d6c288aec2f562560e902fbdd1199d82c7237763b50f905207362",
+      "bytes": 3356
+    },
+    "dashboard/public/data/security.json": {
+      "sha256": "c3fc02a303ef40a0779c84cb45b0384535bd2457c797b5ecee9eb69e8b44fbd6",
+      "bytes": 5257
+    },
+    "dashboard/public/data/statistical_analysis.json": {
+      "sha256": "f6e138e33ebb0beec6ebf547e1d59c0eb4d867f5a786d49d5dc9a490894ef810",
+      "bytes": 2635
+    },
+    "data/processed/dim_customers.parquet": {
+      "sha256": "31198c2c77390e2623ca6fdb5f869c8f967753fdc34c1802de5aefa240fbb607",
+      "bytes": 7002898
+    },
+    "data/processed/dim_geolocation.parquet": {
+      "sha256": "ed289cfdf6fdcb0064050b5796f228953556f81fa367a19b8211c94171530eb6",
+      "bytes": 565863
+    },
+    "data/processed/dim_payments.parquet": {
+      "sha256": "33d7abf7d1e44703c1a484cb5cb1d7a8725a20ced9057ff88283a95f949dc194",
+      "bytes": 3507124
+    },
+    "data/processed/dim_products.parquet": {
+      "sha256": "0e5f7512755d95fc6f181ae53115ec3c9205bc61661fc6bbfd661c136e7779f4",
+      "bytes": 1440570
+    },
+    "data/processed/dim_sellers.parquet": {
+      "sha256": "fae44608f8e6770ea8f55a37d77894c45091aa7bf12164b36752f34e62c00a9c",
+      "bytes": 133721
+    },
+    "data/processed/dim_topics.csv": {
+      "sha256": "8defe1551b30ec3c59f3b363c647f1bc999045c8190e3683836029eb57b0379d",
+      "bytes": 1896
+    },
+    "data/processed/fact_order_items.parquet": {
+      "sha256": "b78b60ad0eb7f84adf510f5e17dc62118dbcd0a057e6e819824abfba3eb03685",
+      "bytes": 6401042
+    },
+    "data/processed/fact_order_reviews.parquet": {
+      "sha256": "06f9a208d2dcf2d5792312a79bee9af179dca244a2841332edc86bcac3afa6df",
+      "bytes": 9476155
+    },
+    "data/processed/fact_orders.parquet": {
+      "sha256": "500a4e650aceac7a5ff5df33f2b80ad0a586242fc76a6e182d6666f49daab62e",
+      "bytes": 10220005
+    },
+    "data/processed/features_orders.parquet": {
+      "sha256": "072627084918b4fab10016ecd2feaab46597c27450bede170fcc236f6c481b9f",
+      "bytes": 9587098
+    },
+    "data/processed/nlp_aspects.json": {
+      "sha256": "4fc32778599e8456a00f55150f7f05e70b92819c9b10d9b1f78aed27577ff55b",
+      "bytes": 5373
+    },
+    "data/processed/nlp_reviews.parquet": {
+      "sha256": "44508a4d551c06683ba425b17681e6c0a1cf01a47bfd586baedf0e678efdb642",
+      "bytes": 4747423
+    },
+    "data/processed/nlp_summary_metrics.json": {
+      "sha256": "c4199453a179f84b0e91d493ce45409d8e653d86ab9e75259019e3f84ab3da5e",
+      "bytes": 3217
+    },
+    "data/processed/nlp_topics.json": {
+      "sha256": "69afd5d3566497262a3ca94f2f8eba201391b5d29680d5851090384cd7d12019",
+      "bytes": 12057
+    },
+    "data/processed/review_score_distribution.json": {
+      "sha256": "4bf35c1ec657d51dddca07e36f064a4938e30bddc476e8d159734eac20c31e5e",
+      "bytes": 220
+    },
+    "data/processed/stage4/agg_category.csv": {
+      "sha256": "e49d1f5ec8ec33d9b92d9ff445c053286a70ee1452755ba2a6d408aa5e0657ac",
+      "bytes": 16269
+    },
+    "data/processed/stage4/agg_monthly.csv": {
+      "sha256": "a424c84ade8cba239d40f8767a32e7fc5d1f0f33cdad192829d0bff32d531ffd",
+      "bytes": 3909
+    },
+    "data/processed/stage4/agg_quarterly.csv": {
+      "sha256": "37440a2d4c53fbe87622286f6dd7ac7c7c7325764f4d90c4abce635758d93496",
+      "bytes": 1605
+    },
+    "data/processed/stage4/agg_seller.csv": {
+      "sha256": "7eb9d480943839a37d6bfd92f790332f9c7deec61f15bb72a0a21dc77b56a7c0",
+      "bytes": 337347
+    },
+    "data/processed/stage4/agg_state.csv": {
+      "sha256": "4543aebfe171110ee7ff1f04f959581bd034d95b2cf56ec01591c33e4952a66b",
+      "bytes": 4386
+    },
+    "data/processed/stage4/business_prioritization.csv": {
+      "sha256": "acf32775f65fc8661f784c495e1f67fd8b237f4252a766295a73566e340c3488",
+      "bytes": 4333
+    },
+    "data/processed/stage4/complaint_matrix.csv": {
+      "sha256": "139bc32acd4dce0dafa2ef0421a6c7cf2303d11504b9414bcc03fc7302d244da",
+      "bytes": 5572
+    },
+    "data/processed/stage4/complaint_matrix_long.csv": {
+      "sha256": "fcfef34e7c60fc1042fd016257b27c2573d3bb3be0090bd3288d2b3afd47c22f",
+      "bytes": 27834
+    },
+    "data/processed/stage4/fraud_signals.json": {
+      "sha256": "2f769f30e5ef11ba8719f2dd09d2dc112ecb877c4e3a3084942f0aaa4c596f86",
+      "bytes": 5269
+    },
+    "data/processed/stage4/stage4_metrics.json": {
+      "sha256": "acb933276246e4fb4351fed956236ef0684d492c8afaf16bfa35b3a0f8456154",
+      "bytes": 9981
+    },
+    "sql/01_category_revenue.sql": {
+      "sha256": "d5905bf3ffae2e03c092fdf70560cc8702969883ea187f2ef0f422a019519966",
+      "bytes": 372
+    },
+    "sql/02_avg_review_score_by_category.sql": {
+      "sha256": "c71528c02e564dc06b11c9474c1c008ce68a6ca5f6cd3ed7fd7ce3d579255887",
+      "bytes": 746
+    },
+    "sql/03_negative_review_rate.sql": {
+      "sha256": "53ecc69c8ddb23cf35b39e8a2290aa3861c725c321761f007aff12c4c50497ef",
+      "bytes": 728
+    },
+    "sql/04_late_delivery_rate.sql": {
+      "sha256": "dfb2a2764d9bf9620123ffaab61d22cdaa3cb4f8a913d6364fb47bd3f85cfbe5",
+      "bytes": 480
+    },
+    "sql/05_category_complaint_rate.sql": {
+      "sha256": "2af6c9097046d7ebb0a0da501438fae3647918026c52e598da9419d2def72777",
+      "bytes": 761
+    },
+    "sql/06_seller_performance.sql": {
+      "sha256": "d5eb85756e57b37a677e812918f205b9bc149e64aaca3e6a59fef02b2f6981fe",
+      "bytes": 1007
+    },
+    "sql/07_monthly_trends.sql": {
+      "sha256": "30db27f1a260961ba76becb5495c3c9afb1f403a0a4f63a4c7be6924f7a92942",
+      "bytes": 415
+    },
+    "sql/08_product_ranking.sql": {
+      "sha256": "052fb3f031d0c6746ecd7b02fab3cda50ba30a05ff4308198123ecdbfc5b9fc1",
+      "bytes": 874
+    },
+    "sql/09_complaint_breakdown.sql": {
+      "sha256": "516e21f63e13ea7178d9af8ecd48c886e88b12f0765b6ca6b2b7e939f8849c5f",
+      "bytes": 441
+    },
+    "sql/10_customer_geography.sql": {
+      "sha256": "37d35bd79a72d6be035f3d628ed40f958fd9a0002dc28f864a40ee09cb0792e6",
+      "bytes": 854
+    },
+    "sql/11_order_value_segments.sql": {
+      "sha256": "23c3d8485a6c2d3f543f1f5cff3abec5d2d67b752bb7a648983f020142336e10",
+      "bytes": 735
+    },
+    "sql/views.json": {
+      "sha256": "2a038069a29e264f9fd639130cad7063b2c73c5416926a937cb9b5ac1d0bc7b1",
+      "bytes": 585
+    }
+  }
+}

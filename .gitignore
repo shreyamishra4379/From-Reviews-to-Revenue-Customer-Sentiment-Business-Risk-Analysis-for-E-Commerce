@@ -54,3 +54,6 @@ data/processed/checkpoints/
 # ── Testing ──────────────────────────────────────────────────────────────────
 .pytest_cache/
 .coverage
+
+# Dashboard security event log
+dashboard/logs/

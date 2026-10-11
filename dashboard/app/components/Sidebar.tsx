@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   LayoutDashboard, MessageSquareText, Truck, Boxes, Wallet,
-  Sigma, Database, Sparkles, Menu, X,
+  Sigma, Database, Sparkles, Menu, X, ShieldCheck,
 } from "lucide-react";
 import { STAR } from "@/lib/chart";
 import ThemeSwitch from "./ThemeSwitch";
@@ -25,6 +25,7 @@ const GROUPS = [
     links: [
       { href: "/statistical-analysis", label: "Statistics", icon: Sigma },
       { href: "/sql-analytics", label: "SQL workbench", icon: Database },
+      { href: "/security", label: "Security", icon: ShieldCheck },
     ],
   },
   {

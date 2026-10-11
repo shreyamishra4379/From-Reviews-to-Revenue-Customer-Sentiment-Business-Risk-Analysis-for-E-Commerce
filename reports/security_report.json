@@ -1,0 +1,211 @@
+{
+  "target": "http://localhost:3123",
+  "run_at": "2026-10-11T05:06:56Z",
+  "passed": 29,
+  "total": 29,
+  "results": [
+    {
+      "category": "Control",
+      "name": "Legitimate read-only query",
+      "attack": "SELECT COUNT(*) FROM nlp_reviews",
+      "passed": true,
+      "evidence": "HTTP 200: {\"columns\":[\"n\"],\"rows\":[[40977]],\"row_count\":1,\"truncated\":false}"
+    },
+    {
+      "category": "SQL injection",
+      "name": "Drop a table",
+      "attack": "DROP TABLE fact_orders",
+      "passed": true,
+      "evidence": "HTTP 400: {\"error\":\"Only SELECT / WITH queries are allowed.\"}"
+    },
+    {
+      "category": "SQL injection",
+      "name": "Stacked statement after a valid query",
+      "attack": "SELECT 1; DROP TABLE fact_orders",
+      "passed": true,
+      "evidence": "HTTP 400: {\"error\":\"Only a single statement is allowed.\"}"
+    },
+    {
+      "category": "SQL injection",
+      "name": "Mixed-case keyword to dodge filters",
+      "attack": "dRoP tAbLe fact_orders",
+      "passed": true,
+      "evidence": "HTTP 400: {\"error\":\"Only SELECT / WITH queries are allowed.\"}"
+    },
+    {
+      "category": "SQL injection",
+      "name": "Hidden statement after a comment",
+      "attack": "/* report */ DELETE FROM fact_orders",
+      "passed": true,
+      "evidence": "HTTP 400: {\"error\":\"Only SELECT / WITH queries are allowed.\"}"
+    },
+    {
+      "category": "SQL injection",
+      "name": "Write a file with COPY",
+      "attack": "COPY (SELECT * FROM dim_customers) TO 'stolen.csv'",
+      "passed": true,
+      "evidence": "HTTP 400: {\"error\":\"Only SELECT / WITH queries are allowed.\"}"
+    },
+    {
+      "category": "SQL injection",
+      "name": "Attach another database",
+      "attack": "ATTACH 'evil.db' AS evil",
+      "passed": true,
+      "evidence": "HTTP 400: {\"error\":\"Only SELECT / WITH queries are allowed.\"}"
+    },
+    {
+      "category": "SQL injection",
+      "name": "Re-enable file access",
+      "attack": "SET enable_external_access = true",
+      "passed": true,
+      "evidence": "HTTP 400: {\"error\":\"Only SELECT / WITH queries are allowed.\"}"
+    },
+    {
+      "category": "SQL injection",
+      "name": "Install an extension",
+      "attack": "INSTALL httpfs",
+      "passed": true,
+      "evidence": "HTTP 400: {\"error\":\"Only SELECT / WITH queries are allowed.\"}"
+    },
+    {
+      "category": "File access",
+      "name": "Read an operating-system file",
+      "attack": "SELECT * FROM read_csv_auto('C:/Windows/win.ini')",
+      "passed": true,
+      "evidence": "HTTP 403: {\"error\":\"Access denied: queries can only read the project's processed tables, n"
+    },
+    {
+      "category": "File access",
+      "name": "Read raw data outside data/processed",
+      "attack": "SELECT * FROM read_csv_auto('C:/ProjectWS/From-Reviews-to-Revenue-Customer-Sentiment-Business-Risk-Analysis-for-E-Commerce-main/data/raw/olist_customers_dataset.csv')",
+      "passed": true,
+      "evidence": "HTTP 403: {\"error\":\"Access denied: queries can only read the project's processed tables, n"
+    },
+    {
+      "category": "File access",
+      "name": "Read the API key file",
+      "attack": "SELECT * FROM read_text('C:/ProjectWS/From-Reviews-to-Revenue-Customer-Sentiment-Business-Risk-Analysis-for-E-Commerce-main/dashboard/.env.local')",
+      "passed": true,
+      "evidence": "HTTP 403: {\"error\":\"Access denied: queries can only read the project's processed tables, n"
+    },
+    {
+      "category": "File access",
+      "name": "List files with glob()",
+      "attack": "SELECT * FROM glob('C:/*')",
+      "passed": true,
+      "evidence": "HTTP 403: {\"error\":\"Access denied: queries can only read the project's processed tables, n"
+    },
+    {
+      "category": "File access",
+      "name": "Escape with a relative path",
+      "attack": "SELECT * FROM read_text('../../dashboard/.env.local')",
+      "passed": true,
+      "evidence": "HTTP 403: {\"error\":\"Access denied: queries can only read the project's processed tables, n"
+    },
+    {
+      "category": "Information disclosure",
+      "name": "Errors hide server file paths",
+      "attack": "denied file read + unknown column",
+      "passed": true,
+      "evidence": "no server paths in error text"
+    },
+    {
+      "category": "Path traversal",
+      "name": "GET /../.env.local",
+      "attack": "/../.env.local",
+      "passed": true,
+      "evidence": "HTTP 404, secrets leaked: False"
+    },
+    {
+      "category": "Path traversal",
+      "name": "GET /data/../../.env.local",
+      "attack": "/data/../../.env.local",
+      "passed": true,
+      "evidence": "HTTP 404, secrets leaked: False"
+    },
+    {
+      "category": "Path traversal",
+      "name": "GET /%2e%2e/%2e%2e/dashboard/.env.local",
+      "attack": "/%2e%2e/%2e%2e/dashboard/.env.local",
+      "passed": true,
+      "evidence": "HTTP 404, secrets leaked: False"
+    },
+    {
+      "category": "Path traversal",
+      "name": "GET /.env.local",
+      "attack": "/.env.local",
+      "passed": true,
+      "evidence": "HTTP 404, secrets leaked: False"
+    },
+    {
+      "category": "Input validation",
+      "name": "Malformed JSON body",
+      "attack": "{not json",
+      "passed": true,
+      "evidence": "HTTP 400: {\"error\":\"The request body must be JSON: { \\\"sql\\\": \\\"SELECT ...\\\" }\"}"
+    },
+    {
+      "category": "Input validation",
+      "name": "100 KB SQL request",
+      "attack": "100 KB body",
+      "passed": true,
+      "evidence": "HTTP 413: {\"error\":\"Request too large. The limit is 16 KB.\"}"
+    },
+    {
+      "category": "Input validation",
+      "name": "100 KB chat request",
+      "attack": "100 KB body",
+      "passed": true,
+      "evidence": "HTTP 413: {\"error\":\"Request too large. The limit is 64 KB.\"}"
+    },
+    {
+      "category": "Security headers",
+      "name": "content-security-policy",
+      "attack": "GET /",
+      "passed": true,
+      "evidence": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form"
+    },
+    {
+      "category": "Security headers",
+      "name": "x-frame-options",
+      "attack": "GET /",
+      "passed": true,
+      "evidence": "DENY"
+    },
+    {
+      "category": "Security headers",
+      "name": "x-content-type-options",
+      "attack": "GET /",
+      "passed": true,
+      "evidence": "nosniff"
+    },
+    {
+      "category": "Security headers",
+      "name": "referrer-policy",
+      "attack": "GET /",
+      "passed": true,
+      "evidence": "strict-origin-when-cross-origin"
+    },
+    {
+      "category": "Security headers",
+      "name": "permissions-policy",
+      "attack": "GET /",
+      "passed": true,
+      "evidence": "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    },
+    {
+      "category": "Security headers",
+      "name": "No X-Powered-By header",
+      "attack": "GET /",
+      "passed": true,
+      "evidence": "not sent"
+    },
+    {
+      "category": "Rate limiting",
+      "name": "40 queries in a few seconds",
+      "attack": "40 x POST /api/sql/execute",
+      "passed": true,
+      "evidence": "13 allowed, 27 refused with HTTP 429"
+    }
+  ]
+}

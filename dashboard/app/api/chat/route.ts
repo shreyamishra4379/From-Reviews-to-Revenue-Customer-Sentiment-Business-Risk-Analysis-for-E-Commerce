@@ -5,6 +5,9 @@ import {
 } from "@/lib/ai/providers";
 import { TOOL_SPECS, executeTool } from "@/lib/ai/tools";
 import { systemPrompt } from "@/lib/ai/prompt";
+import { guardRequest } from "@/lib/security/guard";
+import { logSecurityEvent, redact } from "@/lib/security/audit";
+import { detectPromptInjection, INJECTION_REMINDER } from "@/lib/security/promptGuard";
 
 // POST /api/chat
 // Body: { messages: { role: "user" | "assistant", content: string }[] }
@@ -65,6 +68,9 @@ async function runTurn(p: ProviderConfig, base: ChatMessage[], emit: Emit, signa
 }
 
 export async function POST(req: NextRequest) {
+  const { blocked, client } = guardRequest(req, "/api/chat");
+  if (blocked) return blocked;
+
   const providers = configuredProviders();
   if (providers.length === 0) {
     return Response.json(
@@ -95,6 +101,14 @@ export async function POST(req: NextRequest) {
   }
   const base: ChatMessage[] = [{ role: "system", content: system }, ...history];
 
+  // Prompt-injection detection: log it and remind the model; the question still gets an answer.
+  const latest = String(history[history.length - 1].content ?? "");
+  const matched = detectPromptInjection(latest);
+  if (matched.length) {
+    logSecurityEvent("prompt_injection_suspected", "/api/chat", client, `${matched.join(", ")}: ${latest.slice(0, 160)}`);
+    base.push({ role: "system", content: INJECTION_REMINDER });
+  }
+
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
     async start(controller) {
@@ -109,14 +123,14 @@ export async function POST(req: NextRequest) {
             break;
           } catch (e) {
             const msg = e instanceof Error ? e.message : String(e);
-            console.error(`[chat] ${p.label} failed: ${msg}`);
+            console.error(`[chat] ${p.label} failed: ${redact(msg)}`);
             failures.push(msg);
             // Part of the answer is already on screen; switching provider would duplicate it.
             if (e instanceof TextAlreadySentError || req.signal.aborted) break;
           }
         }
         if (failures.length) {
-          emit({ type: "error", message: failures.join(" | ").slice(0, 800) });
+          emit({ type: "error", message: redact(failures.join(" | ")).slice(0, 800) });
         }
       } finally {
         emit({ type: "done" });
