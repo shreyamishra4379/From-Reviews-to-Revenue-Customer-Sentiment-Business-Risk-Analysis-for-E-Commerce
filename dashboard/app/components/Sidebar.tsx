@@ -7,6 +7,7 @@ import {
   Sigma, Database, Sparkles, Menu, X,
 } from "lucide-react";
 import { STAR } from "@/lib/chart";
+import ThemeSwitch from "./ThemeSwitch";
 
 const GROUPS = [
   {
@@ -75,6 +76,7 @@ export default function Sidebar() {
           ))}
         </nav>
         <div className="sidebar-foot">
+          <ThemeSwitch />
           Money in Brazilian reais (R$).<br />
           Statistics show associations, not causes.
         </div>

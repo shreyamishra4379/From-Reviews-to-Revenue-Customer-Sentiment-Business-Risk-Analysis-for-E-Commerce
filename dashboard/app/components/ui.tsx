@@ -20,8 +20,22 @@ export function useData<T>(url: string): { data: T | null; error: string | null 
   return { data, error };
 }
 
-export function Loading({ label = "Loading data" }: { label?: string }) {
-  return <div className="state" role="status"><div className="spinner" />{label}</div>;
+/** Page-shaped placeholder while data loads; pass `inline` for small areas. */
+export function Loading({ label = "Loading data", inline = false }: { label?: string; inline?: boolean }) {
+  if (inline) return <div className="state" role="status"><div className="spinner" />{label}</div>;
+  return (
+    <div className="skeleton" role="status" aria-label={label}>
+      <div className="sk" style={{ width: 120, height: 14 }} />
+      <div className="sk" style={{ width: "min(720px, 90%)", height: 34 }} />
+      <div className="sk" style={{ width: "min(520px, 70%)", height: 34, marginTop: -8 }} />
+      <div className="sk" style={{ width: "min(640px, 85%)", height: 16, marginTop: 6 }} />
+      <div className="grid grid-2" style={{ marginTop: 10 }}>
+        <div className="sk sk-panel" />
+        <div className="sk sk-panel" />
+      </div>
+      <div className="sk sk-panel" style={{ height: 180 }} />
+    </div>
+  );
 }
 
 export function ErrorState({ message }: { message: string }) {

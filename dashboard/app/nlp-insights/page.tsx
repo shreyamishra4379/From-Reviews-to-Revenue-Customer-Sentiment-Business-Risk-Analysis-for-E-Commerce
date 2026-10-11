@@ -42,7 +42,7 @@ export default function CustomerVoicePage() {
               <XAxis type="number" hide domain={[0, "dataMax"]} />
               <YAxis type="category" dataKey="aspect" width={150} {...categoryAxis} />
               <Tooltip {...tooltip} formatter={(v: any, _: unknown, p: any) => [`${int(p.payload.negative)} mentions (${pctOf(v)})`, "Negative"]} />
-              <Bar dataKey="share" fill={C.ink2} radius={[0, 3, 3, 0]} barSize={18}>
+              <Bar dataKey="share" fill={C.bar} radius={[0, 3, 3, 0]} barSize={18}>
                 <LabelList dataKey="share" position="right" style={barLabel} formatter={(v: any) => pctOf(v)} />
               </Bar>
             </BarChart>

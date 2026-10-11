@@ -77,7 +77,7 @@ export default function SqlWorkbenchPage() {
 
       <div className="workbench">
         <Panel title="Queries">
-          {listError ? <ErrorState message={listError} /> : !data ? <Loading label="Loading queries" /> : (
+          {listError ? <ErrorState message={listError} /> : !data ? <Loading label="Loading queries" inline /> : (
             <div className="query-list">
               {queries.map(q => (
                 <button key={q.file} aria-pressed={!custom && selected === q.file} onClick={() => choose(q.file)}>
@@ -99,7 +99,7 @@ export default function SqlWorkbenchPage() {
             title={custom ? "Your query" : current?.name ?? "Select a query"}
             action={
               <button className="btn btn-primary" onClick={run} disabled={running || !sql.trim()}>
-                {running ? <div className="spinner" style={{ width: 14, height: 14, borderTopColor: "#fff" }} /> : <Play size={15} />}
+                {running ? <div className="spinner" style={{ width: 14, height: 14, borderTopColor: "var(--btn-fg)" }} /> : <Play size={15} />}
                 {running ? "Running" : "Run query"}
               </button>
             }

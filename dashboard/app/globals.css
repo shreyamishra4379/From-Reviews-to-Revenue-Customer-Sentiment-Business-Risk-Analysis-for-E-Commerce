@@ -12,12 +12,25 @@
   --ink:     #13223A;
   --ink-2:   #2F3C52;
   --muted:   #5A6578;
-  --faint:   #8A93A3;
+  --faint:   #6F7889;
   --line:    #D9DEE6;
   --line-2:  #E8EBF0;
   --cobalt:  #1F49B6;
   --cobalt-soft: #E6ECFA;
   --yellow:  #FFD84D;
+
+  /* roles that differ between themes */
+  --btn-bg:       #1F49B6;
+  --btn-bg-hover: #193C96;
+  --btn-fg:       #FFFFFF;
+  --inverse-bg:   #13223A;   /* user chat bubble, pressed chips */
+  --inverse-fg:   #FFFFFF;
+  --caution-bg:   #FBF5E3;
+  --caution-fg:   #8A6A10;
+  --caution-line: #EAD9A0;
+  --chart-soft:   #A9BBEA;   /* secondary bars (monthly volume) */
+  --overlay:      rgba(19, 34, 58, 0.35);
+  --tooltip-shadow: 0 4px 14px rgba(19, 34, 58, 0.08);
 
   /* star scale: 1★ … 5★ (also negative / neutral / positive) */
   --s1: #B42318;
@@ -25,9 +38,16 @@
   --s3: #CA9A1C;
   --s4: #5E9A57;
   --s5: #1E7552;
+  /* star tones for TEXT: same hues, darkened to >= 4.5:1 on white */
+  --t1: #B42318;
+  --t2: #B4531F;
+  --t3: #8F6B0E;
+  --t4: #3F7A3A;
+  --t5: #1E7552;
   --neg: var(--s1);
   --neu: var(--s3);
   --pos: var(--s5);
+  --bar: #2F3C52;            /* neutral data bars */
 
   --sans:  "Schibsted Grotesk", "Segoe UI", system-ui, sans-serif;
   --serif: "Newsreader", Georgia, "Times New Roman", serif;
@@ -36,6 +56,46 @@
   --r-panel: 10px;
   --r-control: 6px;
   --sidebar-w: 232px;
+  color-scheme: light;
+}
+
+/* Dark theme: deep navy paper (the light theme's ink), star colors lifted for
+   contrast. Applied when the user picks Dark, or picks System on a dark device. */
+:root[data-theme="dark"] {
+  --paper:   #0E1520;
+  --surface: #151E2C;
+  --sunken:  #1A2536;
+  --ink:     #E7ECF3;
+  --ink-2:   #C4CCD9;
+  --muted:   #97A2B4;
+  --faint:   #7F8B9F;
+  --line:    #2A3648;
+  --line-2:  #212C3D;
+  --cobalt:  #86A3F2;
+  --cobalt-soft: rgba(134, 163, 242, 0.14);
+  --s1: #EF6A5B;
+  --s2: #EE8D52;
+  --s3: #DDB441;
+  --s4: #7DBA72;
+  --s5: #43B186;
+  --t1: #EF6A5B;
+  --t2: #EE8D52;
+  --t3: #DDB441;
+  --t4: #7DBA72;
+  --t5: #43B186;
+  --bar: #7686A2;
+  --btn-bg:       #3A61D6;
+  --btn-bg-hover: #4B70E0;
+  --btn-fg:       #FFFFFF;
+  --inverse-bg:   #E7ECF3;
+  --inverse-fg:   #0E1520;
+  --caution-bg:   #2A2413;
+  --caution-fg:   #E6C766;
+  --caution-line: #574A1F;
+  --chart-soft:   #34508F;
+  --overlay:      rgba(0, 0, 0, 0.55);
+  --tooltip-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  color-scheme: dark;
 }
 
 html { -webkit-text-size-adjust: 100%; }
@@ -89,13 +149,14 @@ button { font: inherit; color: inherit; }
 
 .topbar { display: none; }
 
+.main:focus { outline: none; }
 .main { margin-left: var(--sidebar-w); flex: 1; min-width: 0; padding: 36px 44px 64px; }
 .page { max-width: 1240px; }
 
 @media (max-width: 900px) {
   .layout { flex-direction: column; }
   .sidebar { transform: translateX(-100%); transition: transform 0.2s ease; box-shadow: none; }
-  .sidebar.open { transform: none; box-shadow: 0 0 0 100vmax rgba(19, 34, 58, 0.35); }
+  .sidebar.open { transform: none; box-shadow: 0 0 0 100vmax var(--overlay); }
   .topbar {
     display: flex; align-items: center; justify-content: space-between;
     position: sticky; top: 0; z-index: 40;
@@ -150,9 +211,9 @@ button { font: inherit; color: inherit; }
 .stat-value { font-size: 1.65rem; font-weight: 600; line-height: 1.1; letter-spacing: -0.01em; }
 .stat-label { font-size: 0.88rem; color: var(--ink-2); margin-top: 6px; }
 .stat-detail { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
-.tone-neg { color: var(--neg); }
-.tone-pos { color: var(--pos); }
-.tone-neu { color: var(--neu); }
+.tone-neg { color: var(--t1); }
+.tone-pos { color: var(--t5); }
+.tone-neu { color: var(--t3); }
 
 /* ── Notes (disclaimers, caveats) ────────────────────────────────────────── */
 .note {
@@ -162,8 +223,8 @@ button { font: inherit; color: inherit; }
   padding: 10px 14px; border-radius: 0 var(--r-control) var(--r-control) 0;
 }
 .note svg { flex-shrink: 0; margin-top: 2px; color: var(--cobalt); }
-.note.caution { border-left-color: var(--s3); background: #FBF5E3; }
-.note.caution svg { color: #8A6A10; }
+.note.caution { border-left-color: var(--s3); background: var(--caution-bg); }
+.note.caution svg { color: var(--caution-fg); }
 .note + * { margin-top: 18px; }
 
 /* ── Tables ──────────────────────────────────────────────────────────────── */
@@ -185,7 +246,7 @@ th[aria-sort] { color: var(--cobalt); }
 
 /* ── Tags, chips, controls ───────────────────────────────────────────────── */
 .tag { display: inline-block; font-size: 0.74rem; font-weight: 600; padding: 1px 8px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
-.tag.low-n { color: #8A6A10; background: #FBF5E3; border-color: #EAD9A0; }
+.tag.low-n { color: var(--caution-fg); background: var(--caution-bg); border-color: var(--caution-line); }
 
 .segmented { display: inline-flex; flex-wrap: wrap; gap: 6px; }
 .segmented button {
@@ -193,7 +254,7 @@ th[aria-sort] { color: var(--cobalt); }
   border-radius: 999px; padding: 5px 12px; font-size: 0.84rem; cursor: pointer;
 }
 .segmented button:hover { border-color: var(--faint); }
-.segmented button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.segmented button[aria-pressed="true"] { background: var(--inverse-bg); border-color: var(--inverse-bg); color: var(--inverse-fg); }
 
 .input {
   border: 1px solid var(--line); border-radius: var(--r-control); background: var(--surface);
@@ -205,8 +266,8 @@ th[aria-sort] { color: var(--cobalt); }
   cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
 }
 .btn:hover { border-color: var(--faint); }
-.btn-primary { background: var(--cobalt); border-color: var(--cobalt); color: #fff; }
-.btn-primary:hover { background: #193C96; border-color: #193C96; }
+.btn-primary { background: var(--btn-bg); border-color: var(--btn-bg); color: var(--btn-fg); }
+.btn-primary:hover { background: var(--btn-bg-hover); border-color: var(--btn-bg-hover); }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
 /* ── States ──────────────────────────────────────────────────────────────── */
@@ -301,7 +362,7 @@ textarea.code:focus { outline: 2px solid var(--cobalt); outline-offset: 0; }
 .chat-msg.user { align-self: flex-end; align-items: flex-end; }
 .chat-msg.assistant { align-self: flex-start; }
 .chat-bubble { padding: 12px 16px; border-radius: var(--r-panel); line-height: 1.6; font-size: 0.94rem; background: var(--surface); border: 1px solid var(--line); overflow-x: auto; min-width: 0; }
-.chat-msg.user .chat-bubble { background: var(--ink); border-color: var(--ink); color: #fff; white-space: pre-wrap; }
+.chat-msg.user .chat-bubble { background: var(--inverse-bg); border-color: var(--inverse-bg); color: var(--inverse-fg); white-space: pre-wrap; }
 .chat-bubble p { margin: 0 0 8px; }
 .chat-bubble p:last-child { margin-bottom: 0; }
 .chat-bubble ul, .chat-bubble ol { margin: 4px 0 8px 20px; }
@@ -332,3 +393,45 @@ textarea.code:focus { outline: 2px solid var(--cobalt); outline-offset: 0; }
 .chat-actions { display: flex; gap: 8px; }
 .chat-footnote { font-size: 0.76rem; color: var(--faint); margin-top: 8px; }
 @media (max-width: 900px) { .chat-page { height: auto; min-height: calc(100vh - 140px); } .chat-msg { max-width: 100%; } }
+
+/* ── Theme switch ────────────────────────────────────────────────────────── */
+.theme-switch { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); border-radius: 999px; padding: 2px; gap: 2px; margin-bottom: 12px; }
+.theme-switch button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 4px; border: none; background: none; cursor: pointer;
+  border-radius: 999px; padding: 5px 4px; font-size: 0.76rem; color: var(--muted); min-width: 0;
+}
+.theme-switch button:hover { color: var(--ink); }
+.theme-switch button[aria-pressed="true"] { background: var(--inverse-bg); color: var(--inverse-fg); }
+
+/* Colors fade briefly when the user switches theme (added by ThemeSwitch for 300 ms).
+   Only on that action, so page loads don't animate. */
+html.theme-changing *, html.theme-changing *::before, html.theme-changing *::after {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, fill 0.25s ease, stroke 0.25s ease !important;
+}
+
+/* ── Skip link ───────────────────────────────────────────────────────────── */
+.skip-link { position: absolute; left: 12px; top: -48px; z-index: 100; background: var(--inverse-bg); color: var(--inverse-fg); padding: 8px 14px; border-radius: var(--r-control); text-decoration: none; font-weight: 600; }
+.skip-link:focus { top: 12px; }
+
+/* ── Skeleton loading ────────────────────────────────────────────────────── */
+.skeleton { display: grid; gap: 18px; }
+.sk { background: var(--line-2); border-radius: var(--r-control); position: relative; overflow: hidden; }
+.sk::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--surface) 55%, transparent), transparent);
+  transform: translateX(-100%); animation: sk 1.4s ease-in-out infinite;
+}
+@keyframes sk { to { transform: translateX(100%); } }
+.sk-panel { height: 260px; border-radius: var(--r-panel); }
+
+/* ── Ask AI: grouped starter questions ───────────────────────────────────── */
+.starter-groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+@media (max-width: 900px) { .starter-groups { grid-template-columns: 1fr; } }
+.starter { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-panel); padding: 14px; }
+.starter h3 { font-size: 0.86rem; font-weight: 600; color: var(--muted); display: flex; align-items: center; gap: 7px; margin-bottom: 8px; }
+.starter button {
+  display: block; width: 100%; text-align: left; border: none; background: none; cursor: pointer;
+  padding: 8px 10px; margin: 0 -10px; width: calc(100% + 20px); border-radius: var(--r-control);
+  font-size: 0.92rem; line-height: 1.4; color: var(--ink);
+}
+.starter button:hover { background: var(--cobalt-soft); color: var(--cobalt); }

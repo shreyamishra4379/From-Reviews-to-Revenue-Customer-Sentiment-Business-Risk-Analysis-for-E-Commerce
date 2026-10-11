@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Sparkles, Search } from "lucide-react";
+import { Sparkles, Search, MessageSquareText, Truck, Wallet } from "lucide-react";
 import { PageHeader } from "../components/ui";
 
 interface ToolEvent {
@@ -22,13 +22,25 @@ interface Msg {
   pending?: boolean;
 }
 
-const SUGGESTIONS = [
-  "What are customers complaining about the most?",
-  "How strongly is late delivery associated with review scores?",
-  "Which categories should Olist fix first, and why?",
-  "Which 5 states have the highest late-delivery rate?",
-  "What does the scenario exposure model say at 5%?",
-  "Explain how the sentiment analysis was done.",
+const STARTERS = [
+  {
+    title: "Complaints", Icon: MessageSquareText, questions: [
+      "What are customers complaining about the most?",
+      "Explain how the sentiment analysis was done.",
+    ],
+  },
+  {
+    title: "Delivery", Icon: Truck, questions: [
+      "How strongly is late delivery associated with review scores?",
+      "Which 5 states have the highest late-delivery rate?",
+    ],
+  },
+  {
+    title: "Money and priorities", Icon: Wallet, questions: [
+      "Which categories should Olist fix first, and why?",
+      "What does the scenario exposure model say at 5%?",
+    ],
+  },
 ];
 
 const STORAGE_KEY = "ask-ai-chat";
@@ -159,9 +171,12 @@ export default function AskAIPage() {
         {messages.length === 0 && (
           <div className="chat-empty">
             <p>Start with one of these, or type your own question below.</p>
-            <div className="chat-suggestions">
-              {SUGGESTIONS.map(s => (
-                <button key={s} className="chat-chip" onClick={() => send(s)}>{s}</button>
+            <div className="starter-groups">
+              {STARTERS.map(({ title, Icon, questions }) => (
+                <div className="starter" key={title}>
+                  <h3><Icon size={15} />{title}</h3>
+                  {questions.map(q => <button key={q} type="button" onClick={() => send(q)}>{q}</button>)}
+                </div>
               ))}
             </div>
           </div>

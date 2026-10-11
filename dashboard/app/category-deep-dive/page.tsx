@@ -7,7 +7,7 @@ import {
 import { Boxes } from "lucide-react";
 import type { CategoryIntelligence, CategoryRow } from "../types";
 import { useData, Loading, ErrorState, PageHeader, Panel, Segmented, LowN } from "../components/ui";
-import { axis, categoryAxis, grid, tooltip, barLabel, rateColor, C } from "@/lib/chart";
+import { axis, categoryAxis, grid, tooltip, barLabel, rateColor, rateTextColor, C } from "@/lib/chart";
 import { int, pct, brl, label } from "@/lib/format";
 
 const FILTERS = ["reliable", "all", "low"] as const;
@@ -29,7 +29,8 @@ const COLUMNS: { key: SortKey; title: string; num: boolean; fmt: (r: CategoryRow
 
 function heatStyle(v: number) {
   const c = rateColor(v / 100, 0.2, 0.6);
-  return { background: `${c}${v >= 50 ? "33" : "1F"}`, color: v >= 45 ? c : "var(--ink-2)", fontWeight: v >= 45 ? 600 : 400 };
+  const t = rateTextColor(v / 100, 0.2, 0.6);
+  return { background: `color-mix(in srgb, ${c} ${v >= 50 ? 20 : 12}%, transparent)`, color: v >= 45 ? t : "var(--ink-2)", fontWeight: v >= 45 ? 600 : 400 };
 }
 
 export default function CategoriesPage() {
@@ -175,7 +176,7 @@ export default function CategoriesPage() {
                 <tr key={r.category}>
                   {COLUMNS.map(col => (
                     <td key={col.key} className={col.num ? "num" : ""}
-                      style={col.key === "neg_sentiment_rate" && !r.low_n ? { color: rateColor(r.neg_sentiment_rate, 0.2, 0.34), fontWeight: 600 } : undefined}>
+                      style={col.key === "neg_sentiment_rate" && !r.low_n ? { color: rateTextColor(r.neg_sentiment_rate, 0.2, 0.34), fontWeight: 600 } : undefined}>
                       {col.fmt(r)}
                       {col.key === "category" && r.low_n && <> <LowN /></>}
                     </td>

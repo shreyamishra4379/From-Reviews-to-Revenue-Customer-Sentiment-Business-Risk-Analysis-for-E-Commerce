@@ -99,7 +99,7 @@ export default function StatisticsPage() {
               <XAxis dataKey="name" {...axis} />
               <YAxis {...axis} width={36} domain={[3, 4.2]} tickFormatter={v => v.toFixed(1)} />
               <Tooltip {...tooltip} formatter={(v: any, _: unknown, p: any) => [`${v.toFixed(2)} ★ (${int(p.payload.n)} reviews)`, "Average"]} />
-              <Bar dataKey="mean_score" fill={C.ink2} radius={[3, 3, 0, 0]} maxBarSize={64}>
+              <Bar dataKey="mean_score" fill={C.bar} radius={[3, 3, 0, 0]} maxBarSize={64}>
                 <LabelList dataKey="mean_score" position="top" style={barLabel} formatter={(v: any) => `${v.toFixed(2)} ★`} />
               </Bar>
             </BarChart>

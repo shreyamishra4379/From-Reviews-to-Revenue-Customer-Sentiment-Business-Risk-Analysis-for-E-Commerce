@@ -73,7 +73,7 @@ export default function DeliveryPage() {
               <XAxis type="number" hide domain={[0, "dataMax"]} />
               <YAxis type="category" dataKey="name" width={190} {...categoryAxis} />
               <Tooltip {...tooltip} formatter={(v: any, _: unknown, p: any) => [`${pctOf(v)} of ${int(p.payload.order_count)} reviewed orders`, "Late"]} />
-              <Bar dataKey="late_rate_pct" fill={C.ink2} radius={[0, 3, 3, 0]} barSize={18}>
+              <Bar dataKey="late_rate_pct" fill={C.bar} radius={[0, 3, 3, 0]} barSize={18}>
                 <LabelList dataKey="late_rate_pct" position="right" style={barLabel} formatter={(v: any) => pctOf(v)} />
               </Bar>
             </BarChart>

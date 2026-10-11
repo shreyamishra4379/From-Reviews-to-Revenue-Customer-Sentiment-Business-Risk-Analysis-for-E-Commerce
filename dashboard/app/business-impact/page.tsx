@@ -11,10 +11,10 @@ import { axis, grid, tooltip, barLabel, C } from "@/lib/chart";
 import { int, pct, brl, brlShort, label } from "@/lib/format";
 
 const SEGMENTS = [
-  { key: "HIGH Risk + HIGH Exposure", name: "Act first", desc: "High complaint rate and high order value", color: C.s1 },
-  { key: "HIGH Risk + LOW Exposure", name: "Fix cheaply", desc: "High complaint rate, lower order value", color: C.s2 },
-  { key: "LOW Risk + HIGH Exposure", name: "Protect", desc: "Lower complaint rate, high order value", color: C.cobalt },
-  { key: "LOW Risk + LOW Exposure", name: "Monitor", desc: "Lower complaint rate and order value", color: C.faint },
+  { key: "HIGH Risk + HIGH Exposure", name: "Act first", desc: "High complaint rate and high order value", color: C.s1, text: "var(--t1)" },
+  { key: "HIGH Risk + LOW Exposure", name: "Fix cheaply", desc: "High complaint rate, lower order value", color: C.s2, text: "var(--t2)" },
+  { key: "LOW Risk + HIGH Exposure", name: "Protect", desc: "Lower complaint rate, high order value", color: C.cobalt, text: "var(--cobalt)" },
+  { key: "LOW Risk + LOW Exposure", name: "Monitor", desc: "Lower complaint rate and order value", color: C.faint, text: "var(--muted)" },
 ] as const;
 const segInfo = (k: string) => SEGMENTS.find(s => s.key === k) ?? SEGMENTS[3];
 
@@ -69,7 +69,7 @@ export default function BusinessImpactPage() {
           <ResponsiveContainer width="100%" height={380}>
             <ScatterChart margin={{ top: 10, right: 16, left: 4, bottom: 26 }}>
               <CartesianGrid stroke={C.line2} />
-              <XAxis type="number" dataKey="x" scale="log" domain={["auto", "auto"]} {...axis}
+              <XAxis type="number" dataKey="x" scale="log" domain={[8000, 800000]} ticks={[10000, 30000, 100000, 300000]} {...axis}
                 tickFormatter={v => brlShort(v)}
                 label={{ value: "Item value in reviewed orders (log scale)", position: "insideBottom", offset: -16, fill: C.muted, fontSize: 12 }} />
               <YAxis type="number" dataKey="y" {...axis} width={44} tickFormatter={v => `${v}%`} domain={[10, "auto"]} />
@@ -102,7 +102,7 @@ export default function BusinessImpactPage() {
               <XAxis dataKey="name" {...axis} />
               <YAxis {...axis} width={72} tickFormatter={v => brlShort(v)} />
               <Tooltip {...tooltip} formatter={(v: any) => [brl(v), "Scenario exposure"]} labelFormatter={l => `${l} impact assumption`} />
-              <Bar dataKey="exposure_BRL" fill={C.ink2} radius={[3, 3, 0, 0]} maxBarSize={48}>
+              <Bar dataKey="exposure_BRL" fill={C.bar} radius={[3, 3, 0, 0]} maxBarSize={48}>
                 <LabelList dataKey="exposure_BRL" position="top" style={barLabel} formatter={(v: any) => brlShort(v)} />
               </Bar>
             </BarChart>
@@ -130,7 +130,7 @@ export default function BusinessImpactPage() {
                 return (
                   <tr key={r.category}>
                     <td>{label(r.category)}</td>
-                    <td><span className="tag" style={{ color: s.color }} title={s.desc}>{s.name}</span></td>
+                    <td><span className="tag" style={{ color: s.text }} title={s.desc}>{s.name}</span></td>
                     <td className="num">{int(r.review_count)}</td>
                     <td className="num">{pct(r.neg_sentiment_rate)}</td>
                     <td className="num">{pct(r.neg_review_rate)}</td>
