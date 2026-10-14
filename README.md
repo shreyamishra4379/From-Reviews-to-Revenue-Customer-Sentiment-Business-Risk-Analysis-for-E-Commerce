@@ -351,6 +351,13 @@ The **Ask AI** page is a streaming chat assistant. It does not answer from memor
 
 **Providers:** Groq is the primary provider (`openai/gpt-oss-120b`) and Gemini is the fallback (`gemini-3.8-flash`). Both are called through their OpenAI-compatible APIs. If Groq fails or is rate-limited before it starts answering, Gemini answers the question from scratch. The project's rules (R$, association rather than causation, scenario labels, low-N warnings) are part of the system prompt in `dashboard/lib/ai/prompt.ts`.
 
+**Guardrails:** every message is classified on the server before any AI call (`dashboard/lib/ai/guardrails.ts`).
+- Project questions, and short follow-ups to them ("why?", "what about office furniture?"), go to the AI.
+- Greetings, thanks, goodbyes and "what can you do" are answered locally with **no API call**. Each reply is composed from the project's results (a random real finding, suggested questions built from real category and state names, the user's own greeting), so it is not a fixed canned message.
+- Off-topic questions (weather, people, general maths, jokes, coding help) are declined locally with **no API call**, with a short reason and project questions to try instead.
+- Locally answered turns are left out of the history sent to the AI, so they cost no tokens later either. Each AI answer is capped at 2,048 tokens, and the system prompt repeats the scope rule as a second layer.
+- Rate limits: 60 chat messages a minute per client, of which at most 10 can reach the AI.
+
 **Setup:** copy `dashboard/.env.example` to `dashboard/.env.local`, add `GROQ_API_KEY` and `GEMINI_API_KEY`, then restart the server. Either key on its own also works. `.env.local` is gitignored; the keys stay on the server and are never sent to the browser.
 
 | | |
@@ -371,10 +378,10 @@ The dashboard treats every request as untrusted. Its **Security** page shows the
 | Area | What it does |
 |---|---|
 | SQL injection | A read-only validator allows one `SELECT`/`WITH` statement; the DuckDB sandbox cannot read files outside `data/processed/` or change its own settings |
-| Abuse | Per-client rate limits (30 SQL and 10 AI requests per minute) and request-size limits (16 KB SQL, 64 KB chat) |
+| Abuse | Per-client rate limits (30 SQL queries, 60 chat messages and at most 10 AI calls per minute) and request-size limits (16 KB SQL, 64 KB chat) |
 | Browser | Content Security Policy, `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`; no `X-Powered-By` |
 | Secrets | API keys stay on the server, are never sent to the browser or the model, and are redacted from logs; errors hide server file paths |
-| AI | Prompt-injection detection: suspicious messages are logged and the model is reminded of its rules |
+| AI | Scope guardrail (greetings and off-topic questions answered locally, no API call) and prompt-injection detection (logged, model reminded of its rules) |
 | Integrity | SHA-256 fingerprints of the 44 result files (`data/processed/integrity_manifest.json`), re-checked by the dashboard every minute |
 | Detection | Blocked and flagged requests go to an event log (`dashboard/logs/security.log`) with anonymised client IDs |
 

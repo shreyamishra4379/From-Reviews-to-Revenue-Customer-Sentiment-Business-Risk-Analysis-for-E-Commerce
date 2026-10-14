@@ -32,7 +32,7 @@ export function pValue(p: number): string {
   return `p = ${p.toFixed(4)}`;
 }
 
-const UF: Record<string, string> = {
+export const STATE_NAMES: Record<string, string> = {
   AC: "Acre", AL: "Alagoas", AP: "Amapá", AM: "Amazonas", BA: "Bahia", CE: "Ceará",
   DF: "Distrito Federal", ES: "Espírito Santo", GO: "Goiás", MA: "Maranhão", MT: "Mato Grosso",
   MS: "Mato Grosso do Sul", MG: "Minas Gerais", PA: "Pará", PB: "Paraíba", PR: "Paraná",
@@ -42,4 +42,4 @@ const UF: Record<string, string> = {
 };
 
 /** "AL" -> "Alagoas" */
-export const stateName = (code: string) => UF[code] ?? code;
+export const stateName = (code: string) => STATE_NAMES[code] ?? code;

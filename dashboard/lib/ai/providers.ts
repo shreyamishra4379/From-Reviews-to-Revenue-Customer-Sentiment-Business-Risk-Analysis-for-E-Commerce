@@ -1,6 +1,8 @@
 // OpenAI-compatible chat providers: Groq (primary) and Gemini (fallback).
 // Both expose POST {baseUrl}/chat/completions with the same request/stream format.
 
+const MAX_ANSWER_TOKENS = Number(process.env.AI_MAX_TOKENS) || 2048;
+
 export interface ProviderConfig {
   id: "groq" | "gemini";
   label: string;
@@ -85,6 +87,8 @@ export async function streamRound(
         tool_choice: "auto",
         stream: true,
         temperature: 0.2,
+        // Caps tokens per answer (reasoning included) so no single reply can burn the quota.
+        max_tokens: MAX_ANSWER_TOKENS,
       }),
       signal,
     });

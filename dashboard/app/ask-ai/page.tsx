@@ -17,6 +17,7 @@ interface Msg {
   content: string;
   tools?: ToolEvent[];
   provider?: string;
+  local?: boolean;       // answered by the guardrail without an AI call
   fallback?: boolean;
   error?: string;
   pending?: boolean;
@@ -145,7 +146,7 @@ export default function AskAIPage() {
           if (ev.type === "text") update(m => ({ ...m, content: m.content + ev.delta }));
           else if (ev.type === "tool") update(m => ({ ...m, tools: [...(m.tools ?? []), ev] }));
           else if (ev.type === "provider")
-            update(m => ({ ...m, provider: `${ev.label} (${ev.model})`, fallback: ev.fallback, tools: ev.fallback ? [] : m.tools }));
+            update(m => ({ ...m, provider: `${ev.label} (${ev.model})`, local: ev.id === "local", fallback: ev.fallback, tools: ev.fallback ? [] : m.tools }));
           else if (ev.type === "error") update(m => ({ ...m, error: ev.message }));
         }
       }
@@ -210,7 +211,10 @@ export default function AskAIPage() {
               {m.error && <div className="chat-error">{m.error}</div>}
             </div>
             {m.role === "assistant" && m.provider && !m.pending && (
-              <div className="chat-meta">{m.fallback ? "Answered by the fallback provider, " : "Answered by "}{m.provider}</div>
+              <div className="chat-meta">
+                {m.local ? "Answered instantly by the guardrail, no AI call"
+                  : <>{m.fallback ? "Answered by the fallback provider, " : "Answered by "}{m.provider}</>}
+              </div>
             )}
           </div>
         ))}

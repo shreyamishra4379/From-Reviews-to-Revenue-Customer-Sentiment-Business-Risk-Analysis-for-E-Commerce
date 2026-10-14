@@ -50,7 +50,7 @@ export default function SecurityPage() {
 
   const { integrity: integ, pentest, fraud_signals: fraud, controls } = data;
   const sql = controls.rate_limits.find(r => r.route.includes("sql"));
-  const chat = controls.rate_limits.find(r => r.route.includes("chat"));
+  const chat = controls.rate_limits.find(r => r.route === "/api/chat:ai");
 
   const CONTROLS = [
     { control: "Read-only SQL validator", protects: "SQL injection, destructive statements (DROP, DELETE, COPY, ATTACH)", layer: "API" },
@@ -60,6 +60,7 @@ export default function SecurityPage() {
     { control: "Content Security Policy and security headers", protects: "Cross-site scripting, clickjacking, MIME sniffing", layer: "Browser" },
     { control: "API keys server-side only, redacted from logs", protects: "Leaking Groq or Gemini keys to the browser or log files", layer: "Server" },
     { control: "Prompt-injection detection", protects: "Attempts to override the assistant's rules or extract configuration", layer: "AI" },
+    { control: "AI scope guardrail: greetings and off-topic answered locally", protects: "Using the assistant for unrelated questions and spending API quota on them", layer: "AI" },
     { control: `${integ.algorithm} data fingerprints`, protects: "Silent tampering with result files after the analysis", layer: "Data" },
   ];
 

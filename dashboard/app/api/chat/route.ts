@@ -8,6 +8,7 @@ import { systemPrompt } from "@/lib/ai/prompt";
 import { guardRequest } from "@/lib/security/guard";
 import { logSecurityEvent, redact } from "@/lib/security/audit";
 import { detectPromptInjection, INJECTION_REMINDER } from "@/lib/security/promptGuard";
+import { classify, historyForModel, localReply, type Turn } from "@/lib/ai/guardrails";
 
 // POST /api/chat
 // Body: { messages: { role: "user" | "assistant", content: string }[] }
@@ -71,6 +72,39 @@ export async function POST(req: NextRequest) {
   const { blocked, client } = guardRequest(req, "/api/chat");
   if (blocked) return blocked;
 
+  let body: { messages?: { role?: string; content?: string }[] };
+  try {
+    body = await req.json();
+  } catch {
+    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+  const turns: Turn[] = (body.messages ?? [])
+    .filter(m => (m.role === "user" || m.role === "assistant") && typeof m.content === "string" && m.content.trim())
+    .slice(-MAX_HISTORY_MESSAGES)
+    .map(m => ({ role: m.role as "user" | "assistant", content: m.content!.slice(0, MAX_MESSAGE_CHARS) }));
+  if (turns.length === 0 || turns[turns.length - 1].role !== "user") {
+    return Response.json({ error: "The last message must be from the user" }, { status: 400 });
+  }
+
+  // Guardrail: greetings, small talk and off-topic questions are answered here,
+  // before any provider call, so they use no API tokens (and work without keys).
+  const latest = turns[turns.length - 1].content;
+  const intent = classify(latest, turns.slice(0, -1));
+  if (intent !== "project") {
+    const events = [
+      { type: "provider", id: "local", label: "Guardrail", model: "no AI call", fallback: false, intent },
+      { type: "text", delta: localReply(intent, latest, turns.slice(0, -1)) },
+      { type: "done" },
+    ];
+    return new Response(events.map(e => JSON.stringify(e) + "\n").join(""), {
+      headers: { "Content-Type": "application/x-ndjson; charset=utf-8", "Cache-Control": "no-store" },
+    });
+  }
+
+  // Stricter limit for messages that cost API tokens.
+  const aiGuard = guardRequest(req, "/api/chat:ai");
+  if (aiGuard.blocked) return aiGuard.blocked;
+
   const providers = configuredProviders();
   if (providers.length === 0) {
     return Response.json(
@@ -79,19 +113,8 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: { messages?: { role?: string; content?: string }[] };
-  try {
-    body = await req.json();
-  } catch {
-    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
-  }
-  const history: ChatMessage[] = (body.messages ?? [])
-    .filter(m => (m.role === "user" || m.role === "assistant") && typeof m.content === "string" && m.content.trim())
-    .slice(-MAX_HISTORY_MESSAGES)
-    .map(m => ({ role: m.role as "user" | "assistant", content: m.content!.slice(0, MAX_MESSAGE_CHARS) }));
-  if (history.length === 0 || history[history.length - 1].role !== "user") {
-    return Response.json({ error: "The last message must be from the user" }, { status: 400 });
-  }
+  // Only project questions and their answers go to the model (small talk costs no tokens later either).
+  const history: ChatMessage[] = historyForModel(turns);
 
   let system: string;
   try {
@@ -102,7 +125,6 @@ export async function POST(req: NextRequest) {
   const base: ChatMessage[] = [{ role: "system", content: system }, ...history];
 
   // Prompt-injection detection: log it and remind the model; the question still gets an answer.
-  const latest = String(history[history.length - 1].content ?? "");
   const matched = detectPromptInjection(latest);
   if (matched.length) {
     logSecurityEvent("prompt_injection_suspected", "/api/chat", client, `${matched.join(", ")}: ${latest.slice(0, 160)}`);

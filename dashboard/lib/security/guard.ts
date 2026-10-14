@@ -7,7 +7,10 @@ import { clientId, logSecurityEvent } from "./audit";
 // shared store such as Redis.
 
 export const LIMITS = {
-  "/api/chat":        { requests: 10, windowMs: 60_000, maxBytes: 64 * 1024 },
+  // Every chat message (most greetings and off-topic ones are answered locally, for free)
+  "/api/chat":        { requests: 60, windowMs: 60_000, maxBytes: 64 * 1024 },
+  // Chat messages that actually reach Groq / Gemini
+  "/api/chat:ai":     { requests: 10, windowMs: 60_000, maxBytes: 64 * 1024 },
   "/api/sql/execute": { requests: 30, windowMs: 60_000, maxBytes: 16 * 1024 },
 } as const;
 type Route = keyof typeof LIMITS;
